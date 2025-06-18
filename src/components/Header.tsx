@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,7 +11,7 @@ export const Header = () => {
     { label: "Home", href: "/" },
     { label: "About", href: "#about" },
     { label: "Team", href: "#team" },
-    { label: "Research", href: "#research" },
+    { label: "Research", href: "/research" },
     { label: "Partnerships", href: "#partnerships" },
     { label: "Contact", href: "#contact" },
   ];

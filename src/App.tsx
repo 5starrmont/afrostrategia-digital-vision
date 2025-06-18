@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,6 +10,7 @@ import DigitalTrade from "./pages/DigitalTrade";
 import AIGovernance from "./pages/AIGovernance";
 import CyberDiplomacy from "./pages/CyberDiplomacy";
 import YouthStrategy from "./pages/YouthStrategy";
+import Research from "./pages/Research";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +26,7 @@ const App = () => (
           <Route path="/ai-governance" element={<AIGovernance />} />
           <Route path="/cyber-diplomacy" element={<CyberDiplomacy />} />
           <Route path="/youth-strategy" element={<YouthStrategy />} />
+          <Route path="/research" element={<Research />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
