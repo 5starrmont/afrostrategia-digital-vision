@@ -1,6 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Globe, Cpu, Shield, Users, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export const FocusAreas = () => {
   const departments = [
@@ -9,28 +10,32 @@ export const FocusAreas = () => {
       title: "Digital Trade & FinTech",
       description: "Advancing Africa's position in global digital commerce, cryptocurrency regulation, and financial technology innovation.",
       highlights: ["Cross-border payment systems", "Digital currency frameworks", "Trade facilitation platforms"],
-      color: "emerald"
+      color: "emerald",
+      link: "/digital-trade"
     },
     {
       icon: Cpu,
       title: "AI Governance & Ethics",
       description: "Developing ethical AI frameworks that reflect African values while fostering technological advancement.",
       highlights: ["AI policy development", "Algorithmic accountability", "Indigenous knowledge protection"],
-      color: "yellow"
+      color: "yellow",
+      link: "/ai-governance"
     },
     {
       icon: Shield,
       title: "Afro-Sovereignty & Cyber Diplomacy",
       description: "Strengthening Africa's digital sovereignty through strategic cyber diplomacy and security frameworks.",
       highlights: ["Data sovereignty policies", "Cyber security cooperation", "Digital rights advocacy"],
-      color: "emerald"
+      color: "emerald",
+      link: "/cyber-diplomacy"
     },
     {
       icon: Users,
       title: "Youth Strategy & Digital Rights",
       description: "Empowering Africa's youth through digital literacy, rights protection, and strategic engagement.",
       highlights: ["Digital skills development", "Youth policy advocacy", "Online safety frameworks"],
-      color: "yellow"
+      color: "yellow",
+      link: "/youth-strategy"
     }
   ];
 
@@ -54,32 +59,34 @@ export const FocusAreas = () => {
               : 'text-yellow-600 bg-yellow-100';
             
             return (
-              <Card key={dept.title} className="group hover:shadow-lg transition-all duration-300 cursor-pointer">
-                <CardHeader>
-                  <div className={`w-12 h-12 rounded-lg ${colorClasses} flex items-center justify-center mb-4`}>
-                    <IconComponent className="h-6 w-6" />
-                  </div>
-                  <CardTitle className="text-xl text-gray-900 group-hover:text-emerald-700 transition-colors">
-                    {dept.title}
-                  </CardTitle>
-                  <CardDescription className="text-gray-600">
-                    {dept.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2 mb-4">
-                    {dept.highlights.map((highlight, index) => (
-                      <li key={index} className="flex items-center text-sm text-gray-600">
-                        <ArrowRight className="h-4 w-4 text-emerald-600 mr-2 flex-shrink-0" />
-                        {highlight}
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="text-sm text-emerald-700 font-medium group-hover:text-emerald-800 transition-colors">
-                    Learn more →
-                  </div>
-                </CardContent>
-              </Card>
+              <Link key={dept.title} to={dept.link}>
+                <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer h-full">
+                  <CardHeader>
+                    <div className={`w-12 h-12 rounded-lg ${colorClasses} flex items-center justify-center mb-4`}>
+                      <IconComponent className="h-6 w-6" />
+                    </div>
+                    <CardTitle className="text-xl text-gray-900 group-hover:text-emerald-700 transition-colors">
+                      {dept.title}
+                    </CardTitle>
+                    <CardDescription className="text-gray-600">
+                      {dept.description}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-2 mb-4">
+                      {dept.highlights.map((highlight, index) => (
+                        <li key={index} className="flex items-center text-sm text-gray-600">
+                          <ArrowRight className="h-4 w-4 text-emerald-600 mr-2 flex-shrink-0" />
+                          {highlight}
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="text-sm text-emerald-700 font-medium group-hover:text-emerald-800 transition-colors">
+                      Learn more →
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
             );
           })}
         </div>
