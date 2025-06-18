@@ -1,8 +1,23 @@
 
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Globe, Cpu, Shield, Users } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export const Hero = () => {
+  const scrollToAbout = () => {
+    const aboutSection = document.querySelector('#about');
+    if (aboutSection) {
+      aboutSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const scrollToPartnerships = () => {
+    const partnershipsSection = document.querySelector('#partnerships');
+    if (partnershipsSection) {
+      partnershipsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <section id="home" className="relative bg-gradient-to-br from-emerald-50 via-white to-yellow-50 py-20 lg:py-32">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -21,32 +36,49 @@ export const Hero = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" className="bg-emerald-700 hover:bg-emerald-800 text-white">
+              <Button 
+                size="lg" 
+                className="bg-emerald-700 hover:bg-emerald-800 text-white"
+                onClick={scrollToAbout}
+              >
                 Explore Our Research
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-              <Button variant="outline" size="lg" className="border-emerald-700 text-emerald-700 hover:bg-emerald-50">
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="border-emerald-700 text-emerald-700 hover:bg-emerald-50"
+                onClick={scrollToPartnerships}
+              >
                 Partner With Us
               </Button>
             </div>
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-8">
-              <div className="text-center p-4 bg-white rounded-lg shadow-sm">
-                <Globe className="h-8 w-8 text-emerald-600 mx-auto mb-2" />
-                <p className="text-sm text-gray-600">Digital Trade</p>
-              </div>
-              <div className="text-center p-4 bg-white rounded-lg shadow-sm">
-                <Cpu className="h-8 w-8 text-yellow-600 mx-auto mb-2" />
-                <p className="text-sm text-gray-600">AI Governance</p>
-              </div>
-              <div className="text-center p-4 bg-white rounded-lg shadow-sm">
-                <Shield className="h-8 w-8 text-emerald-600 mx-auto mb-2" />
-                <p className="text-sm text-gray-600">Cyber Diplomacy</p>
-              </div>
-              <div className="text-center p-4 bg-white rounded-lg shadow-sm">
-                <Users className="h-8 w-8 text-yellow-600 mx-auto mb-2" />
-                <p className="text-sm text-gray-600">Youth Strategy</p>
-              </div>
+              <Link to="/digital-trade" className="group">
+                <div className="text-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer">
+                  <Globe className="h-8 w-8 text-emerald-600 mx-auto mb-2 group-hover:scale-110 transition-transform" />
+                  <p className="text-sm text-gray-600 group-hover:text-emerald-700">Digital Trade</p>
+                </div>
+              </Link>
+              <Link to="/ai-governance" className="group">
+                <div className="text-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer">
+                  <Cpu className="h-8 w-8 text-yellow-600 mx-auto mb-2 group-hover:scale-110 transition-transform" />
+                  <p className="text-sm text-gray-600 group-hover:text-emerald-700">AI Governance</p>
+                </div>
+              </Link>
+              <Link to="/cyber-diplomacy" className="group">
+                <div className="text-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer">
+                  <Shield className="h-8 w-8 text-emerald-600 mx-auto mb-2 group-hover:scale-110 transition-transform" />
+                  <p className="text-sm text-gray-600 group-hover:text-emerald-700">Cyber Diplomacy</p>
+                </div>
+              </Link>
+              <Link to="/youth-strategy" className="group">
+                <div className="text-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer">
+                  <Users className="h-8 w-8 text-yellow-600 mx-auto mb-2 group-hover:scale-110 transition-transform" />
+                  <p className="text-sm text-gray-600 group-hover:text-emerald-700">Youth Strategy</p>
+                </div>
+              </Link>
             </div>
           </div>
 

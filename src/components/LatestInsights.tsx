@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Calendar, User } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export const LatestInsights = () => {
   const insights = [
@@ -47,15 +48,22 @@ export const LatestInsights = () => {
               Research-driven analysis shaping Africa's digital policy landscape
             </p>
           </div>
-          <Button variant="outline" className="hidden sm:flex border-emerald-700 text-emerald-700 hover:bg-emerald-50">
-            View All Research
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
+          <Link to="/research">
+            <Button variant="outline" className="hidden sm:flex border-emerald-700 text-emerald-700 hover:bg-emerald-50">
+              View All Research
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
           {insights.map((insight, index) => (
-            <Card key={index} className={`group cursor-pointer transition-all duration-300 hover:shadow-lg ${insight.featured ? 'lg:col-span-2 lg:row-span-1' : ''}`}>
+            <Card 
+              key={index} 
+              className={`group cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 ${
+                insight.featured ? 'lg:col-span-2 lg:row-span-1' : ''
+              }`}
+            >
               <CardHeader>
                 <div className="flex items-center justify-between mb-3">
                   <Badge variant="secondary" className="text-emerald-700 bg-emerald-100">
@@ -63,7 +71,9 @@ export const LatestInsights = () => {
                   </Badge>
                   <span className="text-sm text-gray-500">{insight.readTime}</span>
                 </div>
-                <CardTitle className={`group-hover:text-emerald-700 transition-colors ${insight.featured ? 'text-2xl' : 'text-lg'}`}>
+                <CardTitle className={`group-hover:text-emerald-700 transition-colors ${
+                  insight.featured ? 'text-2xl' : 'text-lg'
+                }`}>
                   {insight.title}
                 </CardTitle>
                 <CardDescription className={insight.featured ? 'text-base' : 'text-sm'}>
@@ -82,7 +92,7 @@ export const LatestInsights = () => {
                       <span>{insight.date}</span>
                     </div>
                   </div>
-                  <ArrowRight className="h-4 w-4 text-emerald-600 group-hover:text-emerald-700 transition-colors" />
+                  <ArrowRight className="h-4 w-4 text-emerald-600 group-hover:text-emerald-700 group-hover:translate-x-1 transition-all" />
                 </div>
               </CardContent>
             </Card>
@@ -90,10 +100,12 @@ export const LatestInsights = () => {
         </div>
 
         <div className="text-center mt-12 sm:hidden">
-          <Button variant="outline" className="border-emerald-700 text-emerald-700 hover:bg-emerald-50">
-            View All Research
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
+          <Link to="/research">
+            <Button variant="outline" className="border-emerald-700 text-emerald-700 hover:bg-emerald-50">
+              View All Research
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
         </div>
       </div>
     </section>

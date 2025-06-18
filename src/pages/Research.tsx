@@ -1,102 +1,126 @@
+
+import { useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { 
-  Pagination, 
-  PaginationContent, 
-  PaginationItem, 
-  PaginationLink, 
-  PaginationNext, 
-  PaginationPrevious 
-} from "@/components/ui/pagination";
-import { Calendar, User, Download, Search, Filter, ArrowRight } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ArrowRight, Calendar, User, Download, Search } from "lucide-react";
 
 const Research = () => {
-  const featuredResearch = [
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
+
+  const researchPapers = [
     {
-      title: "African Digital Sovereignty Framework 2024",
-      description: "Comprehensive policy framework for establishing digital sovereignty across African nations, addressing data governance, cybersecurity, and technological independence.",
-      type: "Policy Brief",
-      category: "Cyber Diplomacy",
-      author: "Dr. Amara Diallo",
-      date: "March 2024",
-      downloadUrl: "#",
+      title: "Digital Financial Inclusion: Africa's Leap Forward",
+      description: "Comprehensive analysis of mobile money adoption rates and policy frameworks driving financial inclusion across African markets, with case studies from Kenya, Ghana, and Nigeria.",
+      author: "Dr. Amina Kone",
+      date: "March 15, 2024",
+      category: "FinTech",
+      readTime: "8 min read",
       featured: true,
-      tags: ["Digital Sovereignty", "Policy Framework", "Africa"]
+      downloadUrl: "#"
     },
     {
-      title: "FinTech Regulatory Harmonization Across ECOWAS",
-      description: "Analysis of regulatory frameworks and recommendations for harmonizing FinTech policies across West African Economic Community states.",
-      type: "Research Paper",
-      category: "Digital Trade",
+      title: "AI Ethics Framework for African Development",
+      description: "Proposing culturally-informed AI governance principles that balance innovation with traditional African values and community-centered approaches to technology.",
       author: "Prof. Kwame Asante",
-      date: "February 2024",
-      downloadUrl: "#",
+      date: "March 10, 2024",
+      category: "AI Governance",
+      readTime: "12 min read",
       featured: true,
-      tags: ["FinTech", "ECOWAS", "Regulation"]
+      downloadUrl: "#"
+    },
+    {
+      title: "Youth Digital Rights in the Age of Surveillance",
+      description: "Examining privacy concerns and digital rights protection for African youth in an increasingly connected world, with focus on data protection legislation.",
+      author: "Dr. Fatima Okafor",
+      date: "March 5, 2024",
+      category: "Digital Rights",
+      readTime: "6 min read",
+      featured: false,
+      downloadUrl: "#"
+    },
+    {
+      title: "Cross-Border Digital Trade Regulations in ECOWAS",
+      description: "Policy recommendations for harmonizing digital trade regulations across West African Economic and Monetary Union member states.",
+      author: "Dr. Zara Hassan",
+      date: "February 28, 2024",
+      category: "Digital Trade",
+      readTime: "10 min read",
+      featured: false,
+      downloadUrl: "#"
+    },
+    {
+      title: "Cyber Diplomacy and Continental Data Governance",
+      description: "Strategic framework for African Union digital sovereignty initiatives and international cyber diplomacy engagement strategies.",
+      author: "Dr. Kofi Mensah",
+      date: "February 20, 2024",
+      category: "Cyber Diplomacy",
+      readTime: "15 min read",
+      featured: false,
+      downloadUrl: "#"
+    },
+    {
+      title: "Blockchain for Agricultural Finance in Rural Africa",
+      description: "Innovative blockchain applications for smallholder farmer financing and supply chain transparency in agricultural markets.",
+      author: "Dr. Chidi Okonkwo",
+      date: "February 15, 2024",
+      category: "FinTech",
+      readTime: "9 min read",
+      featured: false,
+      downloadUrl: "#"
+    },
+    {
+      title: "Artificial Intelligence in African Healthcare Systems",
+      description: "Ethical considerations and policy frameworks for AI implementation in healthcare delivery across resource-constrained settings.",
+      author: "Prof. Kwame Asante",
+      date: "February 10, 2024",
+      category: "AI Governance",
+      readTime: "11 min read",
+      featured: false,
+      downloadUrl: "#"
+    },
+    {
+      title: "Digital Identity Solutions for Continental Integration",
+      description: "Comparative analysis of digital identity systems and their role in facilitating African Continental Free Trade Area implementation.",
+      author: "Dr. Amina Kone",
+      date: "February 5, 2024",
+      category: "Digital Trade",
+      readTime: "7 min read",
+      featured: false,
+      downloadUrl: "#"
     }
   ];
 
-  const allResearch = [
-    {
-      title: "AI Ethics Guidelines for African Development",
-      description: "Culturally-informed AI governance principles balancing innovation with traditional African values and social structures.",
-      type: "Policy Brief",
-      category: "AI Governance",
-      author: "Dr. Fatima Okafor",
-      date: "March 2024",
-      downloadUrl: "#",
-      tags: ["AI Ethics", "Governance", "Culture"]
-    },
-    {
-      title: "Youth Digital Rights Protection Framework",
-      description: "Comprehensive framework for protecting digital rights of African youth in an increasingly connected digital environment.",
-      type: "Research Paper",
-      category: "Youth Strategy",
-      author: "Dr. Kofi Mensah",
-      date: "February 2024",
-      downloadUrl: "#",
-      tags: ["Digital Rights", "Youth", "Protection"]
-    },
-    {
-      title: "Cryptocurrency Adoption in Sub-Saharan Africa",
-      description: "Market analysis and policy recommendations for cryptocurrency adoption and regulation across Sub-Saharan African countries.",
-      type: "Market Analysis",
-      category: "Digital Trade",
-      author: "Prof. Aisha Kamara",
-      date: "January 2024",
-      downloadUrl: "#",
-      tags: ["Cryptocurrency", "Market Analysis", "Regulation"]
-    },
-    {
-      title: "Cybersecurity Capacity Building Strategy",
-      description: "Strategic roadmap for enhancing cybersecurity capabilities across African institutions and government agencies.",
-      type: "Strategy Document",
-      category: "Cyber Diplomacy",
-      author: "Dr. Samuel Nkomo",
-      date: "January 2024",
-      downloadUrl: "#",
-      tags: ["Cybersecurity", "Capacity Building", "Strategy"]
-    }
-  ];
+  const categories = ["all", "FinTech", "AI Governance", "Digital Rights", "Digital Trade", "Cyber Diplomacy"];
+
+  const filteredPapers = researchPapers.filter(paper => {
+    const matchesSearch = paper.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         paper.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         paper.author.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === "all" || paper.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  const totalPages = Math.ceil(filteredPapers.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentPapers = filteredPapers.slice(startIndex, startIndex + itemsPerPage);
 
   const getCategoryColor = (category: string) => {
-    switch (category) {
-      case "Digital Trade":
-        return "bg-emerald-100 text-emerald-700";
-      case "AI Governance":
-        return "bg-yellow-100 text-yellow-700";
-      case "Cyber Diplomacy":
-        return "bg-blue-100 text-blue-700";
-      case "Youth Strategy":
-        return "bg-purple-100 text-purple-700";
-      default:
-        return "bg-gray-100 text-gray-700";
-    }
+    const colors = {
+      "FinTech": "bg-green-100 text-green-700",
+      "AI Governance": "bg-yellow-100 text-yellow-700",
+      "Digital Rights": "bg-blue-100 text-blue-700",
+      "Digital Trade": "bg-emerald-100 text-emerald-700",
+      "Cyber Diplomacy": "bg-purple-100 text-purple-700"
+    };
+    return colors[category as keyof typeof colors] || "bg-gray-100 text-gray-700";
   };
 
   return (
@@ -104,24 +128,15 @@ const Research = () => {
       <Header />
       
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-emerald-50 to-yellow-50 py-16">
+      <section className="bg-gradient-to-br from-emerald-50 via-white to-yellow-50 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-              Policy Research & Insights
+            <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+              Research & Policy Insights
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-              Evidence-based research shaping Africa's digital transformation through comprehensive policy analysis, strategic frameworks, and actionable recommendations.
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Evidence-based research shaping Africa's digital transformation policy landscape
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-emerald-700 hover:bg-emerald-800">
-                Browse All Research
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-              <Button variant="outline" size="lg" className="border-emerald-700 text-emerald-700 hover:bg-emerald-50">
-                Subscribe to Updates
-              </Button>
-            </div>
           </div>
         </div>
       </section>
@@ -129,45 +144,38 @@ const Research = () => {
       {/* Featured Research */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8">Featured Research</h2>
-          <div className="grid lg:grid-cols-2 gap-8">
-            {featuredResearch.map((item, index) => (
-              <Card key={index} className="group hover:shadow-lg transition-all duration-300">
+          <h2 className="text-2xl font-bold text-gray-900 mb-8">Featured Research</h2>
+          <div className="grid lg:grid-cols-2 gap-8 mb-16">
+            {researchPapers.filter(paper => paper.featured).map((paper, index) => (
+              <Card key={index} className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
                 <CardHeader>
                   <div className="flex items-center justify-between mb-3">
-                    <Badge className={getCategoryColor(item.category)}>
-                      {item.category}
+                    <Badge className={getCategoryColor(paper.category)}>
+                      {paper.category}
                     </Badge>
-                    <Badge variant="outline">{item.type}</Badge>
+                    <span className="text-sm text-gray-500">{paper.readTime}</span>
                   </div>
                   <CardTitle className="text-xl group-hover:text-emerald-700 transition-colors">
-                    {item.title}
+                    {paper.title}
                   </CardTitle>
                   <CardDescription className="text-base">
-                    {item.description}
+                    {paper.description}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {item.tags.map((tag, tagIndex) => (
-                      <Badge key={tagIndex} variant="secondary" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4 text-sm text-gray-500">
                       <div className="flex items-center space-x-1">
                         <User className="h-4 w-4" />
-                        <span>{item.author}</span>
+                        <span>{paper.author}</span>
                       </div>
                       <div className="flex items-center space-x-1">
                         <Calendar className="h-4 w-4" />
-                        <span>{item.date}</span>
+                        <span>{paper.date}</span>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm">
-                      <Download className="h-4 w-4 mr-2" />
+                    <Button variant="ghost" size="sm" className="text-emerald-600 hover:text-emerald-700">
+                      <Download className="h-4 w-4 mr-1" />
                       Download
                     </Button>
                   </div>
@@ -182,123 +190,114 @@ const Research = () => {
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900">Research Library</h2>
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                <Input placeholder="Search research..." className="pl-10 w-64" />
-              </div>
-              <Button variant="outline" size="sm">
-                <Filter className="h-4 w-4 mr-2" />
-                Filter
-              </Button>
+            <h2 className="text-2xl font-bold text-gray-900">Research Library</h2>
+            <div className="text-sm text-gray-600">
+              {filteredPapers.length} research papers found
             </div>
           </div>
 
-          <Tabs defaultValue="all" className="w-full">
-            <TabsList className="grid w-full grid-cols-5">
-              <TabsTrigger value="all">All Research</TabsTrigger>
-              <TabsTrigger value="digital-trade">Digital Trade</TabsTrigger>
-              <TabsTrigger value="ai-governance">AI Governance</TabsTrigger>
-              <TabsTrigger value="cyber-diplomacy">Cyber Diplomacy</TabsTrigger>
-              <TabsTrigger value="youth-strategy">Youth Strategy</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="all" className="mt-6">
-              <div className="grid md:grid-cols-2 gap-6">
-                {allResearch.map((item, index) => (
-                  <Card key={index} className="group hover:shadow-lg transition-all duration-300">
-                    <CardHeader className="pb-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <Badge className={getCategoryColor(item.category)}>
-                          {item.category}
-                        </Badge>
-                        <Badge variant="outline">{item.type}</Badge>
-                      </div>
-                      <CardTitle className="text-lg group-hover:text-emerald-700 transition-colors">
-                        {item.title}
-                      </CardTitle>
-                      <CardDescription>
-                        {item.description}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {item.tags.map((tag, tagIndex) => (
-                          <Badge key={tagIndex} variant="secondary" className="text-xs">
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4 text-sm text-gray-500">
-                          <div className="flex items-center space-x-1">
-                            <User className="h-4 w-4" />
-                            <span>{item.author}</span>
-                          </div>
-                          <div className="flex items-center space-x-1">
-                            <Calendar className="h-4 w-4" />
-                            <span>{item.date}</span>
-                          </div>
-                        </div>
-                        <Button variant="outline" size="sm">
-                          <Download className="h-4 w-4 mr-2" />
-                          Download
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
+          {/* Search and Filter */}
+          <div className="flex flex-col sm:flex-row gap-4 mb-8">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Input
+                placeholder="Search research papers..."
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="pl-10"
+              />
+            </div>
+            <Select value={selectedCategory} onValueChange={(value) => {
+              setSelectedCategory(value);
+              setCurrentPage(1);
+            }}>
+              <SelectTrigger className="w-full sm:w-48">
+                <SelectValue placeholder="Filter by category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map(category => (
+                  <SelectItem key={category} value={category}>
+                    {category === "all" ? "All Categories" : category}
+                  </SelectItem>
                 ))}
-              </div>
+              </SelectContent>
+            </Select>
+          </div>
 
-              <div className="mt-12 flex justify-center">
-                <Pagination>
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious href="#" />
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink href="#" isActive>1</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink href="#">2</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink href="#">3</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationNext href="#" />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
-              </div>
-            </TabsContent>
+          {/* Research Grid */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {currentPapers.map((paper, index) => (
+              <Card key={index} className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 bg-white">
+                <CardHeader>
+                  <div className="flex items-center justify-between mb-3">
+                    <Badge className={getCategoryColor(paper.category)}>
+                      {paper.category}
+                    </Badge>
+                    <span className="text-sm text-gray-500">{paper.readTime}</span>
+                  </div>
+                  <CardTitle className="text-lg group-hover:text-emerald-700 transition-colors">
+                    {paper.title}
+                  </CardTitle>
+                  <CardDescription>
+                    {paper.description.length > 120 ? 
+                      `${paper.description.substring(0, 120)}...` : 
+                      paper.description
+                    }
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-col space-y-1 text-sm text-gray-500">
+                      <div className="flex items-center space-x-1">
+                        <User className="h-4 w-4" />
+                        <span>{paper.author}</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <Calendar className="h-4 w-4" />
+                        <span>{paper.date}</span>
+                      </div>
+                    </div>
+                    <Button variant="ghost" size="sm" className="text-emerald-600 hover:text-emerald-700">
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
 
-            {/* Other tab contents would show filtered research by category */}
-            <TabsContent value="digital-trade" className="mt-6">
-              <div className="text-center py-8">
-                <p className="text-gray-500">Digital Trade research items would be displayed here.</p>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="ai-governance" className="mt-6">
-              <div className="text-center py-8">
-                <p className="text-gray-500">AI Governance research items would be displayed here.</p>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="cyber-diplomacy" className="mt-6">
-              <div className="text-center py-8">
-                <p className="text-gray-500">Cyber Diplomacy research items would be displayed here.</p>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="youth-strategy" className="mt-6">
-              <div className="text-center py-8">
-                <p className="text-gray-500">Youth Strategy research items would be displayed here.</p>
-              </div>
-            </TabsContent>
-          </Tabs>
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-center space-x-2">
+              <Button
+                variant="outline"
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </Button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                <Button
+                  key={page}
+                  variant={currentPage === page ? "default" : "outline"}
+                  onClick={() => setCurrentPage(page)}
+                  className={currentPage === page ? "bg-emerald-700 hover:bg-emerald-800" : ""}
+                >
+                  {page}
+                </Button>
+              ))}
+              <Button
+                variant="outline"
+                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </Button>
+            </div>
+          )}
         </div>
       </section>
 

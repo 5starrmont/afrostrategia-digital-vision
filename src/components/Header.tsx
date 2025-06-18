@@ -1,11 +1,31 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDepartmentsOpen, setIsDepartmentsOpen] = useState(false);
+  const location = useLocation();
+
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setIsMenuOpen(false);
+    setIsDepartmentsOpen(false);
+  }, [location]);
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setIsDepartmentsOpen(false);
+    };
+    
+    if (isDepartmentsOpen) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [isDepartmentsOpen]);
 
   const navItems = [
     { label: "Home", href: "/" },
@@ -22,6 +42,20 @@ export const Header = () => {
     { label: "Afro-Sovereignty & Cyber Diplomacy", href: "/cyber-diplomacy" },
     { label: "Youth Strategy & Digital Rights", href: "/youth-strategy" },
   ];
+
+  const isActive = (href: string) => {
+    if (href === "/") return location.pathname === "/";
+    return location.pathname === href;
+  };
+
+  const scrollToSection = (href: string) => {
+    if (href.startsWith('#')) {
+      const element = document.querySelector(href);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50">
@@ -46,7 +80,11 @@ export const Header = () => {
                 <Link
                   key={item.label}
                   to={item.href}
-                  className="text-gray-700 hover:text-emerald-700 px-3 py-2 text-sm font-medium transition-colors"
+                  className={`px-3 py-2 text-sm font-medium transition-colors ${
+                    isActive(item.href) 
+                      ? 'text-emerald-700 border-b-2 border-emerald-700' 
+                      : 'text-gray-700 hover:text-emerald-700'
+                  }`}
                 >
                   {item.label}
                 </Link>
@@ -54,7 +92,11 @@ export const Header = () => {
                 <a
                   key={item.label}
                   href={item.href}
-                  className="text-gray-700 hover:text-emerald-700 px-3 py-2 text-sm font-medium transition-colors"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToSection(item.href);
+                  }}
+                  className="text-gray-700 hover:text-emerald-700 px-3 py-2 text-sm font-medium transition-colors cursor-pointer"
                 >
                   {item.label}
                 </a>
@@ -65,10 +107,13 @@ export const Header = () => {
             <div className="relative">
               <button
                 className="text-gray-700 hover:text-emerald-700 px-3 py-2 text-sm font-medium transition-colors flex items-center"
-                onClick={() => setIsDepartmentsOpen(!isDepartmentsOpen)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsDepartmentsOpen(!isDepartmentsOpen);
+                }}
               >
                 Departments
-                <ChevronDown className="ml-1 h-4 w-4" />
+                <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${isDepartmentsOpen ? 'rotate-180' : ''}`} />
               </button>
               
               {isDepartmentsOpen && (
@@ -77,7 +122,11 @@ export const Header = () => {
                     <Link
                       key={dept.label}
                       to={dept.href}
-                      className="block px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors"
+                      className={`block px-4 py-3 text-sm transition-colors ${
+                        isActive(dept.href)
+                          ? 'bg-emerald-50 text-emerald-700 border-l-4 border-emerald-700'
+                          : 'text-gray-700 hover:bg-emerald-50 hover:text-emerald-700'
+                      }`}
                       onClick={() => setIsDepartmentsOpen(false)}
                     >
                       {dept.label}
@@ -109,7 +158,11 @@ export const Header = () => {
                   <Link
                     key={item.label}
                     to={item.href}
-                    className="text-gray-700 hover:text-emerald-700 px-3 py-2 text-sm font-medium transition-colors"
+                    className={`px-3 py-2 text-sm font-medium transition-colors ${
+                      isActive(item.href) 
+                        ? 'text-emerald-700 bg-emerald-50' 
+                        : 'text-gray-700 hover:text-emerald-700'
+                    }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {item.label}
@@ -118,8 +171,12 @@ export const Header = () => {
                   <a
                     key={item.label}
                     href={item.href}
-                    className="text-gray-700 hover:text-emerald-700 px-3 py-2 text-sm font-medium transition-colors"
-                    onClick={() => setIsMenuOpen(false)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      scrollToSection(item.href);
+                      setIsMenuOpen(false);
+                    }}
+                    className="text-gray-700 hover:text-emerald-700 px-3 py-2 text-sm font-medium transition-colors cursor-pointer"
                   >
                     {item.label}
                   </a>
@@ -133,7 +190,11 @@ export const Header = () => {
                   <Link
                     key={dept.label}
                     to={dept.href}
-                    className="text-gray-700 hover:text-emerald-700 px-3 py-2 text-sm font-medium transition-colors block"
+                    className={`text-sm font-medium transition-colors block px-3 py-2 ${
+                      isActive(dept.href)
+                        ? 'text-emerald-700 bg-emerald-50'
+                        : 'text-gray-700 hover:text-emerald-700'
+                    }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {dept.label}
