@@ -13,7 +13,7 @@ export const PartnershipsPreview = () => {
       name: "The Cooperative University of Kenya",
       type: "Research Partner",
       description: "Collaborative research on emerging technologies in Africa",
-      logo: "https://images.unsplash.com/photo-1523050854058-8df90110c9d1?w=200&h=200&fit=crop&crop=center"
+      logo: "https://www.cuk.ac.ke/images/logo.png"
     },
     {
       name: "World Economic Forum",
