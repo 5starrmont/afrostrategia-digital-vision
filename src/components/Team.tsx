@@ -10,7 +10,6 @@ export const Team = () => {
       role: "Executive Director",
       department: "Leadership",
       bio: "Former AU Digital Transformation Advisor with 15+ years in fintech policy development across West Africa.",
-      image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300&h=300&fit=crop&crop=face",
       social: { linkedin: "#", twitter: "#", email: "amina@afrostrategia.org" }
     },
     {
@@ -18,7 +17,6 @@ export const Team = () => {
       role: "Director of AI Governance",
       department: "AI Ethics",
       bio: "Leading AI ethics researcher and former MIT Technology Policy Fellow specializing in algorithmic accountability.",
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop&crop=face",
       social: { linkedin: "#", twitter: "#", email: "kwame@afrostrategia.org" }
     },
     {
@@ -26,7 +24,6 @@ export const Team = () => {
       role: "Director of Youth Strategy",
       department: "Digital Rights",
       bio: "Digital rights advocate and former UN Youth Envoy focused on online safety and digital literacy programs.",
-      image: "https://images.unsplash.com/photo-1494790108755-2616b612b29c?w=300&h=300&fit=crop&crop=face",
       social: { linkedin: "#", twitter: "#", email: "fatima@afrostrategia.org" }
     },
     {
@@ -34,7 +31,6 @@ export const Team = () => {
       role: "Director of Cyber Diplomacy",
       department: "Digital Sovereignty",
       bio: "Former African Union Commission cybersecurity advisor with expertise in international digital governance frameworks.",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face",
       social: { linkedin: "#", twitter: "#", email: "kofi@afrostrategia.org" }
     },
     {
@@ -42,7 +38,6 @@ export const Team = () => {
       role: "Director of Digital Trade",
       department: "FinTech",
       bio: "International trade economist specializing in digital commerce regulations and cross-border payment systems.",
-      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face",
       social: { linkedin: "#", twitter: "#", email: "zara@afrostrategia.org" }
     },
     {
@@ -50,7 +45,6 @@ export const Team = () => {
       role: "Research Director",
       department: "Policy Analysis",
       bio: "Seasoned policy researcher with expertise in continental governance frameworks and digital transformation strategies.",
-      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&h=300&fit=crop&crop=face",
       social: { linkedin: "#", twitter: "#", email: "chidi@afrostrategia.org" }
     }
   ];
@@ -84,12 +78,7 @@ export const Team = () => {
             <Card key={index} className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
               <CardContent className="p-6">
                 <div className="text-center mb-4">
-                  <img 
-                    src={member.image} 
-                    alt={member.name}
-                    className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
-                  />
-                  <Badge className={`${getDepartmentColor(member.department)} mb-2`}>
+                  <Badge className={`${getDepartmentColor(member.department)} mb-3`}>
                     {member.department}
                   </Badge>
                   <h3 className="text-xl font-semibold text-gray-900 mb-1">{member.name}</h3>
