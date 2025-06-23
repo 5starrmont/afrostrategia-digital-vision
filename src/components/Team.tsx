@@ -6,57 +6,41 @@ import { Linkedin, Twitter, Mail } from "lucide-react";
 export const Team = () => {
   const teamMembers = [
     {
-      name: "Dr. Amina Kone",
-      role: "Executive Director",
+      name: "Ian Obwoge",
+      role: "Founding Strategic Envoy & Executive Director",
       department: "Leadership",
-      bio: "Former AU Digital Transformation Advisor with 15+ years in fintech policy development across West Africa.",
-      social: { linkedin: "#", twitter: "#", email: "amina@afrostrategia.org" }
+      bio: "Chair of Strategic Inquiry and Global Affairs, leading Digital Trade & FinTech Access research and co-leading Finance & Operations.",
+      social: { linkedin: "#", twitter: "#", email: "ian@afrostrategia.org" }
     },
     {
-      name: "Prof. Kwame Asante",
-      role: "Director of AI Governance",
-      department: "AI Ethics",
-      bio: "Leading AI ethics researcher and former MIT Technology Policy Fellow specializing in algorithmic accountability.",
-      social: { linkedin: "#", twitter: "#", email: "kwame@afrostrategia.org" }
+      name: "Brian Koech",
+      role: "Department Lead",
+      department: "Afro-Sovereignty & Cyber Diplomacy",
+      bio: "Leading initiatives in digital sovereignty and cyber diplomacy frameworks for continental security and autonomy.",
+      social: { linkedin: "#", twitter: "#", email: "brian@afrostrategia.org" }
     },
     {
-      name: "Dr. Fatima Okafor",
-      role: "Director of Youth Strategy",
-      department: "Digital Rights",
-      bio: "Digital rights advocate and former UN Youth Envoy focused on online safety and digital literacy programs.",
-      social: { linkedin: "#", twitter: "#", email: "fatima@afrostrategia.org" }
+      name: "Eric Nyaosi",
+      role: "Department Lead",
+      department: "AI Governance, Ethics & Innovation",
+      bio: "Driving AI governance frameworks, ethical standards, and innovation policies for responsible AI development in Africa.",
+      social: { linkedin: "#", twitter: "#", email: "eric@afrostrategia.org" }
     },
     {
-      name: "Dr. Kofi Mensah",
-      role: "Director of Cyber Diplomacy",
-      department: "Digital Sovereignty",
-      bio: "Former African Union Commission cybersecurity advisor with expertise in international digital governance frameworks.",
-      social: { linkedin: "#", twitter: "#", email: "kofi@afrostrategia.org" }
-    },
-    {
-      name: "Dr. Zara Hassan",
-      role: "Director of Digital Trade",
-      department: "FinTech",
-      bio: "International trade economist specializing in digital commerce regulations and cross-border payment systems.",
-      social: { linkedin: "#", twitter: "#", email: "zara@afrostrategia.org" }
-    },
-    {
-      name: "Dr. Chidi Okonkwo",
-      role: "Research Director",
-      department: "Policy Analysis",
-      bio: "Seasoned policy researcher with expertise in continental governance frameworks and digital transformation strategies.",
-      social: { linkedin: "#", twitter: "#", email: "chidi@afrostrategia.org" }
+      name: "Collins Momanyi",
+      role: "Department Lead",
+      department: "Youth Strategy & Digital Rights",
+      bio: "Championing youth empowerment and digital rights advocacy to ensure inclusive digital transformation across Africa.",
+      social: { linkedin: "#", twitter: "#", email: "collins@afrostrategia.org" }
     }
   ];
 
   const getDepartmentColor = (department: string) => {
     const colors = {
       "Leadership": "bg-purple-100 text-purple-700",
-      "AI Ethics": "bg-yellow-100 text-yellow-700",
-      "Digital Rights": "bg-blue-100 text-blue-700",
-      "Digital Sovereignty": "bg-emerald-100 text-emerald-700",
-      "FinTech": "bg-green-100 text-green-700",
-      "Policy Analysis": "bg-gray-100 text-gray-700"
+      "Afro-Sovereignty & Cyber Diplomacy": "bg-emerald-100 text-emerald-700",
+      "AI Governance, Ethics & Innovation": "bg-yellow-100 text-yellow-700",
+      "Youth Strategy & Digital Rights": "bg-blue-100 text-blue-700"
     };
     return colors[department as keyof typeof colors] || "bg-gray-100 text-gray-700";
   };
@@ -73,7 +57,7 @@ export const Team = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {teamMembers.map((member, index) => (
             <Card key={index} className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
               <CardContent className="p-6">
