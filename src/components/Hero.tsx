@@ -31,7 +31,7 @@ export const Hero = () => {
                 </span>
               </h1>
               <p className="text-xl text-gray-600 leading-relaxed">
-                AfroStrategia is a Pan-African think tank shaping the continent's digital transformation through strategic research, policy innovation, and collaborative diplomacy.
+                AfroStrategia Foundation is a Pan-African think tank shaping the continent's digital transformation through strategic research, policy innovation, and collaborative diplomacy.
               </p>
             </div>
 
@@ -86,12 +86,12 @@ export const Hero = () => {
             <div className="relative bg-gradient-to-br from-emerald-100 to-yellow-100 rounded-2xl p-8">
               <img 
                 src="/lovable-uploads/aea9891e-d4df-4543-b771-163f7061a75c.png" 
-                alt="AfroStrategia Vision" 
+                alt="AfroStrategia Foundation Vision" 
                 className="w-full h-auto max-w-md mx-auto"
               />
               <div className="absolute -bottom-4 -right-4 bg-white p-6 rounded-xl shadow-lg">
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-emerald-700">2024</p>
+                  <p className="text-2xl font-bold text-emerald-700">2025</p>
                   <p className="text-sm text-gray-600">Established</p>
                 </div>
               </div>

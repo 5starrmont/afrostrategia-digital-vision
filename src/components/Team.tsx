@@ -8,28 +8,28 @@ export const Team = () => {
     {
       name: "Ian Obwoge",
       role: "Founding Strategic Envoy & Chief Executive Officer",
-      department: "Executive Leadership",
+      department: "Executive Board",
       bio: "Chair of Strategic Inquiry and Global Affairs, leading Digital Trade & FinTech Access research and co-leading Finance & Operations.",
       social: { linkedin: "#", twitter: "#", email: "ian@afrostrategia.org" }
     },
     {
       name: "Brian Koech",
-      role: "Executive Vice President & Chief Strategy Officer",
-      department: "Afro-Sovereignty & Cyber Diplomacy",
+      role: "Executive Vice President",
+      department: "Executive Board",
       bio: "Leading initiatives in digital sovereignty and cyber diplomacy frameworks for continental security and autonomy.",
       social: { linkedin: "#", twitter: "#", email: "brian@afrostrategia.org" }
     },
     {
       name: "Eric Nyaosi",
-      role: "Executive Vice President & Chief Innovation Officer",
-      department: "AI Governance, Ethics & Innovation",
+      role: "Executive Vice President",
+      department: "Executive Board",
       bio: "Driving AI governance frameworks, ethical standards, and innovation policies for responsible AI development in Africa.",
       social: { linkedin: "#", twitter: "#", email: "eric@afrostrategia.org" }
     },
     {
       name: "Collins Momanyi",
-      role: "Executive Vice President & Chief Youth Strategy Officer",
-      department: "Youth Strategy & Digital Rights",
+      role: "Executive Vice President",
+      department: "Executive Board",
       bio: "Championing youth empowerment and digital rights advocacy to ensure inclusive digital transformation across Africa.",
       social: { linkedin: "#", twitter: "#", email: "collins@afrostrategia.org" }
     }
@@ -37,7 +37,7 @@ export const Team = () => {
 
   const getDepartmentColor = (department: string) => {
     const colors = {
-      "Executive Leadership": "bg-purple-100 text-purple-700",
+      "Executive Board": "bg-purple-100 text-purple-700",
       "Afro-Sovereignty & Cyber Diplomacy": "bg-emerald-100 text-emerald-700",
       "AI Governance, Ethics & Innovation": "bg-yellow-100 text-yellow-700",
       "Youth Strategy & Digital Rights": "bg-blue-100 text-blue-700"
