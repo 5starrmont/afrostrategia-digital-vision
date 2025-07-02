@@ -1,4 +1,3 @@
-
 import { Globe, Mail, MapPin, Phone } from "lucide-react";
 
 export const Footer = () => {
@@ -10,11 +9,11 @@ export const Footer = () => {
             <div className="flex items-center space-x-3 mb-6">
               <img 
                 src="/lovable-uploads/aea9891e-d4df-4543-b771-163f7061a75c.png" 
-                alt="AfroStrategia Logo" 
+                alt="AfroStrategia Foundation Logo" 
                 className="h-12 w-auto"
               />
               <div>
-                <h3 className="text-xl font-bold">AfroStrategia</h3>
+                <h3 className="text-xl font-bold">AfroStrategia Foundation</h3>
                 <p className="text-gray-400 text-sm">Pan-African Think Tank</p>
               </div>
             </div>
@@ -28,7 +27,7 @@ export const Footer = () => {
               </div>
               <div className="flex items-center space-x-3">
                 <MapPin className="h-5 w-5 text-emerald-400" />
-                <span className="text-gray-300">Addis Ababa, Ethiopia</span>
+                <span className="text-gray-300">Nairobi, Kenya</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Globe className="h-5 w-5 text-emerald-400" />
@@ -61,7 +60,7 @@ export const Footer = () => {
         <div className="border-t border-gray-800 pt-8 mt-12">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm">
-              © 2024 AfroStrategia. All rights reserved.
+              © 2025 AfroStrategia Foundation. All rights reserved.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <a href="#" className="text-gray-400 hover:text-emerald-400 text-sm transition-colors">Privacy Policy</a>

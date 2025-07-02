@@ -64,11 +64,11 @@ export const Header = () => {
           <Link to="/" className="flex items-center space-x-3">
             <img 
               src="/lovable-uploads/aea9891e-d4df-4543-b771-163f7061a75c.png" 
-              alt="AfroStrategia Logo" 
+              alt="AfroStrategia Foundation Logo" 
               className="h-12 w-auto"
             />
             <div className="hidden sm:block">
-              <h1 className="text-xl font-bold text-gray-900">AfroStrategia</h1>
+              <h1 className="text-xl font-bold text-gray-900">AfroStrategia Foundation</h1>
               <p className="text-xs text-gray-600">Pan-African Think Tank</p>
             </div>
           </Link>
