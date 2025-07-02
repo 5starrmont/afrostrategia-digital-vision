@@ -9,12 +9,12 @@ export const Team = () => {
       name: "Ian Obwoge",
       role: "Strategic Envoy & Chief Executive Officer",
       department: "Executive Board",
-      bio: "Chair of Strategic Inquiry and Global Affairs, leading Digital Trade & FinTech Access research and co-leading Finance & Operations.",
+      bio: "Chair of Strategic Inquiry and Global Affairs, leading Digital Trade & FinTech Access research.",
       social: { linkedin: "#", twitter: "#", email: "ian@afrostrategia.org" }
     },
     {
       name: "Brian Koech",
-      role: "Chief Strategy Officer",
+      role: "Director of Research",
       department: "Executive Board",
       bio: "Leading initiatives in digital sovereignty and cyber diplomacy frameworks for continental security and autonomy.",
       social: { linkedin: "#", twitter: "#", email: "brian@afrostrategia.org" }
