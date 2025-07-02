@@ -1,4 +1,3 @@
-
 import { Card, CardContent } from "@/components/ui/card";
 
 export const PartnershipsPreview = () => {
@@ -7,19 +6,19 @@ export const PartnershipsPreview = () => {
       name: "African Union",
       type: "Continental Body",
       description: "Strategic policy alignment with AU digital transformation agenda",
-      logo: "https://upload.wikimedia.org/wikipedia/commons/5/51/Emblem_of_the_African_Union.svg"
+      logo: "https://au.int/sites/default/files/newsevents/workingdocuments/33178-wd-au_emblem.png"
     },
     {
       name: "The Cooperative University of Kenya",
       type: "Research Partner",
       description: "Collaborative research on emerging technologies in Africa",
-      logo: "https://www.cuk.ac.ke/images/logo.png"
+      logo: "https://www.cuk.ac.ke/wp-content/uploads/2020/05/CUK-LOGO.png"
     },
     {
       name: "World Economic Forum",
       type: "Global Platform",
       description: "Contributing to global digital governance discussions",
-      logo: "https://upload.wikimedia.org/wikipedia/commons/a/a6/World_Economic_Forum_logo.svg"
+      logo: "https://www.weforum.org/assets/logo/wef-logo.svg"
     },
     {
       name: "UNECA",

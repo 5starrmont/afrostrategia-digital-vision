@@ -1,4 +1,3 @@
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Target, Globe2, Users2, Lightbulb } from "lucide-react";
 
@@ -32,7 +31,7 @@ export const About = () => {
         <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
           <div>
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
-              About AfroStrategia
+              About AfroStrategia Foundation
             </h2>
             <div className="space-y-4 text-lg text-gray-600">
               <p>
