@@ -7,28 +7,28 @@ export const Team = () => {
   const teamMembers = [
     {
       name: "Ian Obwoge",
-      role: "Founding Strategic Envoy & Chief Executive Officer",
+      role: "Strategic Envoy & Chief Executive Officer",
       department: "Executive Board",
       bio: "Chair of Strategic Inquiry and Global Affairs, leading Digital Trade & FinTech Access research and co-leading Finance & Operations.",
       social: { linkedin: "#", twitter: "#", email: "ian@afrostrategia.org" }
     },
     {
       name: "Brian Koech",
-      role: "Executive Vice President",
+      role: "Chief Strategy Officer",
       department: "Executive Board",
       bio: "Leading initiatives in digital sovereignty and cyber diplomacy frameworks for continental security and autonomy.",
       social: { linkedin: "#", twitter: "#", email: "brian@afrostrategia.org" }
     },
     {
       name: "Eric Nyaosi",
-      role: "Executive Vice President",
+      role: "Chief Innovation Officer",
       department: "Executive Board",
       bio: "Driving AI governance frameworks, ethical standards, and innovation policies for responsible AI development in Africa.",
       social: { linkedin: "#", twitter: "#", email: "eric@afrostrategia.org" }
     },
     {
       name: "Collins Momanyi",
-      role: "Executive Vice President",
+      role: "Chief Development Officer",
       department: "Executive Board",
       bio: "Championing youth empowerment and digital rights advocacy to ensure inclusive digital transformation across Africa.",
       social: { linkedin: "#", twitter: "#", email: "collins@afrostrategia.org" }
