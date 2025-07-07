@@ -59,19 +59,35 @@ export const LoginForm = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">
-            {isSignUp ? "Create Admin Account" : "Admin Login"}
-          </CardTitle>
-          <p className="text-muted-foreground">
-            {isSignUp 
-              ? "Sign up for admin access to AfroStrategia Foundation" 
-              : "Access the AfroStrategia Foundation admin panel"
-            }
-          </p>
-        </CardHeader>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-white to-yellow-50 px-4">
+      <div className="w-full max-w-md">
+        {/* Logo and branding */}
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center space-x-3 mb-6">
+            <img 
+              src="/lovable-uploads/aea9891e-d4df-4543-b771-163f7061a75c.png" 
+              alt="AfroStrategia Foundation Logo" 
+              className="h-12 w-auto"
+            />
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">AfroStrategia Foundation</h1>
+              <p className="text-emerald-600 text-sm">Pan-African Think Tank</p>
+            </div>
+          </div>
+        </div>
+
+        <Card className="w-full bg-white/80 backdrop-blur-sm border-emerald-100 shadow-xl">
+          <CardHeader className="text-center space-y-2">
+            <CardTitle className="text-2xl text-gray-900">
+              {isSignUp ? "Create Admin Account" : "Admin Login"}
+            </CardTitle>
+            <p className="text-gray-600">
+              {isSignUp 
+                ? "Sign up for admin access to the foundation" 
+                : "Access the admin dashboard"
+              }
+            </p>
+          </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
@@ -100,7 +116,7 @@ export const LoginForm = () => {
             
             <Button 
               type="submit" 
-              className="w-full" 
+              className="w-full bg-emerald-700 hover:bg-emerald-800 text-white" 
               disabled={loading}
             >
               {loading ? "Processing..." : (isSignUp ? "Sign Up" : "Sign In")}
@@ -116,7 +132,8 @@ export const LoginForm = () => {
             </Button>
           </form>
         </CardContent>
-      </Card>
+        </Card>
+      </div>
     </div>
   );
 };
