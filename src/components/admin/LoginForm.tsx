@@ -10,7 +10,6 @@ export const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -18,35 +17,17 @@ export const LoginForm = () => {
     setLoading(true);
 
     try {
-      if (isSignUp) {
-        const redirectUrl = `${window.location.origin}/admin`;
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: redirectUrl
-          }
-        });
-        
-        if (error) throw error;
-        
-        toast({
-          title: "Check your email",
-          description: "We've sent you a confirmation link to complete your registration.",
-        });
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        
-        if (error) throw error;
-        
-        toast({
-          title: "Welcome back!",
-          description: "You have successfully signed in to the admin panel.",
-        });
-      }
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Welcome back!",
+        description: "You have successfully signed in to the admin panel.",
+      });
     } catch (error: any) {
       toast({
         title: "Authentication Error",
@@ -79,13 +60,10 @@ export const LoginForm = () => {
         <Card className="w-full bg-white/80 backdrop-blur-sm border-emerald-100 shadow-xl">
           <CardHeader className="text-center space-y-2">
             <CardTitle className="text-2xl text-gray-900">
-              {isSignUp ? "Create Admin Account" : "Admin Login"}
+              Admin Login
             </CardTitle>
             <p className="text-gray-600">
-              {isSignUp 
-                ? "Sign up for admin access to the foundation" 
-                : "Access the admin dashboard"
-              }
+              Access the admin dashboard
             </p>
           </CardHeader>
         <CardContent>
@@ -119,16 +97,7 @@ export const LoginForm = () => {
               className="w-full bg-emerald-700 hover:bg-emerald-800 text-white" 
               disabled={loading}
             >
-              {loading ? "Processing..." : (isSignUp ? "Sign Up" : "Sign In")}
-            </Button>
-            
-            <Button
-              type="button"
-              variant="ghost"
-              className="w-full"
-              onClick={() => setIsSignUp(!isSignUp)}
-            >
-              {isSignUp ? "Already have an account? Sign In" : "Need an account? Sign Up"}
+              {loading ? "Processing..." : "Sign In"}
             </Button>
           </form>
         </CardContent>
