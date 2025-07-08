@@ -7,7 +7,7 @@ export const FocusAreas = () => {
   const departments = [
     {
       icon: Globe,
-      title: "Digital Trade & FinTech",
+      title: "Department of Digital Trade and FinTech Access",
       description: "Advancing Africa's position in global digital commerce, cryptocurrency regulation, and financial technology innovation.",
       highlights: ["Cross-border payment systems", "Digital currency frameworks", "Trade facilitation platforms"],
       color: "emerald",
@@ -15,7 +15,7 @@ export const FocusAreas = () => {
     },
     {
       icon: Cpu,
-      title: "AI Governance & Ethics",
+      title: "Department of AI Ethics, Governance & Innovation",
       description: "Developing ethical AI frameworks that reflect African values while fostering technological advancement.",
       highlights: ["AI policy development", "Algorithmic accountability", "Indigenous knowledge protection"],
       color: "yellow",
@@ -23,7 +23,7 @@ export const FocusAreas = () => {
     },
     {
       icon: Shield,
-      title: "Afro-Sovereignty & Cyber Diplomacy",
+      title: "Department of Afro-Sovereignty and Cyber Diplomacy",
       description: "Strengthening Africa's digital sovereignty through strategic cyber diplomacy and security frameworks.",
       highlights: ["Data sovereignty policies", "Cyber security cooperation", "Digital rights advocacy"],
       color: "emerald",
@@ -31,7 +31,7 @@ export const FocusAreas = () => {
     },
     {
       icon: Users,
-      title: "Youth Strategy & Digital Rights",
+      title: "Department of Youth Strategy and Digital Rights",
       description: "Empowering Africa's youth through digital literacy, rights protection, and strategic engagement.",
       highlights: ["Digital skills development", "Youth policy advocacy", "Online safety frameworks"],
       color: "yellow",
