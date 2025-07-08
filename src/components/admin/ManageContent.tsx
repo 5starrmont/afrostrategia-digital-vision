@@ -140,44 +140,60 @@ export const ManageContent = () => {
 
   return (
     <Tabs defaultValue="content" className="space-y-4">
-      <TabsList>
-        <TabsTrigger value="content">Content ({content.length})</TabsTrigger>
-        <TabsTrigger value="reports">Reports ({reports.length})</TabsTrigger>
+      <TabsList className="bg-emerald-50 border border-emerald-200">
+        <TabsTrigger 
+          value="content"
+          className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
+        >
+          Content ({content.length})
+        </TabsTrigger>
+        <TabsTrigger 
+          value="reports"
+          className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
+        >
+          Reports ({reports.length})
+        </TabsTrigger>
       </TabsList>
 
       <TabsContent value="content">
-        <div className="rounded-md border">
+        <div className="rounded-lg border border-emerald-200 bg-white/50 backdrop-blur-sm overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Department</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Created</TableHead>
-                <TableHead>Actions</TableHead>
+              <TableRow className="bg-emerald-600 hover:bg-emerald-700">
+                <TableHead className="text-white font-medium">Title</TableHead>
+                <TableHead className="text-white font-medium">Type</TableHead>
+                <TableHead className="text-white font-medium">Department</TableHead>
+                <TableHead className="text-white font-medium">Status</TableHead>
+                <TableHead className="text-white font-medium">Created</TableHead>
+                <TableHead className="text-white font-medium">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {content.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell className="font-medium">{item.title}</TableCell>
+                <TableRow key={item.id} className="hover:bg-emerald-50">
+                  <TableCell className="font-medium text-gray-900">{item.title}</TableCell>
                   <TableCell>
-                    <Badge variant="secondary">{item.type}</Badge>
+                    <Badge 
+                      variant="secondary" 
+                      className="bg-emerald-100 text-emerald-700 border-emerald-200"
+                    >
+                      {item.type}
+                    </Badge>
                   </TableCell>
-                  <TableCell>{item.departments.name}</TableCell>
+                  <TableCell className="text-gray-700">{item.departments.name}</TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-2">
                       <Switch
                         checked={item.published}
                         onCheckedChange={(checked) => togglePublished(item.id, checked)}
+                        className="data-[state=checked]:bg-emerald-600"
                       />
-                      <span className="text-sm">
+                      <span className="text-sm text-gray-700">
                         {item.published ? 'Published' : 'Draft'}
                       </span>
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-gray-700">
                     {new Date(item.created_at).toLocaleDateString()}
                   </TableCell>
                   <TableCell>
@@ -187,6 +203,7 @@ export const ManageContent = () => {
                           variant="outline"
                           size="sm"
                           asChild
+                          className="border-emerald-200 text-emerald-700 hover:bg-emerald-50"
                         >
                           <a href={item.file_url} target="_blank" rel="noopener noreferrer">
                             <ExternalLink className="h-4 w-4" />
@@ -197,6 +214,7 @@ export const ManageContent = () => {
                         variant="outline"
                         size="sm"
                         onClick={() => deleteContent(item.id, 'content')}
+                        className="border-red-200 text-red-700 hover:bg-red-50"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -210,30 +228,35 @@ export const ManageContent = () => {
       </TabsContent>
 
       <TabsContent value="reports">
-        <div className="rounded-md border">
+        <div className="rounded-lg border border-emerald-200 bg-white/50 backdrop-blur-sm overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Department</TableHead>
-                <TableHead>File</TableHead>
-                <TableHead>Created</TableHead>
-                <TableHead>Actions</TableHead>
+              <TableRow className="bg-emerald-600 hover:bg-emerald-700">
+                <TableHead className="text-white font-medium">Title</TableHead>
+                <TableHead className="text-white font-medium">Department</TableHead>
+                <TableHead className="text-white font-medium">File</TableHead>
+                <TableHead className="text-white font-medium">Created</TableHead>
+                <TableHead className="text-white font-medium">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {reports.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell className="font-medium">{item.title}</TableCell>
-                  <TableCell>{item.departments.name}</TableCell>
+                <TableRow key={item.id} className="hover:bg-emerald-50">
+                  <TableCell className="font-medium text-gray-900">{item.title}</TableCell>
+                  <TableCell className="text-gray-700">{item.departments.name}</TableCell>
                   <TableCell>
                     {item.file_name ? (
-                      <Badge variant="outline">{item.file_name}</Badge>
+                      <Badge 
+                        variant="outline" 
+                        className="border-emerald-200 text-emerald-700"
+                      >
+                        {item.file_name}
+                      </Badge>
                     ) : (
-                      <span className="text-muted-foreground">No file</span>
+                      <span className="text-gray-500">No file</span>
                     )}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-gray-700">
                     {new Date(item.created_at).toLocaleDateString()}
                   </TableCell>
                   <TableCell>
@@ -243,6 +266,7 @@ export const ManageContent = () => {
                           variant="outline"
                           size="sm"
                           asChild
+                          className="border-emerald-200 text-emerald-700 hover:bg-emerald-50"
                         >
                           <a href={item.file_url} target="_blank" rel="noopener noreferrer">
                             <Download className="h-4 w-4" />
@@ -253,6 +277,7 @@ export const ManageContent = () => {
                         variant="outline"
                         size="sm"
                         onClick={() => deleteContent(item.id, 'report')}
+                        className="border-red-200 text-red-700 hover:bg-red-50"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>

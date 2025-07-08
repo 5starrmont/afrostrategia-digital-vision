@@ -131,36 +131,38 @@ export const UploadReports = () => {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
-        <Label htmlFor="title">Report Title *</Label>
+        <Label htmlFor="title" className="text-gray-700 font-medium">Report Title *</Label>
         <Input
           id="title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Enter report title"
           required
+          className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500"
         />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="description">Description</Label>
+        <Label htmlFor="description" className="text-gray-700 font-medium">Description</Label>
         <Textarea
           id="description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Enter report description"
           rows={3}
+          className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500"
         />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="department">Department *</Label>
+        <Label htmlFor="department" className="text-gray-700 font-medium">Department *</Label>
         <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
-          <SelectTrigger>
+          <SelectTrigger className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500">
             <SelectValue placeholder="Select a department" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-white border-emerald-200">
             {departments.map((dept) => (
-              <SelectItem key={dept.id} value={dept.id}>
+              <SelectItem key={dept.id} value={dept.id} className="hover:bg-emerald-50">
                 {dept.name}
               </SelectItem>
             ))}
@@ -169,16 +171,21 @@ export const UploadReports = () => {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="file">Upload File (PDF, DOC, DOCX)</Label>
+        <Label htmlFor="file" className="text-gray-700 font-medium">Upload File (PDF, DOC, DOCX)</Label>
         <Input
           id="file"
           type="file"
           accept=".pdf,.doc,.docx"
           onChange={(e) => setFile(e.target.files?.[0] || null)}
+          className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500 file:bg-emerald-50 file:text-emerald-700 file:border-emerald-200"
         />
       </div>
 
-      <Button type="submit" disabled={uploading} className="w-full">
+      <Button 
+        type="submit" 
+        disabled={uploading} 
+        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5"
+      >
         {uploading ? "Uploading..." : "Upload Report"}
       </Button>
     </form>

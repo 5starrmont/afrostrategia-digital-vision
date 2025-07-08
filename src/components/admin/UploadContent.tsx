@@ -146,25 +146,26 @@ export const UploadContent = () => {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
-        <Label htmlFor="title">Content Title *</Label>
+        <Label htmlFor="title" className="text-gray-700 font-medium">Content Title *</Label>
         <Input
           id="title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Enter content title"
           required
+          className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500"
         />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="type">Content Type *</Label>
+        <Label htmlFor="type" className="text-gray-700 font-medium">Content Type *</Label>
         <Select value={type} onValueChange={setType}>
-          <SelectTrigger>
+          <SelectTrigger className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500">
             <SelectValue placeholder="Select content type" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-white border-emerald-200">
             {contentTypes.map((contentType) => (
-              <SelectItem key={contentType.value} value={contentType.value}>
+              <SelectItem key={contentType.value} value={contentType.value} className="hover:bg-emerald-50">
                 {contentType.label}
               </SelectItem>
             ))}
@@ -173,14 +174,14 @@ export const UploadContent = () => {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="department">Department *</Label>
+        <Label htmlFor="department" className="text-gray-700 font-medium">Department *</Label>
         <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
-          <SelectTrigger>
+          <SelectTrigger className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500">
             <SelectValue placeholder="Select a department" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-white border-emerald-200">
             {departments.map((dept) => (
-              <SelectItem key={dept.id} value={dept.id}>
+              <SelectItem key={dept.id} value={dept.id} className="hover:bg-emerald-50">
                 {dept.name}
               </SelectItem>
             ))}
@@ -189,36 +190,43 @@ export const UploadContent = () => {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="body">Content Body</Label>
+        <Label htmlFor="body" className="text-gray-700 font-medium">Content Body</Label>
         <Textarea
           id="body"
           value={body}
           onChange={(e) => setBody(e.target.value)}
           placeholder="Enter the main content"
           rows={6}
+          className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500"
         />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="file">Upload Supporting File (Images, PDFs, etc.)</Label>
+        <Label htmlFor="file" className="text-gray-700 font-medium">Upload Supporting File (Images, PDFs, etc.)</Label>
         <Input
           id="file"
           type="file"
           accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif"
           onChange={(e) => setFile(e.target.files?.[0] || null)}
+          className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500 file:bg-emerald-50 file:text-emerald-700 file:border-emerald-200"
         />
       </div>
 
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-3 p-4 bg-emerald-50 rounded-lg border border-emerald-200">
         <Switch
           id="published"
           checked={published}
           onCheckedChange={setPublished}
+          className="data-[state=checked]:bg-emerald-600"
         />
-        <Label htmlFor="published">Publish immediately</Label>
+        <Label htmlFor="published" className="text-gray-700 font-medium">Publish immediately</Label>
       </div>
 
-      <Button type="submit" disabled={uploading} className="w-full">
+      <Button 
+        type="submit" 
+        disabled={uploading} 
+        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5"
+      >
         {uploading ? "Uploading..." : "Upload Content"}
       </Button>
     </form>
