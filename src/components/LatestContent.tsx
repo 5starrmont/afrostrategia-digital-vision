@@ -153,14 +153,16 @@ export const LatestContent = () => {
                   )}
                   
                   <div className="flex items-center justify-between pt-4 border-t border-border/50">
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <div className="w-7 h-7 bg-primary/10 rounded-full flex items-center justify-center mr-3">
-                        <User className="h-4 w-4 text-primary" />
-                      </div>
-                      <span className="font-medium">AfroStrategia</span>
-                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="border-primary/20 text-primary hover:bg-primary/5 hover:border-primary/40 transition-all duration-300"
+                    >
+                      <FileText className="h-4 w-4 mr-2" />
+                      Open
+                    </Button>
                     
-                    {item.file_url ? (
+                    {item.file_url && (
                       <Button
                         variant="default"
                         size="sm"
@@ -177,15 +179,6 @@ export const LatestContent = () => {
                       >
                         <Download className="h-4 w-4 mr-2" />
                         Download
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="border-primary/20 text-primary hover:bg-primary/5 hover:border-primary/40 transition-all duration-300"
-                      >
-                        <FileText className="h-4 w-4 mr-2" />
-                        Read More
                       </Button>
                     )}
                   </div>
