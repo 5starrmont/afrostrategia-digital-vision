@@ -153,12 +153,27 @@ export const LatestContent = () => {
                   )}
                   
                   <div className="flex items-center justify-between pt-4 border-t border-border/50">
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <div className="w-7 h-7 bg-primary/10 rounded-full flex items-center justify-center mr-3">
+                        <User className="h-4 w-4 text-primary" />
+                      </div>
+                      <span className="font-medium">AfroStrategia</span>
+                    </div>
+                    
                     {item.file_url ? (
                       <Button
                         variant="default"
                         size="sm"
                         className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-md hover:shadow-lg transition-all duration-300"
-                        onClick={() => window.open(item.file_url!, '_blank')}
+                        onClick={() => {
+                          const link = document.createElement('a');
+                          link.href = item.file_url!;
+                          link.target = '_blank';
+                          link.rel = 'noopener noreferrer';
+                          document.body.appendChild(link);
+                          link.click();
+                          document.body.removeChild(link);
+                        }}
                       >
                         <Download className="h-4 w-4 mr-2" />
                         Download
@@ -173,13 +188,6 @@ export const LatestContent = () => {
                         Read More
                       </Button>
                     )}
-                    
-                    <div className="flex items-center text-xs text-muted-foreground">
-                      <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center mr-2">
-                        <User className="h-3 w-3 text-primary" />
-                      </div>
-                      <span className="font-medium">AfroStrategia</span>
-                    </div>
                   </div>
                 </CardContent>
               </Card>
