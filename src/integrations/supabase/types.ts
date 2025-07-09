@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       content: {
         Row: {
+          author: string | null
           body: string | null
           created_at: string
           created_by: string | null
@@ -23,12 +24,18 @@ export type Database = {
           file_name: string | null
           file_url: string | null
           id: string
+          media_type: string | null
+          media_url: string | null
           published: boolean | null
+          read_time: number | null
+          slug: string | null
+          thumbnail_url: string | null
           title: string
           type: string
           updated_at: string
         }
         Insert: {
+          author?: string | null
           body?: string | null
           created_at?: string
           created_by?: string | null
@@ -36,12 +43,18 @@ export type Database = {
           file_name?: string | null
           file_url?: string | null
           id?: string
+          media_type?: string | null
+          media_url?: string | null
           published?: boolean | null
+          read_time?: number | null
+          slug?: string | null
+          thumbnail_url?: string | null
           title: string
           type: string
           updated_at?: string
         }
         Update: {
+          author?: string | null
           body?: string | null
           created_at?: string
           created_by?: string | null
@@ -49,7 +62,12 @@ export type Database = {
           file_name?: string | null
           file_url?: string | null
           id?: string
+          media_type?: string | null
+          media_url?: string | null
           published?: boolean | null
+          read_time?: number | null
+          slug?: string | null
+          thumbnail_url?: string | null
           title?: string
           type?: string
           updated_at?: string
