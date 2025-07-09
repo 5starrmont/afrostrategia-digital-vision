@@ -79,60 +79,85 @@ export const LatestContent = () => {
   }
 
   return (
-    <section className="py-20 bg-gradient-to-br from-emerald-50 to-yellow-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+    <section className="py-24 bg-gradient-to-br from-background via-muted/30 to-background relative overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent"></div>
+      <div className="absolute top-20 left-10 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-20 right-10 w-96 h-96 bg-yellow-500/10 rounded-full blur-3xl"></div>
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+        <div className="text-center mb-20">
+          <div className="inline-flex items-center justify-center p-2 bg-primary/10 rounded-full mb-6">
+            <FileText className="h-6 w-6 text-primary" />
+          </div>
+          <h2 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent mb-6">
             Latest Content & Publications
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
             Explore our most recent research papers, policy briefs, and strategic publications 
-            shaping Africa's digital future.
+            shaping Africa's digital future through evidence-based insights and innovative solutions.
           </p>
         </div>
 
         {content.length === 0 ? (
-          <div className="text-center py-12">
-            <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-600 mb-2">No Content Available</h3>
-            <p className="text-gray-500">Check back soon for our latest publications and research.</p>
+          <div className="text-center py-20">
+            <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
+              <FileText className="h-12 w-12 text-muted-foreground" />
+            </div>
+            <h3 className="text-2xl font-semibold text-foreground mb-3">No Content Available</h3>
+            <p className="text-muted-foreground text-lg max-w-md mx-auto">
+              Check back soon for our latest publications and research insights.
+            </p>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {content.map((item) => (
-              <Card key={item.id} className="group hover:shadow-xl transition-all duration-300 bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-                <CardHeader className="pb-4">
-                  <div className="flex items-start justify-between mb-3">
-                    <Badge className={`${getTypeColor(item.type)} font-medium`}>
+          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
+            {content.map((item, index) => (
+              <Card 
+                key={item.id} 
+                className="group relative overflow-hidden border-0 bg-card/50 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                {/* Gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                
+                <CardHeader className="pb-4 relative">
+                  <div className="flex items-start justify-between mb-4">
+                    <Badge className={`${getTypeColor(item.type)} font-medium px-3 py-1 text-xs uppercase tracking-wide`}>
                       {item.type}
                     </Badge>
                     {item.department && (
-                      <Badge variant="outline" className="text-xs text-emerald-700 border-emerald-200">
+                      <Badge 
+                        variant="outline" 
+                        className="text-xs bg-background/50 border-primary/20 text-primary font-medium"
+                      >
                         {item.department.name.replace('Department of ', '')}
                       </Badge>
                     )}
                   </div>
-                  <CardTitle className="text-lg leading-tight group-hover:text-emerald-700 transition-colors line-clamp-2">
+                  <CardTitle className="text-xl font-bold leading-tight group-hover:text-primary transition-colors duration-300 line-clamp-2 mb-3">
                     {item.title}
                   </CardTitle>
-                  <div className="flex items-center text-sm text-gray-500 mt-2">
-                    <Calendar className="h-4 w-4 mr-1" />
-                    {format(new Date(item.created_at), 'MMM dd, yyyy')}
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <Calendar className="h-4 w-4 mr-2" />
+                    <time dateTime={item.created_at}>
+                      {format(new Date(item.created_at), 'MMMM dd, yyyy')}
+                    </time>
                   </div>
                 </CardHeader>
-                <CardContent className="pt-0">
+                
+                <CardContent className="pt-0 relative">
                   {item.body && (
-                    <CardDescription className="text-gray-600 mb-4 line-clamp-3">
+                    <CardDescription className="text-muted-foreground mb-6 line-clamp-3 leading-relaxed">
                       {item.body}
                     </CardDescription>
                   )}
                   
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between pt-4 border-t border-border/50">
                     {item.file_url ? (
                       <Button
-                        variant="outline"
+                        variant="default"
                         size="sm"
-                        className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:border-emerald-300"
+                        className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-md hover:shadow-lg transition-all duration-300"
                         onClick={() => window.open(item.file_url!, '_blank')}
                       >
                         <Download className="h-4 w-4 mr-2" />
@@ -142,17 +167,19 @@ export const LatestContent = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:border-emerald-300"
+                        className="border-primary/20 text-primary hover:bg-primary/5 hover:border-primary/40 transition-all duration-300"
                       >
                         <FileText className="h-4 w-4 mr-2" />
                         Read More
                       </Button>
                     )}
                     
-                    <span className="text-xs text-gray-500 flex items-center">
-                      <User className="h-3 w-3 mr-1" />
-                      AfroStrategia
-                    </span>
+                    <div className="flex items-center text-xs text-muted-foreground">
+                      <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center mr-2">
+                        <User className="h-3 w-3 text-primary" />
+                      </div>
+                      <span className="font-medium">AfroStrategia</span>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -160,13 +187,14 @@ export const LatestContent = () => {
           </div>
         )}
 
-        <div className="text-center mt-12">
+        <div className="text-center mt-16">
           <Button 
             variant="outline"
             size="lg"
-            className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:border-emerald-300 px-8 py-3 font-medium"
+            className="border-primary/20 text-primary hover:bg-primary/5 hover:border-primary/40 px-10 py-4 font-semibold text-lg transition-all duration-300 shadow-md hover:shadow-lg"
           >
             View All Publications
+            <FileText className="ml-2 h-5 w-5" />
           </Button>
         </div>
       </div>
