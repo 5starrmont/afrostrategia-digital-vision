@@ -125,9 +125,6 @@ export const LatestContent = () => {
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div className="text-center mb-20">
-          <div className="inline-flex items-center justify-center p-2 bg-primary/10 rounded-full mb-6">
-            <FileText className="h-6 w-6 text-primary" />
-          </div>
           <h2 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent mb-6">
             Latest Content & Publications
           </h2>
