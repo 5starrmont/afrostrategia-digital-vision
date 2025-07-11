@@ -101,3 +101,32 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Auto-scrolling partnership animations */
+@layer utilities {
+  .animate-scroll-left {
+    animation: scrollLeft 60s linear infinite;
+  }
+  
+  .animate-scroll-right {
+    animation: scrollRight 60s linear infinite;
+  }
+}
+
+@keyframes scrollLeft {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes scrollRight {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
