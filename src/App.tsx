@@ -11,6 +11,7 @@ import AIGovernance from "./pages/AIGovernance";
 import CyberDiplomacy from "./pages/CyberDiplomacy";
 import YouthStrategy from "./pages/YouthStrategy";
 import Research from "./pages/Research";
+import Publications from "./pages/Publications";
 import Admin from "./pages/Admin";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/cyber-diplomacy" element={<CyberDiplomacy />} />
           <Route path="/youth-strategy" element={<YouthStrategy />} />
           <Route path="/research" element={<Research />} />
+          <Route path="/publications" element={<Publications />} />
           <Route path="/admin" element={<Admin />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

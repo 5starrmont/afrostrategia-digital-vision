@@ -3,7 +3,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { FileText, Download, Calendar, User, Play, Eye, Clock, ExternalLink } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { FileText, Download, Calendar, User, Play, Eye, Clock, Search, Filter } from "lucide-react";
 import { format } from "date-fns";
 
 interface Content {
@@ -27,9 +29,12 @@ interface Content {
   } | null;
 }
 
-export const LatestContent = () => {
+const Publications = () => {
   const [content, setContent] = useState<Content[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedType, setSelectedType] = useState<string>("all");
+  const [selectedDepartment, setSelectedDepartment] = useState<string>("all");
 
   useEffect(() => {
     fetchContent();
@@ -44,8 +49,7 @@ export const LatestContent = () => {
           department:departments(name, slug)
         `)
         .eq('published', true)
-        .order('created_at', { ascending: false })
-        .limit(6);
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
       setContent(data || []);
@@ -90,21 +94,30 @@ export const LatestContent = () => {
 
   const handleOpenContent = (item: Content) => {
     if (item.media_type === 'blog' && item.slug) {
-      // Open blog in same window or navigate to blog detail page
       window.open(`/blog/${item.slug}`, '_blank');
     } else if (item.media_url) {
-      // Open media content in new window
       window.open(item.media_url, '_blank');
     } else if (item.file_url) {
-      // Open file in new window
       window.open(item.file_url, '_blank');
     }
   };
 
+  const filteredContent = content.filter(item => {
+    const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         item.body?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         item.author?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesType = selectedType === "all" || item.type.toLowerCase() === selectedType.toLowerCase();
+    const matchesDepartment = selectedDepartment === "all" || item.department?.slug === selectedDepartment;
+    return matchesSearch && matchesType && matchesDepartment;
+  });
+
+  const contentTypes = [...new Set(content.map(item => item.type))];
+  const departments = [...new Set(content.filter(item => item.department).map(item => item.department!))];
+
   if (loading) {
     return (
-      <section className="py-20 bg-gradient-to-br from-emerald-50 to-yellow-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="text-center">
             <div className="animate-pulse">
               <div className="h-8 bg-gray-300 rounded w-64 mx-auto mb-4"></div>
@@ -112,47 +125,103 @@ export const LatestContent = () => {
             </div>
           </div>
         </div>
-      </section>
+      </div>
     );
   }
 
   return (
-    <section className="py-24 bg-gradient-to-br from-background via-muted/30 to-background relative overflow-hidden">
-      {/* Decorative background elements */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent"></div>
-      <div className="absolute top-20 left-10 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-20 right-10 w-96 h-96 bg-yellow-500/10 rounded-full blur-3xl"></div>
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        <div className="text-center mb-20">
-          <h2 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent mb-6">
-            Latest Content & Publications
-          </h2>
-          <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-            Explore our most recent research papers, policy briefs, and strategic publications 
-            shaping Africa's digital future through evidence-based insights and innovative solutions.
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background relative overflow-hidden">
+      {/* Hero section */}
+      <div className="relative pt-20 pb-16 bg-gradient-to-br from-emerald-50 to-yellow-50">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-500/10 via-transparent to-transparent"></div>
+        <div className="absolute top-20 left-10 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-yellow-500/10 rounded-full blur-3xl"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="text-center">
+            <h1 className="text-5xl lg:text-6xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent mb-6">
+              Publications & Research
+            </h1>
+            <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
+              Comprehensive collection of our research papers, policy briefs, strategic reports, and multimedia content 
+              shaping Africa's digital transformation through evidence-based insights.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Filters section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="bg-card/50 backdrop-blur-sm border rounded-lg p-6 mb-12">
+          <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Filter className="h-5 w-5" />
+              <span className="font-medium">Filter by:</span>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-4 flex-1">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search publications..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <Select value={selectedType} onValueChange={setSelectedType}>
+                <SelectTrigger className="w-full sm:w-48">
+                  <SelectValue placeholder="Content Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Types</SelectItem>
+                  {contentTypes.map(type => (
+                    <SelectItem key={type} value={type.toLowerCase()}>{type}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
+                <SelectTrigger className="w-full sm:w-48">
+                  <SelectValue placeholder="Department" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Departments</SelectItem>
+                  {departments.map(dept => (
+                    <SelectItem key={dept.slug} value={dept.slug}>
+                      {dept.name.replace('Department of ', '')}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
+
+        {/* Results */}
+        <div className="mb-8">
+          <p className="text-muted-foreground">
+            Showing {filteredContent.length} of {content.length} publications
           </p>
         </div>
 
-        {content.length === 0 ? (
+        {filteredContent.length === 0 ? (
           <div className="text-center py-20">
             <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
               <FileText className="h-12 w-12 text-muted-foreground" />
             </div>
-            <h3 className="text-2xl font-semibold text-foreground mb-3">No Content Available</h3>
+            <h3 className="text-2xl font-semibold text-foreground mb-3">No Publications Found</h3>
             <p className="text-muted-foreground text-lg max-w-md mx-auto">
-              Check back soon for our latest publications and research insights.
+              Try adjusting your search criteria or filters to find relevant content.
             </p>
           </div>
         ) : (
           <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
-            {content.map((item, index) => {
+            {filteredContent.map((item, index) => {
               const MediaIcon = getMediaIcon(item.media_type);
               return (
                 <Card 
                   key={item.id} 
                   className="group relative overflow-hidden border-0 bg-card/50 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
-                  style={{ animationDelay: `${index * 100}ms` }}
+                  style={{ animationDelay: `${index * 50}ms` }}
                 >
                   {/* Thumbnail image for visual content */}
                   {item.thumbnail_url && (
@@ -178,9 +247,6 @@ export const LatestContent = () => {
                     </div>
                   )}
                   
-                  {/* Gradient overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  
                   <CardHeader className="pb-4 relative">
                     <div className="flex items-start justify-between mb-4">
                       <Badge className={`${getTypeColor(item.type)} font-medium px-3 py-1 text-xs uppercase tracking-wide`}>
@@ -189,13 +255,13 @@ export const LatestContent = () => {
                       {item.department && (
                         <Badge 
                           variant="outline" 
-                          className="text-xs bg-background/50 border-primary/20 text-primary font-medium"
+                          className="text-xs bg-background/50 border-emerald-600/20 text-emerald-600 font-medium"
                         >
                           {item.department.name.replace('Department of ', '')}
                         </Badge>
                       )}
                     </div>
-                    <CardTitle className="text-xl font-bold leading-tight group-hover:text-primary transition-colors duration-300 line-clamp-2 mb-3">
+                    <CardTitle className="text-xl font-bold leading-tight group-hover:text-emerald-600 transition-colors duration-300 line-clamp-2 mb-3">
                       {item.title}
                     </CardTitle>
                     <div className="flex items-center justify-between text-sm text-muted-foreground">
@@ -225,7 +291,7 @@ export const LatestContent = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="border-primary/20 text-primary hover:bg-primary/5 hover:border-primary/40 transition-all duration-300"
+                        className="border-emerald-600/20 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-600/40 transition-all duration-300"
                         onClick={() => handleOpenContent(item)}
                       >
                         <MediaIcon className="h-4 w-4 mr-2" />
@@ -236,7 +302,7 @@ export const LatestContent = () => {
                         <Button
                           variant="default"
                           size="sm"
-                          className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-md hover:shadow-lg transition-all duration-300"
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-md hover:shadow-lg transition-all duration-300"
                           onClick={() => {
                             const link = document.createElement('a');
                             link.href = item.file_url!;
@@ -258,20 +324,9 @@ export const LatestContent = () => {
             })}
           </div>
         )}
-
-        <div className="text-center mt-16">
-          <a href="/publications">
-            <Button 
-              variant="outline"
-              size="lg"
-              className="border-emerald-600 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-700 px-10 py-4 font-semibold text-lg transition-all duration-300 shadow-md hover:shadow-lg"
-            >
-              Explore More
-              <FileText className="ml-2 h-5 w-5" />
-            </Button>
-          </a>
-        </div>
       </div>
-    </section>
+    </div>
   );
 };
+
+export default Publications;
