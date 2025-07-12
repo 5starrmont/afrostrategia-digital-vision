@@ -105,36 +105,30 @@
 /* Auto-scrolling partnership animations */
 @layer utilities {
   .animate-scroll-left {
-    animation: scrollLeft 40s linear infinite;
+    animation: scrollLeft 60s linear infinite;
+    will-change: transform;
   }
   
   .animate-scroll-right {
-    animation: scrollRight 40s linear infinite;
-  }
-  
-  .hover:pause-animation:hover {
-    animation-play-state: paused;
-  }
-  
-  .pause-animation {
-    animation-play-state: paused;
+    animation: scrollRight 60s linear infinite;
+    will-change: transform;
   }
 }
 
 @keyframes scrollLeft {
   0% {
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
   100% {
-    transform: translateX(-50%);
+    transform: translate3d(-33.333%, 0, 0);
   }
 }
 
 @keyframes scrollRight {
   0% {
-    transform: translateX(-50%);
+    transform: translate3d(-33.333%, 0, 0);
   }
   100% {
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
 }
