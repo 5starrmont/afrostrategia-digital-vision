@@ -104,31 +104,17 @@
 
 /* Auto-scrolling partnership animations */
 @layer utilities {
-  .animate-scroll-left {
-    animation: scrollLeft 60s linear infinite;
-    will-change: transform;
-  }
-  
-  .animate-scroll-right {
-    animation: scrollRight 60s linear infinite;
+  .animate-cycle-up {
+    animation: cycleUp 40s linear infinite;
     will-change: transform;
   }
 }
 
-@keyframes scrollLeft {
+@keyframes cycleUp {
   0% {
     transform: translate3d(0, 0, 0);
   }
   100% {
-    transform: translate3d(-33.333%, 0, 0);
-  }
-}
-
-@keyframes scrollRight {
-  0% {
-    transform: translate3d(-33.333%, 0, 0);
-  }
-  100% {
-    transform: translate3d(0, 0, 0);
+    transform: translate3d(0, -33.333%, 0);
   }
 }

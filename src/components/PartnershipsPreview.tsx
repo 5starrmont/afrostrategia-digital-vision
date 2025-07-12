@@ -97,64 +97,43 @@ export const PartnershipsPreview = () => {
           </p>
         </div>
 
-        {/* Continuous auto-sliding carousel */}
-        <div className="relative overflow-hidden">
-          {/* First row - slides left to right */}
-          <div className="flex animate-scroll-left mb-8">
+        {/* Continuous vertical cycling carousel */}
+        <div className="relative h-96 overflow-hidden">
+          {/* Single continuous column that cycles up */}
+          <div className="flex flex-col animate-cycle-up">
             {[...partners, ...partners, ...partners].map((partner, index) => (
-              <div key={`left-${index}`} className="flex-shrink-0 w-80 mx-4">
-                <Card className="h-full bg-white/90 backdrop-blur-sm border border-gray-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group">
-                  <CardContent className="p-6 text-center">
-                    <div className="mb-4">
-                      <img 
-                        src={partner.logo}
-                        alt={`${partner.name} logo`}
-                        className="w-24 h-16 mx-auto object-contain"
-                      />
-                    </div>
-                    <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-emerald-700 transition-colors">
-                      {partner.name}
-                    </h3>
-                    <div className="mb-3">
-                      <span className="inline-block bg-emerald-100 text-emerald-800 text-xs font-semibold px-3 py-1 rounded-full">
-                        {partner.type}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
-                      {partner.description}
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-            ))}
-          </div>
-
-          {/* Second row - slides right to left */}
-          <div className="flex animate-scroll-right">
-            {[...partners.slice().reverse(), ...partners.slice().reverse(), ...partners.slice().reverse()].map((partner, index) => (
-              <div key={`right-${index}`} className="flex-shrink-0 w-80 mx-4">
-                <Card className="h-full bg-white/90 backdrop-blur-sm border border-gray-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group">
-                  <CardContent className="p-6 text-center">
-                    <div className="mb-4">
-                      <img 
-                        src={partner.logo}
-                        alt={`${partner.name} logo`}
-                        className="w-24 h-16 mx-auto object-contain"
-                      />
-                    </div>
-                    <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-emerald-700 transition-colors">
-                      {partner.name}
-                    </h3>
-                    <div className="mb-3">
-                      <span className="inline-block bg-emerald-100 text-emerald-800 text-xs font-semibold px-3 py-1 rounded-full">
-                        {partner.type}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
-                      {partner.description}
-                    </p>
-                  </CardContent>
-                </Card>
+              <div key={`cycle-${index}`} className="flex-shrink-0 mb-8">
+                <div className="flex justify-center space-x-8">
+                  {/* Create a row of 3-4 cards */}
+                  {[0, 1, 2, 3].map((offset) => {
+                    const partnerIndex = (index + offset) % partners.length;
+                    const currentPartner = partners[partnerIndex];
+                    return (
+                      <Card key={`${index}-${offset}`} className="w-80 bg-white/90 backdrop-blur-sm border border-gray-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group">
+                        <CardContent className="p-6 text-center">
+                          <div className="mb-4">
+                            <img 
+                              src={currentPartner.logo}
+                              alt={`${currentPartner.name} logo`}
+                              className="w-24 h-16 mx-auto object-contain"
+                            />
+                          </div>
+                          <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-emerald-700 transition-colors">
+                            {currentPartner.name}
+                          </h3>
+                          <div className="mb-3">
+                            <span className="inline-block bg-emerald-100 text-emerald-800 text-xs font-semibold px-3 py-1 rounded-full">
+                              {currentPartner.type}
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
+                            {currentPartner.description}
+                          </p>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
               </div>
             ))}
           </div>
