@@ -97,35 +97,30 @@ export const PartnershipsPreview = () => {
           </p>
         </div>
 
-        {/* Enhanced auto-sliding carousel */}
-        <div className="relative">
+        {/* Continuous auto-sliding carousel */}
+        <div className="relative overflow-hidden">
           {/* First row - slides left to right */}
-          <div className="flex animate-scroll-left mb-8 hover:pause-animation">
-            {[...partners, ...partners].map((partner, index) => (
+          <div className="flex animate-scroll-left mb-8">
+            {[...partners, ...partners, ...partners].map((partner, index) => (
               <div key={`left-${index}`} className="flex-shrink-0 w-80 mx-4">
-                <Card className="h-full bg-white/80 backdrop-blur-sm border border-emerald-100 shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-2 group">
-                  <CardContent className="p-8">
-                    <div className="relative mb-6">
-                      <div className="w-20 h-20 mx-auto bg-white rounded-2xl shadow-md flex items-center justify-center p-3 group-hover:shadow-lg transition-shadow duration-300">
-                        <img 
-                          src={partner.logo}
-                          alt={`${partner.name} logo`}
-                          className="w-full h-full object-contain"
-                        />
-                      </div>
-                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-emerald-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <div className="w-full h-full bg-emerald-400 rounded-full animate-ping"></div>
-                      </div>
+                <Card className="h-full bg-white/90 backdrop-blur-sm border border-gray-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group">
+                  <CardContent className="p-6 text-center">
+                    <div className="mb-4">
+                      <img 
+                        src={partner.logo}
+                        alt={`${partner.name} logo`}
+                        className="w-24 h-16 mx-auto object-contain"
+                      />
                     </div>
-                    <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-emerald-700 transition-colors line-clamp-2">
+                    <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-emerald-700 transition-colors">
                       {partner.name}
                     </h3>
-                    <div className="mb-4">
+                    <div className="mb-3">
                       <span className="inline-block bg-emerald-100 text-emerald-800 text-xs font-semibold px-3 py-1 rounded-full">
                         {partner.type}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">
+                    <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
                       {partner.description}
                     </p>
                   </CardContent>
@@ -135,32 +130,27 @@ export const PartnershipsPreview = () => {
           </div>
 
           {/* Second row - slides right to left */}
-          <div className="flex animate-scroll-right hover:pause-animation">
-            {[...partners.slice().reverse(), ...partners.slice().reverse()].map((partner, index) => (
+          <div className="flex animate-scroll-right">
+            {[...partners.slice().reverse(), ...partners.slice().reverse(), ...partners.slice().reverse()].map((partner, index) => (
               <div key={`right-${index}`} className="flex-shrink-0 w-80 mx-4">
-                <Card className="h-full bg-white/80 backdrop-blur-sm border border-yellow-100 shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-2 group">
-                  <CardContent className="p-8">
-                    <div className="relative mb-6">
-                      <div className="w-20 h-20 mx-auto bg-white rounded-2xl shadow-md flex items-center justify-center p-3 group-hover:shadow-lg transition-shadow duration-300">
-                        <img 
-                          src={partner.logo}
-                          alt={`${partner.name} logo`}
-                          className="w-full h-full object-contain"
-                        />
-                      </div>
-                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <div className="w-full h-full bg-yellow-400 rounded-full animate-ping"></div>
-                      </div>
+                <Card className="h-full bg-white/90 backdrop-blur-sm border border-gray-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group">
+                  <CardContent className="p-6 text-center">
+                    <div className="mb-4">
+                      <img 
+                        src={partner.logo}
+                        alt={`${partner.name} logo`}
+                        className="w-24 h-16 mx-auto object-contain"
+                      />
                     </div>
-                    <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-yellow-700 transition-colors line-clamp-2">
+                    <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-emerald-700 transition-colors">
                       {partner.name}
                     </h3>
-                    <div className="mb-4">
-                      <span className="inline-block bg-yellow-100 text-yellow-800 text-xs font-semibold px-3 py-1 rounded-full">
+                    <div className="mb-3">
+                      <span className="inline-block bg-emerald-100 text-emerald-800 text-xs font-semibold px-3 py-1 rounded-full">
                         {partner.type}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">
+                    <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
                       {partner.description}
                     </p>
                   </CardContent>
@@ -168,10 +158,6 @@ export const PartnershipsPreview = () => {
               </div>
             ))}
           </div>
-
-          {/* Enhanced gradient overlays */}
-          <div className="absolute top-0 left-0 w-32 h-full bg-gradient-to-r from-emerald-50 via-emerald-50/80 to-transparent pointer-events-none z-10"></div>
-          <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-emerald-50 via-emerald-50/80 to-transparent pointer-events-none z-10"></div>
         </div>
 
         {/* Call to action */}
