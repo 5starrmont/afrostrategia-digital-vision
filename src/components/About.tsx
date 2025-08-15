@@ -41,7 +41,7 @@ export const About = () => {
                 Our multidisciplinary approach combines policy research, strategic analysis, and diplomatic engagement to ensure Africa's digital sovereignty while fostering innovation and economic growth.
               </p>
               <p>
-                Through our four specialized departments, we address the most pressing challenges and opportunities in Africa's digital transformation journey.
+                Through our five specialized departments, we address the most pressing challenges and opportunities in Africa's digital transformation journey.
               </p>
             </div>
           </div>
@@ -53,7 +53,7 @@ export const About = () => {
                   <div className="text-sm text-gray-600">African Countries</div>
                 </div>
                 <div className="bg-white rounded-lg p-6">
-                  <div className="text-3xl font-bold text-yellow-600">4</div>
+                  <div className="text-3xl font-bold text-yellow-600">5</div>
                   <div className="text-sm text-gray-600">Core Departments</div>
                 </div>
                 <div className="bg-white rounded-lg p-6">

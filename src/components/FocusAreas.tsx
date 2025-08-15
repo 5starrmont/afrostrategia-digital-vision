@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Globe, Cpu, Shield, Users, ArrowRight } from "lucide-react";
+import { Globe, Cpu, Shield, Users, ArrowRight, Leaf } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export const FocusAreas = () => {
@@ -36,6 +36,14 @@ export const FocusAreas = () => {
       highlights: ["Digital skills development", "Youth policy advocacy", "Online safety frameworks"],
       color: "yellow",
       link: "/youth-strategy"
+    },
+    {
+      icon: Leaf,
+      title: "Department of Environmental Technology and Climate Innovation",
+      description: "Focusing on sustainable technologies, climate adaptation strategies, and innovative solutions for environmental challenges across Africa.",
+      highlights: ["Green technology initiatives", "Climate policy frameworks", "Sustainable innovation partnerships"],
+      color: "emerald",
+      link: "/environmental-technology"
     }
   ];
 
@@ -47,7 +55,7 @@ export const FocusAreas = () => {
             Our Strategic Departments
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Four interconnected pillars driving Africa's digital transformation through research, policy, and strategic partnerships.
+            Five interconnected pillars driving Africa's digital transformation through research, policy, and strategic partnerships.
           </p>
         </div>
 

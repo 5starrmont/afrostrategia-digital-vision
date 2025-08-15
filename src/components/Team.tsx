@@ -13,11 +13,11 @@ export const Team = () => {
       social: { linkedin: "#", twitter: "#", email: "ian@afrostrategia.org" }
     },
     {
-      name: "Brian Koech",
+      name: "Collins Momanyi",
       role: "Director of Research",
       department: "Executive Board",
       bio: "Leading initiatives in digital sovereignty and cyber diplomacy frameworks for continental security and autonomy.",
-      social: { linkedin: "#", twitter: "#", email: "brian@afrostrategia.org" }
+      social: { linkedin: "#", twitter: "#", email: "collins@afrostrategia.org" }
     },
     {
       name: "Eric Nyaosi",
@@ -27,11 +27,11 @@ export const Team = () => {
       social: { linkedin: "#", twitter: "#", email: "eric@afrostrategia.org" }
     },
     {
-      name: "Collins Momanyi",
+      name: "Brian Koech",
       role: "Chief Development Officer",
       department: "Executive Board",
       bio: "Championing youth empowerment and digital rights advocacy to ensure inclusive digital transformation across Africa.",
-      social: { linkedin: "#", twitter: "#", email: "collins@afrostrategia.org" }
+      social: { linkedin: "#", twitter: "#", email: "brian@afrostrategia.org" }
     }
   ];
 
