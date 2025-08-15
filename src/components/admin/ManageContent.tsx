@@ -25,6 +25,7 @@ interface Report {
   id: string;
   title: string;
   description?: string;
+  public: boolean;
   created_at: string;
   file_url?: string;
   file_name?: string;
@@ -96,6 +97,32 @@ export const ManageContent = () => {
       toast({
         title: "Content updated",
         description: `Content ${published ? 'published' : 'unpublished'} successfully.`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Update failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const togglePublicStatus = async (id: string, isPublic: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('reports')
+        .update({ public: !isPublic })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setReports(reports.map(item => 
+        item.id === id ? { ...item, public: !isPublic } : item
+      ));
+
+      toast({
+        title: "Report updated",
+        description: `Report is now ${!isPublic ? 'public' : 'private'}.`,
       });
     } catch (error: any) {
       toast({
@@ -234,6 +261,7 @@ export const ManageContent = () => {
               <TableRow className="bg-emerald-600 hover:bg-emerald-700">
                 <TableHead className="text-white font-medium">Title</TableHead>
                 <TableHead className="text-white font-medium">Department</TableHead>
+                <TableHead className="text-white font-medium">Status</TableHead>
                 <TableHead className="text-white font-medium">File</TableHead>
                 <TableHead className="text-white font-medium">Created</TableHead>
                 <TableHead className="text-white font-medium">Actions</TableHead>
@@ -244,6 +272,18 @@ export const ManageContent = () => {
                 <TableRow key={item.id} className="hover:bg-emerald-50">
                   <TableCell className="font-medium text-gray-900">{item.title}</TableCell>
                   <TableCell className="text-gray-700">{item.departments.name}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        checked={item.public}
+                        onCheckedChange={() => togglePublicStatus(item.id, item.public)}
+                        className="data-[state=checked]:bg-emerald-600"
+                      />
+                      <span className="text-sm text-gray-700">
+                        {item.public ? 'Public' : 'Private'}
+                      </span>
+                    </div>
+                  </TableCell>
                   <TableCell>
                     {item.file_name ? (
                       <Badge 

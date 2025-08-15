@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 
 interface Department {
@@ -19,6 +20,7 @@ export const UploadReports = () => {
   const [description, setDescription] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [file, setFile] = useState<File | null>(null);
+  const [isPublic, setIsPublic] = useState(false);
   const [uploading, setUploading] = useState(false);
   const { toast } = useToast();
 
@@ -82,6 +84,7 @@ export const UploadReports = () => {
           description,
           department_id: selectedDepartment,
           uploaded_by: user?.id,
+          public: isPublic,
         })
         .select()
         .single();
@@ -115,6 +118,7 @@ export const UploadReports = () => {
       setDescription("");
       setSelectedDepartment("");
       setFile(null);
+      setIsPublic(false);
       
     } catch (error: any) {
       console.error('Error uploading report:', error);
@@ -179,6 +183,17 @@ export const UploadReports = () => {
           onChange={(e) => setFile(e.target.files?.[0] || null)}
           className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500 file:bg-emerald-50 file:text-emerald-700 file:border-emerald-200"
         />
+      </div>
+
+      <div className="flex items-center space-x-2">
+        <Switch
+          id="public"
+          checked={isPublic}
+          onCheckedChange={setIsPublic}
+        />
+        <Label htmlFor="public" className="text-gray-700 font-medium">
+          Make this report publicly accessible
+        </Label>
       </div>
 
       <Button 
