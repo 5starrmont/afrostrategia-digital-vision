@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
+import { Loader2, Shield, AlertTriangle } from "lucide-react";
 import { UploadReports } from "@/components/admin/UploadReports";
 import { UploadContent } from "@/components/admin/UploadContent";
 import { ManageContent } from "@/components/admin/ManageContent";
@@ -14,14 +15,44 @@ import { LoginForm } from "@/components/admin/LoginForm";
 const Admin = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [hasAdminRole, setHasAdminRole] = useState(false);
+  const [roleLoading, setRoleLoading] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Check if user has admin or moderator role
+  const checkUserRole = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId)
+        .in('role', ['admin', 'moderator']);
+      
+      if (error) {
+        console.error('Error checking user role:', error);
+        setHasAdminRole(false);
+      } else {
+        setHasAdminRole(data && data.length > 0);
+      }
+    } catch (error) {
+      console.error('Error checking user role:', error);
+      setHasAdminRole(false);
+    } finally {
+      setRoleLoading(false);
+    }
+  };
 
   useEffect(() => {
     // Check if user is logged in
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setUser(session?.user ?? null);
+      if (session?.user) {
+        checkUserRole(session.user.id);
+      } else {
+        setRoleLoading(false);
+      }
       setLoading(false);
     };
 
@@ -30,7 +61,14 @@ const Admin = () => {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
-      if (event === 'SIGNED_OUT') {
+      setLoading(false);
+      
+      if (session?.user) {
+        setRoleLoading(true);
+        checkUserRole(session.user.id);
+      } else {
+        setHasAdminRole(false);
+        setRoleLoading(false);
         navigate('/');
       }
     });
@@ -58,13 +96,58 @@ const Admin = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+        <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
   }
 
   if (!user) {
     return <LoginForm />;
+  }
+
+  if (roleLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <p>Verifying permissions...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!hasAdminRole) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <div className="mx-auto mb-4 w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+              <Shield className="h-6 w-6 text-red-600" />
+            </div>
+            <CardTitle className="text-red-600">Access Denied</CardTitle>
+          </CardHeader>
+          <CardContent className="text-center space-y-4">
+            <div className="space-y-2">
+              <AlertTriangle className="h-8 w-8 text-yellow-500 mx-auto" />
+              <p className="text-gray-600">
+                You don't have permission to access the admin dashboard.
+              </p>
+              <p className="text-sm text-gray-500">
+                Only users with admin or moderator roles can access this area.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Button onClick={() => navigate('/')} className="w-full">
+                Return to Home
+              </Button>
+              <Button variant="outline" onClick={handleSignOut} className="w-full">
+                Sign Out
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   return (

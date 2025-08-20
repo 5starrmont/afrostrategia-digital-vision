@@ -76,7 +76,52 @@ export const UploadReports = () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       
-      // Insert report record
+      // Validate file if provided
+      if (file) {
+        // File size validation (max 50MB)
+        if (file.size > 50 * 1024 * 1024) {
+          toast({
+            title: "File too large",
+            description: "File size must be less than 50MB",
+            variant: "destructive",
+          });
+          setUploading(false);
+          return;
+        }
+
+        // File type validation
+        const allowedTypes = [
+          'application/pdf',
+          'application/msword',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          'text/plain',
+          'application/vnd.ms-excel',
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        ];
+        
+        if (!allowedTypes.includes(file.type)) {
+          toast({
+            title: "Invalid file type",
+            description: "Only PDF, Word, Excel, and text files are allowed",
+            variant: "destructive",
+          });
+          setUploading(false);
+          return;
+        }
+      }
+
+      // Determine sensitivity level based on description
+      let sensitivityLevel = 'public';
+      if (description) {
+        const desc = description.toLowerCase();
+        if (desc.includes('confidential') || desc.includes('classified')) {
+          sensitivityLevel = 'confidential';
+        } else if (desc.includes('internal') || desc.includes('private')) {
+          sensitivityLevel = 'internal';
+        }
+      }
+      
+      // Insert report record with enhanced security fields
       const { data: report, error: insertError } = await supabase
         .from('reports')
         .insert({
@@ -85,6 +130,9 @@ export const UploadReports = () => {
           department_id: selectedDepartment,
           uploaded_by: user?.id,
           public: isPublic,
+          sensitivity_level: sensitivityLevel,
+          file_size: file?.size || null,
+          file_type: file?.type || null,
         })
         .select()
         .single();
@@ -107,6 +155,17 @@ export const UploadReports = () => {
 
         if (updateError) throw updateError;
       }
+
+      // Log admin action for audit trail
+      await supabase
+        .from('audit_logs')
+        .insert({
+          user_id: user?.id,
+          action: 'report_upload',
+          table_name: 'reports',
+          record_id: report.id,
+          new_values: { title, sensitivity_level: sensitivityLevel, public: isPublic }
+        });
 
       toast({
         title: "Report uploaded successfully",

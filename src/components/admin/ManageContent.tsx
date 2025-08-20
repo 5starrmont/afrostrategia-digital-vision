@@ -134,13 +134,40 @@ export const ManageContent = () => {
   };
 
   const deleteContent = async (id: string, type: 'content' | 'report') => {
+    if (!confirm(`Are you sure you want to delete this ${type}? This action cannot be undone.`)) {
+      return;
+    }
+
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const tableName = type === 'content' ? 'content' : 'reports';
+      
+      // Get the item before deletion for audit logging
+      const { data: item } = await supabase
+        .from(tableName)
+        .select('*')
+        .eq('id', id)
+        .maybeSingle();
+
       const { error } = await supabase
-        .from(type === 'content' ? 'content' : 'reports')
+        .from(tableName)
         .delete()
         .eq('id', id);
 
       if (error) throw error;
+
+      // Log deletion for audit trail
+      await supabase
+        .from('audit_logs')
+        .insert({
+          user_id: user.id,
+          action: `${type}_deletion`,
+          table_name: tableName,
+          record_id: id,
+          old_values: item
+        });
 
       if (type === 'content') {
         setContent(content.filter(item => item.id !== id));

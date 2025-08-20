@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      audit_logs: {
+        Row: {
+          action: string
+          created_at: string | null
+          id: string
+          ip_address: unknown | null
+          new_values: Json | null
+          old_values: Json | null
+          record_id: string | null
+          table_name: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          new_values?: Json | null
+          old_values?: Json | null
+          record_id?: string | null
+          table_name?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          new_values?: Json | null
+          old_values?: Json | null
+          record_id?: string | null
+          table_name?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       content: {
         Row: {
           author: string | null
@@ -22,6 +61,8 @@ export type Database = {
           created_by: string | null
           department_id: string | null
           file_name: string | null
+          file_size: number | null
+          file_type: string | null
           file_url: string | null
           id: string
           media_type: string | null
@@ -33,6 +74,7 @@ export type Database = {
           title: string
           type: string
           updated_at: string
+          virus_scan_status: string | null
         }
         Insert: {
           author?: string | null
@@ -41,6 +83,8 @@ export type Database = {
           created_by?: string | null
           department_id?: string | null
           file_name?: string | null
+          file_size?: number | null
+          file_type?: string | null
           file_url?: string | null
           id?: string
           media_type?: string | null
@@ -52,6 +96,7 @@ export type Database = {
           title: string
           type: string
           updated_at?: string
+          virus_scan_status?: string | null
         }
         Update: {
           author?: string | null
@@ -60,6 +105,8 @@ export type Database = {
           created_by?: string | null
           department_id?: string | null
           file_name?: string | null
+          file_size?: number | null
+          file_type?: string | null
           file_url?: string | null
           id?: string
           media_type?: string | null
@@ -71,6 +118,7 @@ export type Database = {
           title?: string
           type?: string
           updated_at?: string
+          virus_scan_status?: string | null
         }
         Relationships: [
           {
@@ -142,36 +190,48 @@ export type Database = {
           department_id: string | null
           description: string | null
           file_name: string | null
+          file_size: number | null
+          file_type: string | null
           file_url: string | null
           id: string
           public: boolean
+          sensitivity_level: string | null
           title: string
           updated_at: string
           uploaded_by: string | null
+          virus_scan_status: string | null
         }
         Insert: {
           created_at?: string
           department_id?: string | null
           description?: string | null
           file_name?: string | null
+          file_size?: number | null
+          file_type?: string | null
           file_url?: string | null
           id?: string
           public?: boolean
+          sensitivity_level?: string | null
           title: string
           updated_at?: string
           uploaded_by?: string | null
+          virus_scan_status?: string | null
         }
         Update: {
           created_at?: string
           department_id?: string | null
           description?: string | null
           file_name?: string | null
+          file_size?: number | null
+          file_type?: string | null
           file_url?: string | null
           id?: string
           public?: boolean
+          sensitivity_level?: string | null
           title?: string
           updated_at?: string
           uploaded_by?: string | null
+          virus_scan_status?: string | null
         }
         Relationships: [
           {

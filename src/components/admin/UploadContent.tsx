@@ -85,16 +85,63 @@ export const UploadContent = () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       
-      // Insert content record
+      // Validate file if provided
+      if (file) {
+        // File size validation (max 100MB)
+        if (file.size > 100 * 1024 * 1024) {
+          toast({
+            title: "File too large",
+            description: "File size must be less than 100MB",
+            variant: "destructive",
+          });
+          setUploading(false);
+          return;
+        }
+
+        // File type validation for content uploads
+        const allowedTypes = [
+          'application/pdf',
+          'application/msword',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          'text/plain',
+          'image/jpeg',
+          'image/png',
+          'image/gif',
+          'video/mp4',
+          'video/webm',
+          'audio/mpeg',
+          'audio/wav'
+        ];
+        
+        if (!allowedTypes.includes(file.type)) {
+          toast({
+            title: "Invalid file type",
+            description: "Unsupported file type. Please use PDF, Word, images, or media files",
+            variant: "destructive",
+          });
+          setUploading(false);
+          return;
+        }
+      }
+
+      // Sanitize body content to prevent XSS
+      const sanitizedBody = body?.trim()
+        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+        .replace(/javascript:/gi, '')
+        .replace(/on\w+=/gi, '');
+      
+      // Insert content record with enhanced security fields
       const { data: content, error: insertError } = await supabase
         .from('content')
         .insert({
           title,
-          body,
+          body: sanitizedBody,
           type,
           department_id: selectedDepartment,
           published,
           created_by: user?.id,
+          file_size: file?.size || null,
+          file_type: file?.type || null,
         })
         .select()
         .single();
@@ -117,6 +164,17 @@ export const UploadContent = () => {
 
         if (updateError) throw updateError;
       }
+
+      // Log admin action for audit trail
+      await supabase
+        .from('audit_logs')
+        .insert({
+          user_id: user?.id,
+          action: 'content_upload',
+          table_name: 'content',
+          record_id: content.id,
+          new_values: { title, type, published }
+        });
 
       toast({
         title: "Content uploaded successfully",
