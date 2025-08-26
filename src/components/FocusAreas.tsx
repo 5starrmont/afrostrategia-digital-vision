@@ -48,49 +48,93 @@ export const FocusAreas = () => {
   ];
 
   return (
-    <section id="departments" className="py-20 bg-gray-50">
+    <section id="departments" className="py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-emerald-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-emerald-900 bg-clip-text text-transparent mb-4">
             Our Strategic Departments
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
             Five interconnected pillars driving Africa's digital transformation through research, policy, and strategic partnerships.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
-          {departments.map((dept) => {
+        {/* First row - 2 departments */}
+        <div className="grid md:grid-cols-2 gap-8 mb-8">
+          {departments.slice(0, 2).map((dept) => {
             const IconComponent = dept.icon;
             const colorClasses = dept.color === 'emerald' 
-              ? 'text-emerald-600 bg-emerald-100' 
-              : 'text-yellow-600 bg-yellow-100';
+              ? 'text-emerald-600 bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200' 
+              : 'text-amber-600 bg-gradient-to-br from-amber-50 to-amber-100 border-amber-200';
             
             return (
               <Link key={dept.title} to={dept.link}>
-                <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer h-full">
-                  <CardHeader>
-                    <div className={`w-12 h-12 rounded-lg ${colorClasses} flex items-center justify-center mb-4`}>
-                      <IconComponent className="h-6 w-6" />
+                <Card className="group hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-500 cursor-pointer h-full border-0 bg-white/80 backdrop-blur-sm hover:bg-white hover:scale-[1.02]">
+                  <CardHeader className="pb-4">
+                    <div className={`w-14 h-14 rounded-xl ${colorClasses} border flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                      <IconComponent className="h-7 w-7" />
                     </div>
-                    <CardTitle className="text-xl text-gray-900 group-hover:text-emerald-700 transition-colors">
+                    <CardTitle className="text-xl text-slate-900 group-hover:text-emerald-700 transition-colors leading-tight">
                       {dept.title}
                     </CardTitle>
-                    <CardDescription className="text-gray-600">
+                    <CardDescription className="text-slate-600 leading-relaxed">
                       {dept.description}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <ul className="space-y-2 mb-4">
+                    <ul className="space-y-3 mb-6">
                       {dept.highlights.map((highlight, index) => (
-                        <li key={index} className="flex items-center text-sm text-gray-600">
-                          <ArrowRight className="h-4 w-4 text-emerald-600 mr-2 flex-shrink-0" />
-                          {highlight}
+                        <li key={index} className="flex items-start text-sm text-slate-600">
+                          <ArrowRight className="h-4 w-4 text-emerald-600 mr-3 flex-shrink-0 mt-0.5" />
+                          <span>{highlight}</span>
                         </li>
                       ))}
                     </ul>
-                    <div className="text-sm text-emerald-700 font-medium group-hover:text-emerald-800 transition-colors">
-                      Learn more →
+                    <div className="text-sm text-emerald-700 font-semibold group-hover:text-emerald-800 transition-colors flex items-center">
+                      Learn more
+                      <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Second row - 3 departments */}
+        <div className="grid md:grid-cols-3 gap-8">
+          {departments.slice(2, 5).map((dept) => {
+            const IconComponent = dept.icon;
+            const colorClasses = dept.color === 'emerald' 
+              ? 'text-emerald-600 bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200' 
+              : 'text-amber-600 bg-gradient-to-br from-amber-50 to-amber-100 border-amber-200';
+            
+            return (
+              <Link key={dept.title} to={dept.link}>
+                <Card className="group hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-500 cursor-pointer h-full border-0 bg-white/80 backdrop-blur-sm hover:bg-white hover:scale-[1.02]">
+                  <CardHeader className="pb-4">
+                    <div className={`w-14 h-14 rounded-xl ${colorClasses} border flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                      <IconComponent className="h-7 w-7" />
+                    </div>
+                    <CardTitle className="text-lg text-slate-900 group-hover:text-emerald-700 transition-colors leading-tight">
+                      {dept.title}
+                    </CardTitle>
+                    <CardDescription className="text-slate-600 leading-relaxed text-sm">
+                      {dept.description}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-2 mb-6">
+                      {dept.highlights.map((highlight, index) => (
+                        <li key={index} className="flex items-start text-xs text-slate-600">
+                          <ArrowRight className="h-3 w-3 text-emerald-600 mr-2 flex-shrink-0 mt-0.5" />
+                          <span>{highlight}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="text-sm text-emerald-700 font-semibold group-hover:text-emerald-800 transition-colors flex items-center">
+                      Learn more
+                      <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
                     </div>
                   </CardContent>
                 </Card>
