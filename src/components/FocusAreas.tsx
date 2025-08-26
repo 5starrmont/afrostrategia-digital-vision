@@ -48,13 +48,13 @@ export const FocusAreas = () => {
   ];
 
   return (
-    <section id="departments" className="py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-emerald-50">
+    <section id="departments" className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-emerald-900 bg-clip-text text-transparent mb-4">
+          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
             Our Strategic Departments
           </h2>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Five interconnected pillars driving Africa's digital transformation through research, policy, and strategic partnerships.
           </p>
         </div>
