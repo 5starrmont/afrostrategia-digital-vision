@@ -1,6 +1,7 @@
 
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { BackButton } from "@/components/BackButton";
 import { Shield, Globe, Lock, Network } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -31,6 +32,7 @@ const CyberDiplomacy = () => {
         {/* Hero Section */}
         <section className="bg-gradient-to-br from-emerald-50 to-blue-50 py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <BackButton />
             <div className="text-center">
               <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Shield className="h-10 w-10 text-emerald-600" />

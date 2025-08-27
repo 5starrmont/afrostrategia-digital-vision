@@ -41,6 +41,7 @@ export const Header = () => {
     { label: "AI Governance & Ethics", href: "/ai-governance" },
     { label: "Afro-Sovereignty & Cyber Diplomacy", href: "/cyber-diplomacy" },
     { label: "Youth Strategy & Digital Rights", href: "/youth-strategy" },
+    { label: "Environmental Technology & Climate Innovation", href: "/environmental-technology" },
   ];
 
   const isActive = (href: string) => {

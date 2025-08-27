@@ -1,6 +1,7 @@
 
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { BackButton } from "@/components/BackButton";
 import { Users, Smartphone, BookOpen, Zap } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -41,6 +42,7 @@ const YouthStrategy = () => {
         {/* Hero Section */}
         <section className="bg-gradient-to-br from-yellow-50 to-orange-50 py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <BackButton />
             <div className="text-center">
               <div className="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Users className="h-10 w-10 text-yellow-600" />

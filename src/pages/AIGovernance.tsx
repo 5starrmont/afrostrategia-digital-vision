@@ -1,6 +1,7 @@
 
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { BackButton } from "@/components/BackButton";
 import { Cpu, Brain, Scale, BookOpen } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -32,6 +33,7 @@ const AIGovernance = () => {
         {/* Hero Section */}
         <section className="bg-gradient-to-br from-yellow-50 to-emerald-50 py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <BackButton />
             <div className="text-center">
               <div className="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Cpu className="h-10 w-10 text-yellow-600" />
