@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Globe, Cpu, Shield, Users } from "lucide-react";
+import { ArrowRight, Globe, Cpu, Shield, Users, Leaf } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export const Hero = () => {
@@ -54,7 +54,7 @@ export const Hero = () => {
               </Button>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-8">
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 pt-8">
               <Link to="/digital-trade" className="group">
                 <div className="text-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer">
                   <Globe className="h-8 w-8 text-emerald-600 mx-auto mb-2 group-hover:scale-110 transition-transform" />
@@ -77,6 +77,12 @@ export const Hero = () => {
                 <div className="text-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer">
                   <Users className="h-8 w-8 text-yellow-600 mx-auto mb-2 group-hover:scale-110 transition-transform" />
                   <p className="text-sm text-gray-600 group-hover:text-emerald-700">Youth Strategy</p>
+                </div>
+              </Link>
+              <Link to="/environmental-technology" className="group">
+                <div className="text-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer">
+                  <Leaf className="h-8 w-8 text-green-600 mx-auto mb-2 group-hover:scale-110 transition-transform" />
+                  <p className="text-sm text-gray-600 group-hover:text-emerald-700">Environmental Tech</p>
                 </div>
               </Link>
             </div>
