@@ -58,6 +58,15 @@ export const Header = () => {
     }
   };
 
+  const handleNavClick = (href: string) => {
+    if (href.startsWith('#')) {
+      scrollToSection(href);
+    } else {
+      // For page navigation, scroll to top immediately
+      window.scrollTo(0, 0);
+    }
+  };
+
   return (
     <header className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -81,6 +90,7 @@ export const Header = () => {
                 <Link
                   key={item.label}
                   to={item.href}
+                  onClick={() => handleNavClick(item.href)}
                   className={`px-3 py-2 text-sm font-medium transition-colors ${
                     isActive(item.href) 
                       ? 'text-emerald-700 border-b-2 border-emerald-700' 
@@ -95,7 +105,7 @@ export const Header = () => {
                   href={item.href}
                   onClick={(e) => {
                     e.preventDefault();
-                    scrollToSection(item.href);
+                    handleNavClick(item.href);
                   }}
                   className="text-gray-700 hover:text-emerald-700 px-3 py-2 text-sm font-medium transition-colors cursor-pointer"
                 >
@@ -123,12 +133,15 @@ export const Header = () => {
                     <Link
                       key={dept.label}
                       to={dept.href}
+                      onClick={() => {
+                        handleNavClick(dept.href);
+                        setIsDepartmentsOpen(false);
+                      }}
                       className={`block px-4 py-3 text-sm transition-colors ${
                         isActive(dept.href)
                           ? 'bg-emerald-50 text-emerald-700 border-l-4 border-emerald-700'
                           : 'text-gray-700 hover:bg-emerald-50 hover:text-emerald-700'
                       }`}
-                      onClick={() => setIsDepartmentsOpen(false)}
                     >
                       {dept.label}
                     </Link>
@@ -159,12 +172,15 @@ export const Header = () => {
                   <Link
                     key={item.label}
                     to={item.href}
+                    onClick={() => {
+                      handleNavClick(item.href);
+                      setIsMenuOpen(false);
+                    }}
                     className={`px-3 py-2 text-sm font-medium transition-colors ${
                       isActive(item.href) 
                         ? 'text-emerald-700 bg-emerald-50' 
                         : 'text-gray-700 hover:text-emerald-700'
                     }`}
-                    onClick={() => setIsMenuOpen(false)}
                   >
                     {item.label}
                   </Link>
@@ -174,7 +190,7 @@ export const Header = () => {
                     href={item.href}
                     onClick={(e) => {
                       e.preventDefault();
-                      scrollToSection(item.href);
+                      handleNavClick(item.href);
                       setIsMenuOpen(false);
                     }}
                     className="text-gray-700 hover:text-emerald-700 px-3 py-2 text-sm font-medium transition-colors cursor-pointer"
@@ -191,12 +207,15 @@ export const Header = () => {
                   <Link
                     key={dept.label}
                     to={dept.href}
+                    onClick={() => {
+                      handleNavClick(dept.href);
+                      setIsMenuOpen(false);
+                    }}
                     className={`text-sm font-medium transition-colors block px-3 py-2 ${
                       isActive(dept.href)
                         ? 'text-emerald-700 bg-emerald-50'
                         : 'text-gray-700 hover:text-emerald-700'
                     }`}
-                    onClick={() => setIsMenuOpen(false)}
                   >
                     {dept.label}
                   </Link>
