@@ -20,12 +20,12 @@ export const BackButton = ({ href = "/", label = "Back to Home" }: BackButtonPro
 
   return (
     <Button
-      variant="ghost"
+      variant="outline"
       size="sm"
       onClick={handleClick}
-      className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 mb-6"
+      className="group border-primary/20 bg-background/80 backdrop-blur-sm hover:bg-primary hover:text-primary-foreground hover:border-primary shadow-sm transition-all duration-300 mb-6 hover:shadow-md hover:scale-105"
     >
-      <ArrowLeft className="h-4 w-4 mr-2" />
+      <ArrowLeft className="h-4 w-4 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
       {label}
     </Button>
   );
