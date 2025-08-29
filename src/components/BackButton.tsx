@@ -21,12 +21,11 @@ export const BackButton = ({ href = "/", label = "Back to Home" }: BackButtonPro
   return (
     <Button
       variant="outline"
-      size="sm"
+      size="icon"
       onClick={handleClick}
-      className="group border-primary/20 bg-background/80 backdrop-blur-sm hover:bg-primary hover:text-primary-foreground hover:border-primary shadow-sm transition-all duration-300 mb-6 hover:shadow-md hover:scale-105"
+      className="group border-primary/20 bg-background/80 backdrop-blur-sm hover:bg-primary hover:text-primary-foreground hover:border-primary shadow-sm transition-all duration-300 mb-6 hover:shadow-md hover:scale-110 rounded-full"
     >
-      <ArrowLeft className="h-4 w-4 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
-      {label}
+      <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform duration-300" />
     </Button>
   );
 };
