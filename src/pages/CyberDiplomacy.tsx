@@ -28,7 +28,7 @@ const CyberDiplomacy = () => {
     <div className="min-h-screen bg-white">
       <Header />
       
-      <main className="pt-20">
+      <main className="pt-0">
         {/* Hero Section */}
         <section className="bg-gradient-to-br from-emerald-50 to-blue-50 py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
