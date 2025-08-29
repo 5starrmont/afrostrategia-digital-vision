@@ -10,6 +10,8 @@ import { Loader2, Shield, AlertTriangle } from "lucide-react";
 import { UploadReports } from "@/components/admin/UploadReports";
 import { UploadContent } from "@/components/admin/UploadContent";
 import { ManageContent } from "@/components/admin/ManageContent";
+import { AdminDashboard } from "@/components/admin/AdminDashboard";
+import { SecuritySettings } from "@/components/admin/SecuritySettings";
 import { LoginForm } from "@/components/admin/LoginForm";
 
 const Admin = () => {
@@ -183,8 +185,14 @@ const Admin = () => {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        <Tabs defaultValue="reports" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 bg-white/60 backdrop-blur-sm border border-emerald-100">
+        <Tabs defaultValue="dashboard" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-5 bg-white/60 backdrop-blur-sm border border-emerald-100">
+            <TabsTrigger 
+              value="dashboard"
+              className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
+            >
+              Dashboard
+            </TabsTrigger>
             <TabsTrigger 
               value="reports"
               className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
@@ -203,7 +211,25 @@ const Admin = () => {
             >
               Manage Content
             </TabsTrigger>
+            <TabsTrigger 
+              value="security"
+              className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
+            >
+              Security
+            </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="dashboard">
+            <Card className="bg-white/80 backdrop-blur-sm border-emerald-100 shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-t-lg">
+                <CardTitle className="text-white">Admin Dashboard</CardTitle>
+                <p className="text-emerald-100">System overview and recent activity</p>
+              </CardHeader>
+              <CardContent className="p-6">
+                <AdminDashboard />
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           <TabsContent value="reports">
             <Card className="bg-white/80 backdrop-blur-sm border-emerald-100 shadow-lg">
@@ -237,6 +263,18 @@ const Admin = () => {
               </CardHeader>
               <CardContent className="p-6">
                 <ManageContent />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="security">
+            <Card className="bg-white/80 backdrop-blur-sm border-emerald-100 shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-red-600 to-red-700 text-white rounded-t-lg">
+                <CardTitle className="text-white">Security Management</CardTitle>
+                <p className="text-red-100">User roles and security settings</p>
+              </CardHeader>
+              <CardContent className="p-6">
+                <SecuritySettings />
               </CardContent>
             </Card>
           </TabsContent>
