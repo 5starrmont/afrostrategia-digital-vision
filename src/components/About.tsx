@@ -26,14 +26,14 @@ export const About = () => {
   ];
 
   return (
-    <section id="about" className="py-20 bg-gray-50">
+    <section id="about" className="py-20 bg-muted/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
           <div>
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
+            <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-6">
               About AfroStrategia Foundation
             </h2>
-            <div className="space-y-4 text-lg text-gray-600">
+            <div className="space-y-4 text-lg text-muted-foreground">
               <p>
                 AfroStrategia is a premier Pan-African think tank established in 2024 to strategically position Africa in the global digital landscape. We bridge the gap between African wisdom and international digital governance frameworks.
               </p>
@@ -46,23 +46,23 @@ export const About = () => {
             </div>
           </div>
           <div className="relative">
-            <div className="bg-gradient-to-br from-emerald-100 to-yellow-100 rounded-2xl p-8">
+            <div className="bg-gradient-to-br from-accent/20 to-primary/20 rounded-2xl p-8">
               <div className="grid grid-cols-2 gap-6 text-center">
-                <div className="bg-white rounded-lg p-6">
-                  <div className="text-3xl font-bold text-emerald-700">54</div>
-                  <div className="text-sm text-gray-600">African Countries</div>
+                <div className="bg-card rounded-lg p-6 shadow-sm">
+                  <div className="text-3xl font-bold text-accent-foreground">54</div>
+                  <div className="text-sm text-muted-foreground">African Countries</div>
                 </div>
-                <div className="bg-white rounded-lg p-6">
-                  <div className="text-3xl font-bold text-yellow-600">5</div>
-                  <div className="text-sm text-gray-600">Core Departments</div>
+                <div className="bg-card rounded-lg p-6 shadow-sm">
+                  <div className="text-3xl font-bold text-primary">5</div>
+                  <div className="text-sm text-muted-foreground">Core Departments</div>
                 </div>
-                <div className="bg-white rounded-lg p-6">
-                  <div className="text-3xl font-bold text-emerald-700">100+</div>
-                  <div className="text-sm text-gray-600">Policy Insights</div>
+                <div className="bg-card rounded-lg p-6 shadow-sm">
+                  <div className="text-3xl font-bold text-accent-foreground">100+</div>
+                  <div className="text-sm text-muted-foreground">Policy Insights</div>
                 </div>
-                <div className="bg-white rounded-lg p-6">
-                  <div className="text-3xl font-bold text-yellow-600">25+</div>
-                  <div className="text-sm text-gray-600">Partnerships</div>
+                <div className="bg-card rounded-lg p-6 shadow-sm">
+                  <div className="text-3xl font-bold text-primary">25+</div>
+                  <div className="text-sm text-muted-foreground">Partnerships</div>
                 </div>
               </div>
             </div>
@@ -73,13 +73,13 @@ export const About = () => {
           {values.map((value, index) => {
             const IconComponent = value.icon;
             return (
-              <Card key={index} className="text-center hover:shadow-lg transition-all duration-300 bg-white">
+              <Card key={index} className="text-center hover:shadow-lg transition-all duration-300 bg-card">
                 <CardContent className="p-6">
-                  <div className="w-16 h-16 bg-gradient-to-br from-emerald-100 to-yellow-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-                    <IconComponent className="h-8 w-8 text-emerald-700" />
+                  <div className="w-16 h-16 bg-gradient-to-br from-accent/20 to-primary/20 rounded-full mx-auto mb-4 flex items-center justify-center">
+                    <IconComponent className="h-8 w-8 text-accent-foreground" />
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">{value.title}</h3>
-                  <p className="text-sm text-gray-600">{value.description}</p>
+                  <h3 className="text-lg font-semibold text-foreground mb-3">{value.title}</h3>
+                  <p className="text-sm text-muted-foreground">{value.description}</p>
                 </CardContent>
               </Card>
             );

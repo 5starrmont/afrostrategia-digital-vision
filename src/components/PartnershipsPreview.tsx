@@ -75,23 +75,23 @@ export const PartnershipsPreview = () => {
   ];
 
   return (
-    <section id="partnerships" className="py-24 bg-gradient-to-br from-emerald-50 via-yellow-50/30 to-emerald-50 overflow-hidden relative">
+    <section id="partnerships" className="py-24 bg-gradient-to-br from-muted/50 via-background to-muted/50 overflow-hidden relative">
       {/* Background decorative elements */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-200/20 via-transparent to-transparent"></div>
-      <div className="absolute top-20 left-10 w-72 h-72 bg-emerald-400/10 rounded-full blur-3xl animate-pulse"></div>
-      <div className="absolute bottom-20 right-10 w-96 h-96 bg-yellow-400/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-accent/10 via-transparent to-transparent"></div>
+      <div className="absolute top-20 left-10 w-72 h-72 bg-accent/10 rounded-full blur-3xl animate-pulse"></div>
+      <div className="absolute bottom-20 right-10 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div className="text-center mb-20">
-          <div className="inline-flex items-center justify-center p-3 bg-emerald-100 rounded-full mb-6">
-            <svg className="h-8 w-8 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="inline-flex items-center justify-center p-3 bg-accent/20 rounded-full mb-6">
+            <svg className="h-8 w-8 text-accent-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
           </div>
-          <h2 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-gray-900 via-emerald-800 to-gray-900 bg-clip-text text-transparent mb-6">
+          <h2 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-foreground via-accent-foreground to-foreground bg-clip-text text-transparent mb-6">
             Strategic Partnerships
           </h2>
-          <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+          <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
             Building meaningful collaborations with world-class institutions to amplify Africa's voice 
             in shaping the global digital governance landscape
           </p>
@@ -109,7 +109,7 @@ export const PartnershipsPreview = () => {
                     const partnerIndex = (index + offset) % partners.length;
                     const currentPartner = partners[partnerIndex];
                     return (
-                      <Card key={`${index}-${offset}`} className="w-80 bg-white/90 backdrop-blur-sm border border-gray-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group">
+                      <Card key={`${index}-${offset}`} className="w-80 bg-card/90 backdrop-blur-sm border border-border shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group">
                         <CardContent className="p-6 text-center">
                           <div className="mb-4">
                             <img 
@@ -118,15 +118,15 @@ export const PartnershipsPreview = () => {
                               className="w-24 h-16 mx-auto object-contain"
                             />
                           </div>
-                          <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-emerald-700 transition-colors">
+                          <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-accent-foreground transition-colors">
                             {currentPartner.name}
                           </h3>
                           <div className="mb-3">
-                            <span className="inline-block bg-emerald-100 text-emerald-800 text-xs font-semibold px-3 py-1 rounded-full">
+                            <span className="inline-block bg-accent/20 text-accent-foreground text-xs font-semibold px-3 py-1 rounded-full">
                               {currentPartner.type}
                             </span>
                           </div>
-                          <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
+                          <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
                             {currentPartner.description}
                           </p>
                         </CardContent>
@@ -142,11 +142,11 @@ export const PartnershipsPreview = () => {
         {/* Call to action */}
         <div className="text-center mt-16">
           <div className="max-w-2xl mx-auto">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">Join Our Growing Network</h3>
-            <p className="text-gray-600 mb-8">
+            <h3 className="text-2xl font-bold text-foreground mb-4">Join Our Growing Network</h3>
+            <p className="text-muted-foreground mb-8">
               Partner with AfroStrategia to shape the future of digital governance in Africa
             </p>
-            <button className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white px-8 py-4 rounded-full font-semibold hover:from-emerald-700 hover:to-emerald-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+            <button className="bg-gradient-to-r from-primary to-accent text-primary-foreground px-8 py-4 rounded-full font-semibold hover:from-primary/90 hover:to-accent/90 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
               Become a Partner
             </button>
           </div>

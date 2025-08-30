@@ -59,19 +59,19 @@ export const LatestContent = () => {
   const getTypeColor = (type: string) => {
     switch (type.toLowerCase()) {
       case 'report':
-        return 'bg-emerald-100 text-emerald-800';
+        return 'bg-accent/20 text-accent-foreground border border-accent/30';
       case 'policy':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-primary/20 text-primary-foreground border border-primary/30';
       case 'research':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-secondary/30 text-secondary-foreground border border-secondary/40';
       case 'blog':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-muted text-muted-foreground border border-border';
       case 'video':
-        return 'bg-red-100 text-red-800';
+        return 'bg-destructive/20 text-destructive-foreground border border-destructive/30';
       case 'infographic':
-        return 'bg-green-100 text-green-800';
+        return 'bg-accent/30 text-accent-foreground border border-accent/40';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-muted/50 text-muted-foreground border border-border/50';
     }
   };
 
@@ -120,8 +120,8 @@ export const LatestContent = () => {
     <section className="py-24 bg-gradient-to-br from-background via-muted/30 to-background relative overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent"></div>
-      <div className="absolute top-20 left-10 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-20 right-10 w-96 h-96 bg-yellow-500/10 rounded-full blur-3xl"></div>
+      <div className="absolute top-20 left-10 w-72 h-72 bg-accent/10 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-20 right-10 w-96 h-96 bg-primary/10 rounded-full blur-3xl"></div>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div className="text-center mb-20">
@@ -264,7 +264,7 @@ export const LatestContent = () => {
             <Button 
               variant="outline"
               size="lg"
-              className="border-emerald-600 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-700 px-10 py-4 font-semibold text-lg transition-all duration-300 shadow-md hover:shadow-lg"
+              className="border-primary text-primary hover:bg-primary/5 hover:border-primary/70 px-10 py-4 font-semibold text-lg transition-all duration-300 shadow-md hover:shadow-lg"
             >
               Explore More
               <FileText className="ml-2 h-5 w-5" />
