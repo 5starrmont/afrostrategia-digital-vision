@@ -43,6 +43,32 @@ export const ManageContent = () => {
   useEffect(() => {
     fetchContent();
     fetchReports();
+
+    // Set up real-time subscriptions
+    const contentChannel = supabase
+      .channel('content-changes')
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'content' },
+        () => {
+          fetchContent();
+        }
+      )
+      .subscribe();
+
+    const reportsChannel = supabase
+      .channel('reports-changes')
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'reports' },
+        () => {
+          fetchReports();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(contentChannel);
+      supabase.removeChannel(reportsChannel);
+    };
   }, []);
 
   const fetchContent = async () => {

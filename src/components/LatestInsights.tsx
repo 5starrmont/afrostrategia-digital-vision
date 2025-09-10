@@ -27,6 +27,26 @@ export const LatestInsights = () => {
 
   useEffect(() => {
     fetchInsights();
+
+    // Set up real-time updates for insights
+    const channel = supabase
+      .channel('insights-updates')
+      .on('postgres_changes',
+        { 
+          event: '*', 
+          schema: 'public', 
+          table: 'content',
+          filter: 'published=eq.true'
+        },
+        () => {
+          fetchInsights();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const fetchInsights = async () => {

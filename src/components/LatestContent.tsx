@@ -33,6 +33,26 @@ export const LatestContent = () => {
 
   useEffect(() => {
     fetchContent();
+
+    // Set up real-time updates for published content
+    const channel = supabase
+      .channel('published-content-updates')
+      .on('postgres_changes',
+        { 
+          event: '*', 
+          schema: 'public', 
+          table: 'content',
+          filter: 'published=eq.true'
+        },
+        () => {
+          fetchContent();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const fetchContent = async () => {
