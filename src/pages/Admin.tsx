@@ -71,7 +71,6 @@ const Admin = () => {
       } else {
         setHasAdminRole(false);
         setRoleLoading(false);
-        navigate('/');
       }
     });
 
