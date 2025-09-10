@@ -18,7 +18,7 @@ interface Content {
   file_name?: string;
   departments: {
     name: string;
-  };
+  } | null;
 }
 
 interface Report {
@@ -31,7 +31,7 @@ interface Report {
   file_name?: string;
   departments: {
     name: string;
-  };
+  } | null;
 }
 
 export const ManageContent = () => {
@@ -234,7 +234,7 @@ export const ManageContent = () => {
                       {item.type}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-gray-700">{item.departments.name}</TableCell>
+                  <TableCell className="text-gray-700">{item.departments?.name || 'No Department'}</TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-2">
                       <Switch
@@ -298,7 +298,7 @@ export const ManageContent = () => {
               {reports.map((item) => (
                 <TableRow key={item.id} className="hover:bg-emerald-50">
                   <TableCell className="font-medium text-gray-900">{item.title}</TableCell>
-                  <TableCell className="text-gray-700">{item.departments.name}</TableCell>
+                  <TableCell className="text-gray-700">{item.departments?.name || 'No Department'}</TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-2">
                       <Switch
