@@ -24,6 +24,10 @@ import {
 } from "lucide-react";
 import { ContentPreview } from "./ContentPreview";
 
+interface AdminDashboardProps {
+  onNavigateToTab?: (tab: string) => void;
+}
+
 interface AdminStats {
   total_users: number;
   total_content: number;
@@ -53,7 +57,7 @@ interface TypeDistribution {
   color: string;
 }
 
-const AdminDashboard = memo(() => {
+const AdminDashboard = memo(({ onNavigateToTab }: AdminDashboardProps) => {
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [recentActivity, setRecentActivity] = useState<AuditLog[]>([]);
   const [contentStats, setContentStats] = useState<ContentStats[]>([]);
@@ -431,7 +435,7 @@ const AdminDashboard = memo(() => {
             <Button 
               variant="outline" 
               className="h-20 flex flex-col items-center space-y-2 border-emerald-200 hover:bg-emerald-50"
-              onClick={() => window.location.href = '#manage-content'}
+              onClick={() => onNavigateToTab?.('content')}
             >
               <Upload className="h-6 w-6 text-emerald-600" />
               <span className="text-sm">Upload Content</span>
@@ -439,7 +443,7 @@ const AdminDashboard = memo(() => {
             <Button 
               variant="outline" 
               className="h-20 flex flex-col items-center space-y-2 border-blue-200 hover:bg-blue-50"
-              onClick={() => window.location.href = '#upload-reports'}
+              onClick={() => onNavigateToTab?.('reports')}
             >
               <ScrollText className="h-6 w-6 text-blue-600" />
               <span className="text-sm">Add Report</span>
@@ -447,7 +451,7 @@ const AdminDashboard = memo(() => {
             <Button 
               variant="outline" 
               className="h-20 flex flex-col items-center space-y-2 border-purple-200 hover:bg-purple-50"
-              onClick={() => window.location.href = '#manage-content'}
+              onClick={() => onNavigateToTab?.('manage')}
             >
               <Eye className="h-6 w-6 text-purple-600" />
               <span className="text-sm">Review Content</span>
@@ -455,7 +459,18 @@ const AdminDashboard = memo(() => {
             <Button 
               variant="outline" 
               className="h-20 flex flex-col items-center space-y-2 border-orange-200 hover:bg-orange-50"
-              onClick={() => fetchDashboardData(true)}
+              onClick={() => {
+                // Create and download CSV of dashboard stats
+                const csvContent = `Metric,Value\nTotal Users,${stats?.total_users || 0}\nTotal Content,${stats?.total_content || 0}\nTotal Reports,${stats?.total_reports || 0}\nPublished Content,${stats?.published_content || 0}\nPublic Reports,${stats?.public_reports || 0}\nRecent Uploads,${stats?.recent_uploads || 0}`;
+                const blob = new Blob([csvContent], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `admin-dashboard-${new Date().toISOString().split('T')[0]}.csv`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+                toast({ title: "Dashboard data exported", description: "CSV file downloaded successfully" });
+              }}
             >
               <Download className="h-6 w-6 text-orange-600" />
               <span className="text-sm">Export Data</span>

@@ -19,6 +19,7 @@ const Admin = () => {
   const [loading, setLoading] = useState(true);
   const [hasAdminRole, setHasAdminRole] = useState(false);
   const [roleLoading, setRoleLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("dashboard");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -184,7 +185,7 @@ const Admin = () => {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        <Tabs defaultValue="dashboard" className="space-y-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-5 bg-white/60 backdrop-blur-sm border border-emerald-100">
             <TabsTrigger 
               value="dashboard"
@@ -225,7 +226,7 @@ const Admin = () => {
                 <p className="text-emerald-100">System overview and recent activity</p>
               </CardHeader>
               <CardContent className="p-6">
-                <AdminDashboard />
+                <AdminDashboard onNavigateToTab={setActiveTab} />
               </CardContent>
             </Card>
           </TabsContent>
