@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback, memo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -53,7 +53,7 @@ interface TypeDistribution {
   color: string;
 }
 
-export const AdminDashboard = () => {
+const AdminDashboard = memo(() => {
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [recentActivity, setRecentActivity] = useState<AuditLog[]>([]);
   const [contentStats, setContentStats] = useState<ContentStats[]>([]);
@@ -62,58 +62,45 @@ export const AdminDashboard = () => {
   const [refreshing, setRefreshing] = useState(false);
   const { toast } = useToast();
 
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
-
-  const fetchDashboardData = async (showRefreshing = false) => {
+  const fetchDashboardData = useCallback(async (showRefreshing = false) => {
     if (showRefreshing) setRefreshing(true);
     
     try {
-      // Fetch admin stats
-      const { data: statsData, error: statsError } = await supabase
-        .rpc('get_admin_stats');
-      
-      if (statsError) throw statsError;
-      setStats(statsData[0] || null);
+      // Parallel data fetching for better performance
+      const [statsResult, auditResult, contentTrendsResult, contentTypesResult] = await Promise.all([
+        supabase.rpc('get_admin_stats'),
+        supabase
+          .from('audit_logs')
+          .select('id, action, table_name, created_at, user_id')
+          .order('created_at', { ascending: false })
+          .limit(5),
+        supabase
+          .from('content')
+          .select('created_at, type')
+          .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()),
+        supabase
+          .from('content')
+          .select('type')
+          .eq('published', true)
+      ]);
 
-      // Fetch recent audit logs
-      const { data: auditData, error: auditError } = await supabase
-        .from('audit_logs')
-        .select(`
-          id,
-          action,
-          table_name,
-          created_at,
-          user_id
-        `)
-        .order('created_at', { ascending: false })
-        .limit(10);
+      if (statsResult.error) throw statsResult.error;
+      if (auditResult.error) throw auditResult.error;
+      if (contentTrendsResult.error) throw contentTrendsResult.error;
+      if (contentTypesResult.error) throw contentTypesResult.error;
 
-      if (auditError) throw auditError;
-      setRecentActivity(auditData || []);
+      setStats(statsResult.data?.[0] || null);
+      setRecentActivity(auditResult.data || []);
 
-      // Fetch content upload trends (last 7 days)
-      const { data: contentTrends, error: trendsError } = await supabase
-        .from('content')
-        .select('created_at, type')
-        .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
-        .order('created_at', { ascending: true });
-
-      if (trendsError) throw trendsError;
-      
       // Process content trends data
-      const dailyStats = new Map<string, { uploads: number; views: number }>();
       const last7Days = Array.from({ length: 7 }, (_, i) => {
         const date = new Date(Date.now() - (6 - i) * 24 * 60 * 60 * 1000);
         return date.toISOString().split('T')[0];
       });
 
-      last7Days.forEach(date => {
-        dailyStats.set(date, { uploads: 0, views: Math.floor(Math.random() * 100) + 50 });
-      });
-
-      contentTrends?.forEach(item => {
+      const dailyStats = new Map(last7Days.map(date => [date, { uploads: 0, views: 0 }]));
+      
+      contentTrendsResult.data?.forEach(item => {
         const date = item.created_at.split('T')[0];
         if (dailyStats.has(date)) {
           const current = dailyStats.get(date)!;
@@ -129,20 +116,13 @@ export const AdminDashboard = () => {
 
       setContentStats(chartData);
 
-      // Fetch content type distribution
-      const { data: contentTypes, error: typesError } = await supabase
-        .from('content')
-        .select('type')
-        .eq('published', true);
-
-      if (typesError) throw typesError;
-
+      // Process content type distribution
       const typeMap = new Map<string, number>();
-      contentTypes?.forEach(item => {
+      contentTypesResult.data?.forEach(item => {
         typeMap.set(item.type, (typeMap.get(item.type) || 0) + 1);
       });
 
-      const colors = ['#10B981', '#3B82F6', '#8B5CF6', '#F59E0B', '#EF4444', '#6B7280'];
+      const colors = ['hsl(var(--primary))', 'hsl(var(--secondary))', 'hsl(var(--accent))', 'hsl(var(--muted))'];
       const distribution = Array.from(typeMap.entries()).map(([name, value], index) => ({
         name,
         value,
@@ -162,28 +142,42 @@ export const AdminDashboard = () => {
       setLoading(false);
       if (showRefreshing) setRefreshing(false);
     }
-  };
+  }, [toast]);
 
-  const getActionBadgeColor = (action: string) => {
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
+
+  const getActionBadgeColor = useCallback((action: string) => {
     switch (action) {
       case 'content_upload':
       case 'report_upload':
-        return 'bg-green-100 text-green-800';
+        return 'bg-primary/10 text-primary';
       case 'content_status_change':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-secondary/10 text-secondary-foreground';
       case 'content_deletion':
       case 'report_deletion':
-        return 'bg-red-100 text-red-800';
+        return 'bg-destructive/10 text-destructive';
       case 'admin_role_assigned':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-accent/10 text-accent-foreground';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-muted text-muted-foreground';
     }
-  };
+  }, []);
 
-  const formatAction = (action: string) => {
+  const formatAction = useCallback((action: string) => {
     return action.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-  };
+  }, []);
+
+  const maxUploads = useMemo(() => 
+    Math.max(...contentStats.map(d => d.uploads), 1), 
+    [contentStats]
+  );
+
+  const maxTypeValue = useMemo(() => 
+    Math.max(...typeDistribution.map(d => d.value), 1), 
+    [typeDistribution]
+  );
 
   if (loading) {
     return (
@@ -315,8 +309,8 @@ export const AdminDashboard = () => {
                       </div>
                       <div className="w-24 bg-gray-200 rounded-full h-2">
                         <div 
-                          className="bg-emerald-500 h-2 rounded-full transition-all duration-300"
-                          style={{ width: `${(day.uploads / Math.max(...contentStats.map(d => d.uploads))) * 100}%` }}
+                          className="bg-primary h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${(day.uploads / maxUploads) * 100}%` }}
                         />
                       </div>
                     </div>
@@ -359,7 +353,7 @@ export const AdminDashboard = () => {
                           className="h-2 rounded-full transition-all duration-300"
                           style={{ 
                             backgroundColor: item.color,
-                            width: `${(item.value / Math.max(...typeDistribution.map(d => d.value))) * 100}%`
+                            width: `${(item.value / maxTypeValue) * 100}%`
                           }}
                         />
                       </div>
@@ -471,4 +465,8 @@ export const AdminDashboard = () => {
       </Card>
     </div>
   );
-};
+});
+
+AdminDashboard.displayName = 'AdminDashboard';
+
+export { AdminDashboard };
