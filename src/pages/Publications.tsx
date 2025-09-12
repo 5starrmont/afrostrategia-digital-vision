@@ -115,11 +115,21 @@ const Publications = () => {
 
   const handleOpenContent = (item: Content) => {
     try {
+      console.log('Attempting to open content:', item.title);
+      console.log('Available URLs:', { 
+        slug: item.slug, 
+        media_url: item.media_url, 
+        file_url: item.file_url 
+      });
+      
       if (item.media_type === 'blog' && item.slug) {
+        console.log('Opening blog post with slug:', item.slug);
         window.open(`/blog/${item.slug}`, '_blank');
       } else if (item.media_url) {
+        console.log('Opening media URL:', item.media_url);
         window.open(item.media_url, '_blank');
       } else if (item.file_url) {
+        console.log('Opening file URL:', item.file_url);
         window.open(item.file_url, '_blank');
       } else {
         console.error('No URL available for content:', item.title);
@@ -335,14 +345,12 @@ const Publications = () => {
                           className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-md hover:shadow-lg transition-all duration-300"
                           onClick={() => {
                             try {
-                              const link = document.createElement('a');
-                              link.href = item.file_url!;
-                              link.target = '_blank';
-                              link.rel = 'noopener noreferrer';
-                              link.download = item.file_name || `${item.title}.pdf`;
-                              document.body.appendChild(link);
-                              link.click();
-                              document.body.removeChild(link);
+                              console.log('Attempting to download file:', item.file_url);
+                              console.log('File name:', item.file_name);
+                              
+                              // Try direct navigation first
+                              window.open(item.file_url!, '_blank');
+                              
                             } catch (error) {
                               console.error('Error downloading file:', error);
                               alert('There was an error downloading this file. Please try again.');
