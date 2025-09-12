@@ -114,12 +114,20 @@ const Publications = () => {
   };
 
   const handleOpenContent = (item: Content) => {
-    if (item.media_type === 'blog' && item.slug) {
-      window.open(`/blog/${item.slug}`, '_blank');
-    } else if (item.media_url) {
-      window.open(item.media_url, '_blank');
-    } else if (item.file_url) {
-      window.open(item.file_url, '_blank');
+    try {
+      if (item.media_type === 'blog' && item.slug) {
+        window.open(`/blog/${item.slug}`, '_blank');
+      } else if (item.media_url) {
+        window.open(item.media_url, '_blank');
+      } else if (item.file_url) {
+        window.open(item.file_url, '_blank');
+      } else {
+        console.error('No URL available for content:', item.title);
+        alert('Sorry, this content is not available for viewing.');
+      }
+    } catch (error) {
+      console.error('Error opening content:', error);
+      alert('There was an error opening this content. Please try again.');
     }
   };
 
@@ -326,13 +334,19 @@ const Publications = () => {
                           size="sm"
                           className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-md hover:shadow-lg transition-all duration-300"
                           onClick={() => {
-                            const link = document.createElement('a');
-                            link.href = item.file_url!;
-                            link.target = '_blank';
-                            link.rel = 'noopener noreferrer';
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
+                            try {
+                              const link = document.createElement('a');
+                              link.href = item.file_url!;
+                              link.target = '_blank';
+                              link.rel = 'noopener noreferrer';
+                              link.download = item.file_name || `${item.title}.pdf`;
+                              document.body.appendChild(link);
+                              link.click();
+                              document.body.removeChild(link);
+                            } catch (error) {
+                              console.error('Error downloading file:', error);
+                              alert('There was an error downloading this file. Please try again.');
+                            }
                           }}
                         >
                           <Download className="h-4 w-4 mr-2" />

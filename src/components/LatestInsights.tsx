@@ -87,8 +87,16 @@ export const LatestInsights = () => {
   };
 
   const handleContentClick = (insight: InsightContent) => {
-    if (insight.file_url) {
-      window.open(insight.file_url, '_blank');
+    try {
+      if (insight.file_url) {
+        window.open(insight.file_url, '_blank');
+      } else {
+        console.error('No file URL available for insight:', insight.title);
+        alert('Sorry, this content is not available for viewing.');
+      }
+    } catch (error) {
+      console.error('Error opening insight:', error);
+      alert('There was an error opening this content. Please try again.');
     }
   };
 

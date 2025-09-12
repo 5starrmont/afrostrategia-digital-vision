@@ -198,17 +198,24 @@ const Research = () => {
                         <span>{formatDate(paper.created_at)}</span>
                       </div>
                     </div>
-                    {paper.file_url && (
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="text-emerald-600 hover:text-emerald-700"
-                        onClick={() => window.open(paper.file_url, '_blank')}
-                      >
-                        <Download className="h-4 w-4 mr-1" />
-                        Download
-                      </Button>
-                    )}
+                      {paper.file_url && (
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="text-emerald-600 hover:text-emerald-700"
+                          onClick={() => {
+                            try {
+                              window.open(paper.file_url, '_blank');
+                            } catch (error) {
+                              console.error('Error opening file:', error);
+                              alert('There was an error opening this file. Please try again.');
+                            }
+                          }}
+                        >
+                          <Download className="h-4 w-4 mr-1" />
+                          Download
+                        </Button>
+                      )}
                   </div>
                 </CardContent>
               </Card>
@@ -299,7 +306,14 @@ const Research = () => {
                           variant="ghost" 
                           size="sm" 
                           className="text-emerald-600 hover:text-emerald-700"
-                          onClick={() => window.open(paper.file_url, '_blank')}
+                          onClick={() => {
+                            try {
+                              window.open(paper.file_url, '_blank');
+                            } catch (error) {
+                              console.error('Error opening file:', error);
+                              alert('There was an error opening this file. Please try again.');
+                            }
+                          }}
                         >
                           <Download className="h-4 w-4" />
                         </Button>
