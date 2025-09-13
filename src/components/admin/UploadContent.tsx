@@ -202,7 +202,12 @@ export const UploadContent = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <div className="bg-white/50 backdrop-blur-sm rounded-lg border border-emerald-200 p-6">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Upload Content</h2>
+        <p className="text-gray-600">Add new content to the platform</p>
+      </div>
+      <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
         <Label htmlFor="title" className="text-gray-700 font-medium">Content Title *</Label>
         <Input
@@ -287,6 +292,7 @@ export const UploadContent = () => {
       >
         {uploading ? "Uploading..." : "Upload Content"}
       </Button>
-    </form>
+      </form>
+    </div>
   );
 };

@@ -235,18 +235,21 @@ const ManagePartners = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-3xl font-bold">Manage Partners</h2>
-          <p className="text-muted-foreground">Add, edit, and manage strategic partnerships</p>
+          <h2 className="text-3xl font-bold text-gray-900">Manage Partners</h2>
+          <p className="text-gray-600">Add, edit, and manage strategic partnerships</p>
         </div>
         
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => { resetForm(); setEditingPartner(null); }}>
+            <Button 
+              onClick={() => { resetForm(); setEditingPartner(null); }}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            >
               <Plus className="w-4 h-4 mr-2" />
               Add Partner
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-md bg-white border-emerald-200">
             <DialogHeader>
               <DialogTitle>{editingPartner ? 'Edit Partner' : 'Add New Partner'}</DialogTitle>
               <DialogDescription>
@@ -318,10 +321,18 @@ const ManagePartners = () => {
               </div>
               
               <div className="flex justify-end space-x-2">
-                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setIsDialogOpen(false)}
+                  className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                >
                   Cancel
                 </Button>
-                <Button type="submit">
+                <Button 
+                  type="submit"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                >
                   {editingPartner ? 'Update' : 'Add'} Partner
                 </Button>
               </div>
@@ -330,31 +341,31 @@ const ManagePartners = () => {
         </Dialog>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Current Partners</CardTitle>
-          <CardDescription>Manage your strategic partnerships</CardDescription>
+      <Card className="bg-white/50 backdrop-blur-sm border-emerald-200">
+        <CardHeader className="bg-gradient-to-r from-emerald-50 to-blue-50 border-b border-emerald-200">
+          <CardTitle className="text-gray-900">Current Partners</CardTitle>
+          <CardDescription className="text-gray-600">Manage your strategic partnerships</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Logo</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Order</TableHead>
-                <TableHead>Actions</TableHead>
+              <TableRow className="bg-emerald-600 hover:bg-emerald-700">
+                <TableHead className="text-white font-medium">Logo</TableHead>
+                <TableHead className="text-white font-medium">Name</TableHead>
+                <TableHead className="text-white font-medium">Type</TableHead>
+                <TableHead className="text-white font-medium">Status</TableHead>
+                <TableHead className="text-white font-medium">Order</TableHead>
+                <TableHead className="text-white font-medium">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {partners.map((partner) => (
-                <TableRow key={partner.id}>
+                <TableRow key={partner.id} className="hover:bg-emerald-50">
                   <TableCell>
                     <div className="flex items-center space-x-2">
                       {partner.logo_url ? (
                         <img 
-                          src={partner.logo_url} 
+                          src={partner.logo_url.startsWith('/src/') ? partner.logo_url.replace('/src/', '/') : partner.logo_url} 
                           alt={partner.name}
                           className="w-8 h-8 object-contain"
                         />
@@ -379,36 +390,42 @@ const ManagePartners = () => {
                       </label>
                     </div>
                   </TableCell>
-                  <TableCell className="font-medium">{partner.name}</TableCell>
-                  <TableCell>{partner.type}</TableCell>
+                  <TableCell className="font-medium text-gray-900">{partner.name}</TableCell>
+                  <TableCell className="text-gray-700">{partner.type}</TableCell>
                   <TableCell>
-                    <Badge variant={partner.active ? "default" : "secondary"}>
+                    <Badge 
+                      variant={partner.active ? "default" : "secondary"}
+                      className={partner.active ? "bg-emerald-100 text-emerald-700 border-emerald-200" : ""}
+                    >
                       {partner.active ? 'Active' : 'Inactive'}
                     </Badge>
                   </TableCell>
-                  <TableCell>{partner.display_order}</TableCell>
+                  <TableCell className="text-gray-700">{partner.display_order}</TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-2">
                       {partner.website_url && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => window.open(partner.website_url!, '_blank')}
-                        >
-                          <Globe className="w-4 h-4" />
-                        </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => window.open(partner.website_url!, '_blank')}
+                        className="border-blue-200 text-blue-700 hover:bg-blue-50"
+                      >
+                        <Globe className="w-4 h-4" />
+                      </Button>
                       )}
                       <Button
-                        variant="ghost"
+                        variant="outline"
                         size="sm"
                         onClick={() => handleEdit(partner)}
+                        className="border-emerald-200 text-emerald-700 hover:bg-emerald-50"
                       >
                         <Edit className="w-4 h-4" />
                       </Button>
                       <Button
-                        variant="ghost"
+                        variant="outline"
                         size="sm"
                         onClick={() => handleDelete(partner.id)}
+                        className="border-red-200 text-red-700 hover:bg-red-50"
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>

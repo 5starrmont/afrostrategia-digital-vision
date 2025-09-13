@@ -192,7 +192,12 @@ export const UploadReports = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <div className="bg-white/50 backdrop-blur-sm rounded-lg border border-emerald-200 p-6">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Upload Reports</h2>
+        <p className="text-gray-600">Add new reports to the platform</p>
+      </div>
+      <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
         <Label htmlFor="title" className="text-gray-700 font-medium">Report Title *</Label>
         <Input
@@ -262,6 +267,7 @@ export const UploadReports = () => {
       >
         {uploading ? "Uploading..." : "Upload Report"}
       </Button>
-    </form>
+      </form>
+    </div>
   );
 };
