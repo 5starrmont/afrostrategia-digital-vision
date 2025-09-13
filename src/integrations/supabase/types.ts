@@ -154,6 +154,45 @@ export type Database = {
         }
         Relationships: []
       }
+      partners: {
+        Row: {
+          active: boolean | null
+          created_at: string
+          description: string | null
+          display_order: number | null
+          id: string
+          logo_url: string | null
+          name: string
+          type: string
+          updated_at: string
+          website_url: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          logo_url?: string | null
+          name: string
+          type: string
+          updated_at?: string
+          website_url?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          logo_url?: string | null
+          name?: string
+          type?: string
+          updated_at?: string
+          website_url?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

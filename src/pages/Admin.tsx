@@ -13,6 +13,7 @@ import { ManageContent } from "@/components/admin/ManageContent";
 import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import { SecuritySettings } from "@/components/admin/SecuritySettings";
 import { LoginForm } from "@/components/admin/LoginForm";
+import ManagePartners from "@/components/admin/ManagePartners";
 
 const Admin = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -186,7 +187,7 @@ const Admin = () => {
 
       <main className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 bg-white/60 backdrop-blur-sm border border-emerald-100">
+          <TabsList className="grid w-full grid-cols-6 bg-white/60 backdrop-blur-sm border border-emerald-100">
             <TabsTrigger 
               value="dashboard"
               className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
@@ -210,6 +211,12 @@ const Admin = () => {
               className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
             >
               Manage Content
+            </TabsTrigger>
+            <TabsTrigger 
+              value="partners"
+              className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
+            >
+              Partners
             </TabsTrigger>
             <TabsTrigger 
               value="security"
@@ -263,6 +270,18 @@ const Admin = () => {
               </CardHeader>
               <CardContent className="p-6">
                 <ManageContent />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="partners">
+            <Card className="bg-white/80 backdrop-blur-sm border-emerald-100 shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-t-lg">
+                <CardTitle className="text-white">Manage Partners</CardTitle>
+                <p className="text-emerald-100">Manage strategic partnerships and logos</p>
+              </CardHeader>
+              <CardContent className="p-6">
+                <ManagePartners />
               </CardContent>
             </Card>
           </TabsContent>

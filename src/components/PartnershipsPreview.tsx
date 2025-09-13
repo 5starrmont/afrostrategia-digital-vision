@@ -1,78 +1,59 @@
+import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import africanUnionLogo from "@/assets/logos/african-union.png";
-import cukLogo from "@/assets/logos/cuk.png";
-import wefLogo from "@/assets/logos/wef.png";
-import unecaLogo from "@/assets/logos/uneca.png";
-import ituLogo from "@/assets/logos/itu.png";
-import gsmaLogo from "@/assets/logos/gsma.png";
-import brookingsLogo from "@/assets/logos/brookings.png";
-import mozillaLogo from "@/assets/logos/mozilla.png";
-import microsoftLogo from "@/assets/logos/microsoft.png";
-import digitalAfricaLogo from "@/assets/logos/digital-africa.png";
+import { supabase } from "@/integrations/supabase/client";
+
+interface Partner {
+  id: string;
+  name: string;
+  type: string;
+  description: string | null;
+  logo_url: string | null;
+  website_url: string | null;
+  display_order: number;
+  active: boolean;
+}
 
 export const PartnershipsPreview = () => {
-  const partners = [
-    {
-      name: "African Union",
-      type: "Continental Body",
-      description: "Strategic policy alignment with AU digital transformation agenda",
-      logo: africanUnionLogo
-    },
-    {
-      name: "The Cooperative University of Kenya",
-      type: "Research Partner", 
-      description: "Collaborative research on emerging technologies in Africa",
-      logo: cukLogo
-    },
-    {
-      name: "World Economic Forum",
-      type: "Global Platform",
-      description: "Contributing to global digital governance discussions",
-      logo: wefLogo
-    },
-    {
-      name: "UNECA",
-      type: "UN Agency",
-      description: "Supporting digital economy initiatives across Africa",
-      logo: unecaLogo
-    },
-    {
-      name: "ITU",
-      type: "UN Specialized Agency", 
-      description: "International telecommunications and digital policy collaboration",
-      logo: ituLogo
-    },
-    {
-      name: "GSMA",
-      type: "Industry Association",
-      description: "Mobile industry insights and policy development",
-      logo: gsmaLogo
-    },
-    {
-      name: "Brookings Institution",
-      type: "Think Tank",
-      description: "Research collaboration on digital governance in Africa",
-      logo: brookingsLogo
-    },
-    {
-      name: "Mozilla Foundation",
-      type: "Technology Partner",
-      description: "Internet health and digital rights advocacy",
-      logo: mozillaLogo
-    },
-    {
-      name: "Microsoft",
-      type: "Technology Partner",
-      description: "Digital transformation and AI governance initiatives",
-      logo: microsoftLogo
-    },
-    {
-      name: "Digital Africa",
-      type: "Regional Initiative",
-      description: "Supporting African digital ecosystem development",
-      logo: digitalAfricaLogo
+  const [partners, setPartners] = useState<Partner[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchPartners();
+  }, []);
+
+  const fetchPartners = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('partners')
+        .select('*')
+        .eq('active', true)
+        .order('display_order', { ascending: true });
+
+      if (error) throw error;
+      setPartners(data || []);
+    } catch (error) {
+      console.error('Error fetching partners:', error);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  if (loading) {
+    return (
+      <section className="py-24 bg-gradient-to-br from-emerald-50 via-yellow-50/30 to-emerald-50 overflow-hidden relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-gray-900 via-emerald-800 to-gray-900 bg-clip-text text-transparent mb-6">
+              Strategic Partnerships
+            </h2>
+            <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+              Loading our strategic partnerships...
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="partnerships" className="py-24 bg-gradient-to-br from-emerald-50 via-yellow-50/30 to-emerald-50 overflow-hidden relative">
@@ -105,18 +86,24 @@ export const PartnershipsPreview = () => {
               <div key={`cycle-${index}`} className="flex-shrink-0 mb-8">
                 <div className="flex justify-center space-x-8">
                   {/* Create a row of 3-4 cards */}
-                  {[0, 1, 2, 3].map((offset) => {
+                   {[0, 1, 2, 3].map((offset) => {
                     const partnerIndex = (index + offset) % partners.length;
                     const currentPartner = partners[partnerIndex];
                     return (
                       <Card key={`${index}-${offset}`} className="w-80 bg-white/90 backdrop-blur-sm border border-gray-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group">
                         <CardContent className="p-6 text-center">
                           <div className="mb-4">
-                            <img 
-                              src={currentPartner.logo}
-                              alt={`${currentPartner.name} logo`}
-                              className="w-24 h-16 mx-auto object-contain"
-                            />
+                            {currentPartner.logo_url ? (
+                              <img 
+                                src={currentPartner.logo_url}
+                                alt={`${currentPartner.name} logo`}
+                                className="w-24 h-16 mx-auto object-contain"
+                              />
+                            ) : (
+                              <div className="w-24 h-16 mx-auto bg-emerald-100 rounded flex items-center justify-center text-emerald-600 font-bold">
+                                {currentPartner.name.charAt(0)}
+                              </div>
+                            )}
                           </div>
                           <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-emerald-700 transition-colors">
                             {currentPartner.name}
@@ -127,7 +114,7 @@ export const PartnershipsPreview = () => {
                             </span>
                           </div>
                           <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
-                            {currentPartner.description}
+                            {currentPartner.description || 'Strategic partnership for mutual growth and development.'}
                           </p>
                         </CardContent>
                       </Card>
