@@ -193,8 +193,13 @@ export const SecuritySettings = () => {
 
   return (
     <div className="space-y-6">
+      <div className="mb-6">
+        <h2 className="text-3xl font-bold text-gray-900 mb-2">Security Settings</h2>
+        <p className="text-gray-600">Manage user roles and access permissions</p>
+      </div>
+
       {/* Security Warning */}
-      <Card className="border-red-200 bg-red-50">
+      <Card className="border-red-200 bg-gradient-to-r from-red-50 to-orange-50">
         <CardHeader>
           <div className="flex items-center space-x-2">
             <AlertTriangle className="h-5 w-5 text-red-600" />
@@ -210,37 +215,37 @@ export const SecuritySettings = () => {
       </Card>
 
       {/* Add New User Role */}
-      <Card>
-        <CardHeader>
+      <Card className="bg-white/50 backdrop-blur-sm border-emerald-200">
+        <CardHeader className="bg-gradient-to-r from-emerald-50 to-blue-50 border-b border-emerald-200">
           <div className="flex items-center space-x-2">
             <UserPlus className="h-5 w-5 text-emerald-600" />
-            <CardTitle>Assign User Role</CardTitle>
+            <CardTitle className="text-gray-900">Assign User Role</CardTitle>
           </div>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 p-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="userEmail">User Email</Label>
+              <Label htmlFor="userEmail" className="text-gray-700 font-medium">User Email</Label>
               <Input
                 id="userEmail"
                 type="email"
                 placeholder="user@example.com"
                 value={newUserEmail}
                 onChange={(e) => setNewUserEmail(e.target.value)}
-                className="border-emerald-200 focus:border-emerald-500"
+                className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500"
               />
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="userRole">Role</Label>
+              <Label htmlFor="userRole" className="text-gray-700 font-medium">Role</Label>
               <Select value={newUserRole} onValueChange={(value: "admin" | "moderator" | "user") => setNewUserRole(value)}>
-                <SelectTrigger className="border-emerald-200 focus:border-emerald-500">
+                <SelectTrigger className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="user">User</SelectItem>
-                  <SelectItem value="moderator">Moderator</SelectItem>
-                  <SelectItem value="admin">Administrator</SelectItem>
+                <SelectContent className="bg-white border-emerald-200">
+                  <SelectItem value="user" className="hover:bg-emerald-50">User</SelectItem>
+                  <SelectItem value="moderator" className="hover:bg-emerald-50">Moderator</SelectItem>
+                  <SelectItem value="admin" className="hover:bg-emerald-50">Administrator</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -259,14 +264,14 @@ export const SecuritySettings = () => {
       </Card>
 
       {/* Current User Roles */}
-      <Card>
-        <CardHeader>
+      <Card className="bg-white/50 backdrop-blur-sm border-emerald-200">
+        <CardHeader className="bg-gradient-to-r from-emerald-50 to-blue-50 border-b border-emerald-200">
           <div className="flex items-center space-x-2">
-            <Users className="h-5 w-5 text-gray-600" />
-            <CardTitle>User Roles & Permissions</CardTitle>
+            <Users className="h-5 w-5 text-emerald-600" />
+            <CardTitle className="text-gray-900">User Roles & Permissions</CardTitle>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-6">
           {rolesLoading ? (
             <div className="flex justify-center py-8">
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-emerald-600"></div>
@@ -276,7 +281,7 @@ export const SecuritySettings = () => {
           ) : (
             <div className="space-y-3">
               {userRoles.map((userRole) => (
-                <div key={userRole.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div key={userRole.id} className="flex items-center justify-between p-4 bg-emerald-50 rounded-lg border border-emerald-100 hover:bg-emerald-100 transition-colors">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
                       <Shield className="h-5 w-5 text-emerald-600" />
@@ -314,14 +319,14 @@ export const SecuritySettings = () => {
       </Card>
 
       {/* Security Information */}
-      <Card>
-        <CardHeader>
+      <Card className="bg-white/50 backdrop-blur-sm border-emerald-200">
+        <CardHeader className="bg-gradient-to-r from-emerald-50 to-blue-50 border-b border-emerald-200">
           <div className="flex items-center space-x-2">
-            <Key className="h-5 w-5 text-gray-600" />
-            <CardTitle>Security Information</CardTitle>
+            <Key className="h-5 w-5 text-emerald-600" />
+            <CardTitle className="text-gray-900">Security Information</CardTitle>
           </div>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
               <h4 className="font-medium text-blue-900 mb-2">Administrator Access</h4>
