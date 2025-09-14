@@ -131,19 +131,19 @@ export const ContentPreview = () => {
   }
 
   return (
-    <Card className="bg-gradient-to-br from-white to-blue-50">
-      <CardHeader>
+    <Card className="bg-gradient-to-br from-white to-blue-50 border-emerald-200">
+      <CardHeader className="bg-gradient-to-r from-emerald-50 to-blue-50 border-b border-emerald-200">
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center space-x-2">
-            <Eye className="h-5 w-5 text-blue-600" />
+          <CardTitle className="flex items-center space-x-2 text-gray-900">
+            <Eye className="h-5 w-5 text-emerald-600" />
             <span>Recent Content</span>
           </CardTitle>
-          <Badge variant="outline" className="bg-blue-100 text-blue-700 border-blue-200">
+          <Badge variant="outline" className="bg-emerald-100 text-emerald-700 border-emerald-200">
             Live Preview
           </Badge>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-6">
         {recentContent.length === 0 ? (
           <div className="text-center py-8">
             <Eye className="h-12 w-12 text-gray-400 mx-auto mb-4" />

@@ -105,8 +105,10 @@ export const UploadContent = () => {
           'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
           'text/plain',
           'image/jpeg',
+          'image/jpg', 
           'image/png',
           'image/gif',
+          'image/webp',
           'video/mp4',
           'video/webm',
           'audio/mpeg',
@@ -269,10 +271,13 @@ export const UploadContent = () => {
         <Input
           id="file"
           type="file"
-          accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif"
+          accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.mp4,.webm,.mp3,.wav"
           onChange={(e) => setFile(e.target.files?.[0] || null)}
           className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500 file:bg-emerald-50 file:text-emerald-700 file:border-emerald-200"
         />
+        <p className="text-xs text-gray-500">
+          Supported formats: PDF, Word documents, images (JPG, PNG, GIF), videos (MP4, WebM), audio (MP3, WAV)
+        </p>
       </div>
 
       <div className="flex items-center space-x-3 p-4 bg-emerald-50 rounded-lg border border-emerald-200">

@@ -96,13 +96,18 @@ export const UploadReports = () => {
           'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
           'text/plain',
           'application/vnd.ms-excel',
-          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          'image/jpeg',
+          'image/jpg',
+          'image/png',
+          'image/gif',
+          'image/webp'
         ];
         
         if (!allowedTypes.includes(file.type)) {
           toast({
             title: "Invalid file type",
-            description: "Only PDF, Word, Excel, and text files are allowed",
+            description: "Only PDF, Word, Excel, and image files are allowed",
             variant: "destructive",
           });
           setUploading(false);
@@ -239,14 +244,17 @@ export const UploadReports = () => {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="file" className="text-gray-700 font-medium">Upload File (PDF, DOC, DOCX)</Label>
+        <Label htmlFor="file" className="text-gray-700 font-medium">Upload File (PDF, DOC, Images, etc.)</Label>
         <Input
           id="file"
           type="file"
-          accept=".pdf,.doc,.docx"
+          accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.xlsx,.xls"
           onChange={(e) => setFile(e.target.files?.[0] || null)}
           className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500 file:bg-emerald-50 file:text-emerald-700 file:border-emerald-200"
         />
+        <p className="text-xs text-gray-500">
+          Supported formats: PDF, Word documents, Excel files, images (JPG, PNG, GIF)
+        </p>
       </div>
 
       <div className="flex items-center space-x-2">
