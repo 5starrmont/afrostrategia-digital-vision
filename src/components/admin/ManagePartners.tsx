@@ -365,7 +365,7 @@ const ManagePartners = () => {
                     <div className="flex items-center space-x-2">
                       {partner.logo_url ? (
                         <img 
-                          src={partner.logo_url.startsWith('/src/') ? partner.logo_url.replace('/src/', '/') : partner.logo_url} 
+                          src={partner.logo_url} 
                           alt={partner.name}
                           className="w-8 h-8 object-contain"
                         />
