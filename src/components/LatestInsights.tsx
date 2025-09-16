@@ -10,15 +10,13 @@ import { supabase } from "@/integrations/supabase/client";
 interface InsightContent {
   id: string;
   title: string;
-  body: string | null;
-  type: string;
-  author: string | null;
+  description: string | null;
   created_at: string;
-  read_time: number | null;
-  slug: string | null;
-  published: boolean;
   file_url: string | null;
   file_name: string | null;
+  public: boolean;
+  sensitivity_level: string | null;
+  uploaded_by: string | null;
 }
 
 export const LatestInsights = () => {
@@ -35,8 +33,8 @@ export const LatestInsights = () => {
         { 
           event: '*', 
           schema: 'public', 
-          table: 'content',
-          filter: 'published=eq.true'
+          table: 'reports',
+          filter: 'public=eq.true'
         },
         () => {
           fetchInsights();
@@ -52,10 +50,9 @@ export const LatestInsights = () => {
   const fetchInsights = async () => {
     try {
       const { data, error } = await supabase
-        .from('content')
+        .from('reports')
         .select('*')
-        .eq('published', true)
-        .in('type', ['policy', 'research', 'analysis', 'insight'])
+        .eq('public', true)
         .order('created_at', { ascending: false })
         .limit(3);
 
@@ -76,14 +73,8 @@ export const LatestInsights = () => {
     });
   };
 
-  const getTypeColor = (type: string) => {
-    switch (type.toLowerCase()) {
-      case 'policy': return 'text-emerald-700 bg-emerald-100';
-      case 'research': return 'text-blue-700 bg-blue-100';
-      case 'analysis': return 'text-purple-700 bg-purple-100';
-      case 'insight': return 'text-orange-700 bg-orange-100';
-      default: return 'text-gray-700 bg-gray-100';
-    }
+  const getTypeColor = () => {
+    return 'text-emerald-700 bg-emerald-100';
   };
 
   const handleContentClick = (insight: InsightContent) => {
@@ -150,13 +141,10 @@ export const LatestInsights = () => {
               >
                 <CardHeader>
                   <div className="flex items-center justify-between mb-3">
-                    <Badge variant="secondary" className={getTypeColor(insight.type)}>
-                      {insight.type}
+                    <Badge variant="secondary" className={getTypeColor()}>
+                      Research Paper
                     </Badge>
                     <div className="flex items-center space-x-2 text-sm text-gray-500">
-                      {insight.read_time && (
-                        <span>{insight.read_time} min read</span>
-                      )}
                       {insight.file_url && (
                         <FileText className="h-4 w-4" />
                       )}
@@ -168,12 +156,12 @@ export const LatestInsights = () => {
                     {insight.title}
                   </CardTitle>
                   <CardDescription className={index === 0 ? 'text-base' : 'text-sm'}>
-                    {insight.body ? 
-                      (insight.body.length > 150 ? 
-                        `${insight.body.substring(0, 150)}...` : 
-                        insight.body
+                    {insight.description ? 
+                      (insight.description.length > 150 ? 
+                        `${insight.description.substring(0, 150)}...` : 
+                        insight.description
                       ) : 
-                      `${insight.type} content - Click to view`
+                      "Research paper - Click to view"
                     }
                   </CardDescription>
                 </CardHeader>
@@ -182,7 +170,7 @@ export const LatestInsights = () => {
                     <div className="flex items-center space-x-4 text-sm text-gray-500">
                       <div className="flex items-center space-x-1">
                         <User className="h-4 w-4" />
-                        <span>{insight.author || 'AfroStrategia'}</span>
+                        <span>AfroStrategia</span>
                       </div>
                       <div className="flex items-center space-x-1">
                         <Calendar className="h-4 w-4" />

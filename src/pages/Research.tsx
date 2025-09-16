@@ -14,16 +14,13 @@ import { supabase } from "@/integrations/supabase/client";
 interface ResearchPaper {
   id: string;
   title: string;
-  body: string;
-  author: string;
+  description: string | null;
   created_at: string;
-  type: string;
-  read_time: number;
   file_url?: string;
-  published: boolean;
-  department?: {
-    name: string;
-  };
+  file_name?: string;
+  public: boolean;
+  sensitivity_level: string | null;
+  uploaded_by: string | null;
 }
 
 const Research = () => {
@@ -45,8 +42,8 @@ const Research = () => {
         {
           event: '*',
           schema: 'public',
-          table: 'content',
-          filter: 'type=in.(research,policy,analysis)'
+          table: 'reports',
+          filter: 'public=eq.true'
         },
         () => {
           fetchResearchPapers();
@@ -62,23 +59,9 @@ const Research = () => {
   const fetchResearchPapers = async () => {
     try {
       const { data, error } = await supabase
-        .from('content')
-        .select(`
-          id,
-          title,
-          body,
-          author,
-          created_at,
-          type,
-          read_time,
-          file_url,
-          published,
-          departments (
-            name
-          )
-        `)
-        .in('type', ['research', 'policy', 'analysis'])
-        .eq('published', true)
+        .from('reports')
+        .select('*')
+        .eq('public', true)
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -95,27 +78,18 @@ const Research = () => {
     }
   };
 
-  const categories = ["all", ...Array.from(new Set(researchPapers.map(paper => paper.type)))];
-
   const filteredPapers = researchPapers.filter(paper => {
     const matchesSearch = paper.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (paper.body?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
-                         paper.author.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === "all" || paper.type === selectedCategory;
-    return matchesSearch && matchesCategory;
+                         (paper.description?.toLowerCase().includes(searchTerm.toLowerCase()) || false);
+    return matchesSearch;
   });
 
   const totalPages = Math.ceil(filteredPapers.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentPapers = filteredPapers.slice(startIndex, startIndex + itemsPerPage);
 
-  const getCategoryColor = (category: string) => {
-    const colors = {
-      "research": "bg-emerald-100 text-emerald-700",
-      "policy": "bg-blue-100 text-blue-700",
-      "analysis": "bg-purple-100 text-purple-700"
-    };
-    return colors[category as keyof typeof colors] || "bg-gray-100 text-gray-700";
+  const getCategoryColor = () => {
+    return "bg-emerald-100 text-emerald-700";
   };
 
   const formatDate = (dateString: string) => {
@@ -174,16 +148,15 @@ const Research = () => {
               <Card key={index} className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
                 <CardHeader>
                   <div className="flex items-center justify-between mb-3">
-                    <Badge className={getCategoryColor(paper.type)}>
-                      {paper.type}
+                    <Badge className={getCategoryColor()}>
+                      Research Paper
                     </Badge>
-                    <span className="text-sm text-gray-500">{paper.read_time || 5} min read</span>
                   </div>
                   <CardTitle className="text-xl group-hover:text-emerald-700 transition-colors">
                     {paper.title}
                   </CardTitle>
                   <CardDescription className="text-base">
-                    {paper.body ? (paper.body.length > 200 ? `${paper.body.substring(0, 200)}...` : paper.body) : 'No description available'}
+                    {paper.description ? (paper.description.length > 200 ? `${paper.description.substring(0, 200)}...` : paper.description) : 'No description available'}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -191,7 +164,7 @@ const Research = () => {
                     <div className="flex items-center space-x-4 text-sm text-gray-500">
                       <div className="flex items-center space-x-1">
                         <User className="h-4 w-4" />
-                        <span>{paper.author}</span>
+                        <span>AfroStrategia</span>
                       </div>
                       <div className="flex items-center space-x-1">
                         <Calendar className="h-4 w-4" />
@@ -239,7 +212,7 @@ const Research = () => {
             </div>
           </div>
 
-          {/* Search and Filter */}
+          {/* Search */}
           <div className="flex flex-col sm:flex-row gap-4 mb-8">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -253,21 +226,6 @@ const Research = () => {
                 className="pl-10"
               />
             </div>
-            <Select value={selectedCategory} onValueChange={(value) => {
-              setSelectedCategory(value);
-              setCurrentPage(1);
-            }}>
-              <SelectTrigger className="w-full sm:w-48">
-                <SelectValue placeholder="Filter by category" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map(category => (
-                  <SelectItem key={category} value={category}>
-                    {category === "all" ? "All Categories" : category}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
           </div>
 
           {/* Research Grid */}
@@ -277,16 +235,15 @@ const Research = () => {
                 <Card key={paper.id} className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 bg-white">
                   <CardHeader>
                     <div className="flex items-center justify-between mb-3">
-                      <Badge className={getCategoryColor(paper.type)}>
-                        {paper.type}
+                      <Badge className={getCategoryColor()}>
+                        Research Paper
                       </Badge>
-                      <span className="text-sm text-gray-500">{paper.read_time || 5} min read</span>
                     </div>
                     <CardTitle className="text-lg group-hover:text-emerald-700 transition-colors">
                       {paper.title}
                     </CardTitle>
                     <CardDescription>
-                      {paper.body ? (paper.body.length > 120 ? `${paper.body.substring(0, 120)}...` : paper.body) : 'No description available'}
+                      {paper.description ? (paper.description.length > 120 ? `${paper.description.substring(0, 120)}...` : paper.description) : 'No description available'}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -294,7 +251,7 @@ const Research = () => {
                       <div className="flex flex-col space-y-1 text-sm text-gray-500">
                         <div className="flex items-center space-x-1">
                           <User className="h-4 w-4" />
-                          <span>{paper.author}</span>
+                          <span>AfroStrategia</span>
                         </div>
                         <div className="flex items-center space-x-1">
                           <Calendar className="h-4 w-4" />
