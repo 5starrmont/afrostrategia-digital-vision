@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Calendar, User, FileText } from "lucide-react";
+import { ArrowRight, Calendar, User, FileText, Download } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -177,7 +177,39 @@ export const LatestInsights = () => {
                         <span>{formatDate(insight.created_at)}</span>
                       </div>
                     </div>
-                    <ArrowRight className="h-4 w-4 text-emerald-600 group-hover:text-emerald-700 group-hover:translate-x-1 transition-all" />
+                    {insight.file_url && (
+                      <div className="flex items-center space-x-2">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="text-emerald-600 hover:text-emerald-700"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            window.open(insight.file_url, '_blank');
+                          }}
+                        >
+                          <ArrowRight className="h-4 w-4 mr-1" />
+                          View
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="text-emerald-600 hover:text-emerald-700"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const link = document.createElement('a');
+                            link.href = insight.file_url!;
+                            link.download = insight.file_name || 'document.pdf';
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                          }}
+                        >
+                          <Download className="h-4 w-4 mr-1" />
+                          Download
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
