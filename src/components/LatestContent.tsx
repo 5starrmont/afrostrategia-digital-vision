@@ -94,7 +94,7 @@ export const LatestContent = () => {
         id: report.id,
         title: report.title,
         body: report.description,
-        type: 'Research Paper',
+        type: 'Research',
         created_at: report.created_at,
         file_url: report.file_url,
         file_name: report.file_name,
