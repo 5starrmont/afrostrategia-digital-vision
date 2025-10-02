@@ -58,7 +58,7 @@ export const LatestContent = () => {
 
   const fetchContent = async () => {
     try {
-      // Fetch published content
+      // Fetch published content (excluding research/reports as those come from reports table)
       const { data: contentData, error: contentError } = await supabase
         .from('content')
         .select(`
@@ -66,6 +66,8 @@ export const LatestContent = () => {
           department:departments(name, slug)
         `)
         .eq('published', true)
+        .not('type', 'ilike', '%research%')
+        .not('type', 'ilike', '%report%')
         .order('created_at', { ascending: false });
 
       if (contentError) throw contentError;
@@ -254,6 +256,14 @@ export const LatestContent = () => {
                       <Badge className={`${getTypeColor(item.type)} font-medium px-3 py-1 text-xs uppercase tracking-wide`}>
                         {item.type}
                       </Badge>
+                      {item.department && (
+                        <Badge 
+                          variant="outline" 
+                          className="text-xs bg-background/50 border-primary/20 text-primary font-medium"
+                        >
+                          {item.department.name.replace('Department of ', '')}
+                        </Badge>
+                      )}
                     </div>
                     <CardTitle className="text-xl font-bold leading-tight group-hover:text-primary transition-colors duration-300 line-clamp-2 mb-3">
                       {item.title}
