@@ -235,6 +235,7 @@ export type Database = {
           id: string
           public: boolean
           sensitivity_level: string | null
+          thumbnail_url: string | null
           title: string
           updated_at: string
           uploaded_by: string | null
@@ -251,6 +252,7 @@ export type Database = {
           id?: string
           public?: boolean
           sensitivity_level?: string | null
+          thumbnail_url?: string | null
           title: string
           updated_at?: string
           uploaded_by?: string | null
@@ -267,6 +269,7 @@ export type Database = {
           id?: string
           public?: boolean
           sensitivity_level?: string | null
+          thumbnail_url?: string | null
           title?: string
           updated_at?: string
           uploaded_by?: string | null

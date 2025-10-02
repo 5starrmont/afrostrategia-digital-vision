@@ -20,6 +20,7 @@ export const UploadReports = () => {
   const [description, setDescription] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [file, setFile] = useState<File | null>(null);
+  const [thumbnailImage, setThumbnailImage] = useState<File | null>(null);
   const [isPublic, setIsPublic] = useState(false);
   const [uploading, setUploading] = useState(false);
   const { toast } = useToast();
@@ -58,6 +59,24 @@ export const UploadReports = () => {
       .getPublicUrl(filePath);
 
     return { url: publicUrl, fileName: file.name };
+  };
+
+  const handleThumbnailUpload = async (file: File, reportId: string) => {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `thumbnail_${reportId}.${fileExt}`;
+    const filePath = `thumbnails/${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('admin-uploads')
+      .upload(filePath, file);
+
+    if (uploadError) throw uploadError;
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('admin-uploads')
+      .getPublicUrl(filePath);
+
+    return publicUrl;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -147,15 +166,28 @@ export const UploadReports = () => {
       // Upload file if provided
       let fileUrl = null;
       let fileName = null;
+      let thumbnailUrl = null;
+
       if (file && report) {
         const { url, fileName: uploadedFileName } = await handleFileUpload(file, report.id);
         fileUrl = url;
         fileName = uploadedFileName;
+      }
 
-        // Update report with file info
+      // Upload thumbnail if provided
+      if (thumbnailImage && report) {
+        thumbnailUrl = await handleThumbnailUpload(thumbnailImage, report.id);
+      }
+
+      // Update report with file and thumbnail info
+      if ((fileUrl || thumbnailUrl) && report) {
         const { error: updateError } = await supabase
           .from('reports')
-          .update({ file_url: fileUrl, file_name: fileName })
+          .update({ 
+            file_url: fileUrl, 
+            file_name: fileName,
+            thumbnail_url: thumbnailUrl 
+          })
           .eq('id', report.id);
 
         if (updateError) throw updateError;
@@ -182,6 +214,7 @@ export const UploadReports = () => {
       setDescription("");
       setSelectedDepartment("");
       setFile(null);
+      setThumbnailImage(null);
       setIsPublic(false);
       
     } catch (error: any) {
@@ -254,6 +287,22 @@ export const UploadReports = () => {
         />
         <p className="text-xs text-gray-500">
           Supported formats: PDF, Word documents, Excel files, images (JPG, PNG, GIF)
+        </p>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="thumbnail" className="text-gray-700 font-medium">
+          Thumbnail Image (Optional - for general content display)
+        </Label>
+        <Input
+          id="thumbnail"
+          type="file"
+          accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+          onChange={(e) => setThumbnailImage(e.target.files?.[0] || null)}
+          className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500 file:bg-emerald-50 file:text-emerald-700 file:border-emerald-200"
+        />
+        <p className="text-xs text-gray-500">
+          This image will appear when the report shows in "Latest Content & Publications" section
         </p>
       </div>
 
