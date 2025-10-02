@@ -254,14 +254,6 @@ export const LatestContent = () => {
                       <Badge className={`${getTypeColor(item.type)} font-medium px-3 py-1 text-xs uppercase tracking-wide`}>
                         {item.type}
                       </Badge>
-                      {item.department && (
-                        <Badge 
-                          variant="outline" 
-                          className="text-xs bg-background/50 border-primary/20 text-primary font-medium"
-                        >
-                          {item.department.name.replace('Department of ', '')}
-                        </Badge>
-                      )}
                     </div>
                     <CardTitle className="text-xl font-bold leading-tight group-hover:text-primary transition-colors duration-300 line-clamp-2 mb-3">
                       {item.title}
