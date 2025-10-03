@@ -19,6 +19,7 @@ export const UploadReports = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [author, setAuthor] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [thumbnailImage, setThumbnailImage] = useState<File | null>(null);
   const [isPublic, setIsPublic] = useState(false);
@@ -154,6 +155,7 @@ export const UploadReports = () => {
           department_id: selectedDepartment,
           uploaded_by: user?.id,
           public: isPublic,
+          author: author || 'AfroStrategia',
           sensitivity_level: sensitivityLevel,
           file_size: file?.size || null,
           file_type: file?.type || null,
@@ -213,6 +215,7 @@ export const UploadReports = () => {
       setTitle("");
       setDescription("");
       setSelectedDepartment("");
+      setAuthor("");
       setFile(null);
       setThumbnailImage(null);
       setIsPublic(false);
@@ -258,6 +261,20 @@ export const UploadReports = () => {
           rows={3}
           className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500"
         />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="author" className="text-gray-700 font-medium">Publisher/Author Name</Label>
+        <Input
+          id="author"
+          value={author}
+          onChange={(e) => setAuthor(e.target.value)}
+          placeholder="e.g., John Doe, Research Institute (defaults to AfroStrategia)"
+          className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500"
+        />
+        <p className="text-xs text-gray-500">
+          This name will appear as the publisher on the website. Leave blank to use "AfroStrategia"
+        </p>
       </div>
 
       <div className="space-y-2">

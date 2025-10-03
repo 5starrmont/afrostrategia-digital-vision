@@ -17,6 +17,7 @@ interface InsightContent {
   public: boolean;
   sensitivity_level: string | null;
   uploaded_by: string | null;
+  author: string | null;
 }
 
 export const LatestInsights = () => {
@@ -160,7 +161,7 @@ export const LatestInsights = () => {
                     <div className="flex items-center space-x-4 text-sm text-gray-500">
                       <div className="flex items-center space-x-1">
                         <User className="h-4 w-4" />
-                        <span>AfroStrategia</span>
+                        <span>{insight.author || 'AfroStrategia'}</span>
                       </div>
                       <div className="flex items-center space-x-1">
                         <Calendar className="h-4 w-4" />
