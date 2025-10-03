@@ -185,14 +185,22 @@ export const LatestInsights = () => {
                           variant="ghost" 
                           size="sm" 
                           className="text-emerald-600 hover:text-emerald-700 flex-1"
-                          onClick={(e) => {
+                          onClick={async (e) => {
                             e.stopPropagation();
-                            const link = document.createElement('a');
-                            link.href = insight.file_url!;
-                            link.download = insight.file_name || 'document.pdf';
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
+                            try {
+                              const response = await fetch(insight.file_url!);
+                              const blob = await response.blob();
+                              const url = window.URL.createObjectURL(blob);
+                              const link = document.createElement('a');
+                              link.href = url;
+                              link.download = insight.file_name || 'document.pdf';
+                              document.body.appendChild(link);
+                              link.click();
+                              document.body.removeChild(link);
+                              window.URL.revokeObjectURL(url);
+                            } catch (error) {
+                              console.error('Download error:', error);
+                            }
                           }}
                         >
                           <Download className="h-4 w-4 mr-1" />
