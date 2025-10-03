@@ -156,7 +156,7 @@ export const LatestInsights = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center justify-between">
+                  <div className="space-y-4">
                     <div className="flex items-center space-x-4 text-sm text-gray-500">
                       <div className="flex items-center space-x-1">
                         <User className="h-4 w-4" />
@@ -168,11 +168,11 @@ export const LatestInsights = () => {
                       </div>
                     </div>
                     {insight.file_url && (
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center gap-2 pt-2 border-t">
                         <Button 
                           variant="ghost" 
                           size="sm" 
-                          className="text-emerald-600 hover:text-emerald-700"
+                          className="text-emerald-600 hover:text-emerald-700 flex-1"
                           onClick={(e) => {
                             e.stopPropagation();
                             window.open(insight.file_url, '_blank');
@@ -184,7 +184,7 @@ export const LatestInsights = () => {
                         <Button 
                           variant="ghost" 
                           size="sm" 
-                          className="text-emerald-600 hover:text-emerald-700"
+                          className="text-emerald-600 hover:text-emerald-700 flex-1"
                           onClick={(e) => {
                             e.stopPropagation();
                             const link = document.createElement('a');
