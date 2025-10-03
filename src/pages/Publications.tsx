@@ -14,7 +14,7 @@ interface Content {
   title: string;
   body: string | null;
   type: string;
-  published: boolean;
+  published?: boolean;
   created_at: string;
   file_url: string | null;
   file_name: string | null;
@@ -28,6 +28,7 @@ interface Content {
     name: string;
     slug: string;
   } | null;
+  source?: 'content' | 'reports';
 }
 
 const Publications = () => {
@@ -40,8 +41,8 @@ const Publications = () => {
   useEffect(() => {
     fetchContent();
 
-    // Set up real-time updates for publications
-    const channel = supabase
+    // Set up real-time updates for both content and reports
+    const contentChannel = supabase
       .channel('publications-updates')
       .on('postgres_changes',
         { 
@@ -56,14 +57,31 @@ const Publications = () => {
       )
       .subscribe();
 
+    const reportsChannel = supabase
+      .channel('reports-updates')
+      .on('postgres_changes',
+        { 
+          event: '*', 
+          schema: 'public', 
+          table: 'reports',
+          filter: 'public=eq.true'
+        },
+        () => {
+          fetchContent();
+        }
+      )
+      .subscribe();
+
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(contentChannel);
+      supabase.removeChannel(reportsChannel);
     };
   }, []);
 
   const fetchContent = async () => {
     try {
-      const { data, error } = await supabase
+      // Fetch published content
+      const { data: contentData, error: contentError } = await supabase
         .from('content')
         .select(`
           *,
@@ -72,8 +90,54 @@ const Publications = () => {
         .eq('published', true)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      setContent(data || []);
+      if (contentError) throw contentError;
+
+      // Fetch public reports
+      const { data: reportsData, error: reportsError } = await supabase
+        .from('reports')
+        .select(`
+          id,
+          title,
+          description,
+          created_at,
+          file_url,
+          file_name,
+          thumbnail_url,
+          department_id,
+          departments!reports_department_id_fkey(name, slug)
+        `)
+        .eq('public', true)
+        .order('created_at', { ascending: false });
+
+      if (reportsError) throw reportsError;
+
+      // Transform reports to match content structure
+      const transformedReports = (reportsData || []).map(report => ({
+        id: report.id,
+        title: report.title,
+        body: report.description,
+        type: 'Research',
+        created_at: report.created_at,
+        file_url: report.file_url,
+        file_name: report.file_name,
+        media_type: null,
+        media_url: null,
+        thumbnail_url: report.thumbnail_url,
+        slug: null,
+        author: 'AfroStrategia',
+        read_time: null,
+        department: report.departments ? {
+          name: report.departments.name,
+          slug: report.departments.slug
+        } : null,
+        source: 'reports' as const
+      }));
+
+      // Merge and sort all content by date
+      const allContent = [...(contentData || []).map(c => ({ ...c, source: 'content' as const })), ...transformedReports]
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+      setContent(allContent);
     } catch (error) {
       console.error('Error fetching content:', error);
     } finally {
