@@ -131,12 +131,10 @@ export const LatestInsights = () => {
           </div>
         ) : insights.length > 0 ? (
           <div className="grid lg:grid-cols-3 gap-8">
-            {insights.map((insight, index) => (
+            {insights.map((insight) => (
               <Card 
                 key={insight.id} 
-                className={`group cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 ${
-                  index === 0 ? 'lg:col-span-2 lg:row-span-1' : ''
-                }`}
+                className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
                 onClick={() => handleContentClick(insight)}
               >
                 <CardHeader>
@@ -150,19 +148,11 @@ export const LatestInsights = () => {
                       )}
                     </div>
                   </div>
-                  <CardTitle className={`group-hover:text-emerald-700 transition-colors ${
-                    index === 0 ? 'text-2xl' : 'text-lg'
-                  }`}>
+                  <CardTitle className="group-hover:text-emerald-700 transition-colors text-xl">
                     {insight.title}
                   </CardTitle>
-                  <CardDescription className={index === 0 ? 'text-base' : 'text-sm'}>
-                    {insight.description ? 
-                      (insight.description.length > 150 ? 
-                        `${insight.description.substring(0, 150)}...` : 
-                        insight.description
-                      ) : 
-                      "Research paper - Click to view"
-                    }
+                  <CardDescription className="text-sm line-clamp-3">
+                    {insight.description || "Research paper - Click to view"}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
