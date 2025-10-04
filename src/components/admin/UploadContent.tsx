@@ -20,17 +20,20 @@ export const UploadContent = () => {
   const [body, setBody] = useState("");
   const [type, setType] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [author, setAuthor] = useState("");
   const [published, setPublished] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [thumbnailImage, setThumbnailImage] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const { toast } = useToast();
 
   const contentTypes = [
-    { value: "insight", label: "Insight" },
-    { value: "news", label: "News" },
-    { value: "research", label: "Research" },
-    { value: "policy", label: "Policy Brief" },
-    { value: "update", label: "Update" },
+    { value: "blog", label: "Blog" },
+    { value: "video", label: "Video" },
+    { value: "infographics", label: "Infographics" },
+    { value: "policy-brief", label: "Policy Brief" },
+    { value: "op-ed", label: "Op-Ed" },
+    { value: "news-update", label: "News Update" },
   ];
 
   useEffect(() => {
@@ -51,10 +54,10 @@ export const UploadContent = () => {
     }
   };
 
-  const handleFileUpload = async (file: File, contentId: string) => {
+  const handleFileUpload = async (file: File, contentId: string, folder: string = 'content') => {
     const fileExt = file.name.split('.').pop();
-    const fileName = `${contentId}.${fileExt}`;
-    const filePath = `content/${fileName}`;
+    const fileName = `${contentId}-${Date.now()}.${fileExt}`;
+    const filePath = `${folder}/${fileName}`;
 
     const { error: uploadError } = await supabase.storage
       .from('admin-uploads')
@@ -142,6 +145,7 @@ export const UploadContent = () => {
           department_id: selectedDepartment,
           published,
           created_by: user?.id,
+          author: author || 'AfroStrategia',
           file_size: file?.size || null,
           file_type: file?.type || null,
         })
@@ -150,18 +154,36 @@ export const UploadContent = () => {
 
       if (insertError) throw insertError;
 
+      // Upload thumbnail if provided
+      let thumbnailUrl = null;
+      if (thumbnailImage && content) {
+        const { url } = await handleFileUpload(thumbnailImage, content.id, 'thumbnails');
+        thumbnailUrl = url;
+      }
+
       // Upload file if provided
       let fileUrl = null;
       let fileName = null;
       if (file && content) {
-        const { url, fileName: uploadedFileName } = await handleFileUpload(file, content.id);
+        const { url, fileName: uploadedFileName } = await handleFileUpload(file, content.id, 'content');
         fileUrl = url;
         fileName = uploadedFileName;
+      }
 
-        // Update content with file info
+      // Update content with file and thumbnail info
+      if (fileUrl || thumbnailUrl) {
+        const updateData: any = {};
+        if (fileUrl) {
+          updateData.file_url = fileUrl;
+          updateData.file_name = fileName;
+        }
+        if (thumbnailUrl) {
+          updateData.thumbnail_url = thumbnailUrl;
+        }
+
         const { error: updateError } = await supabase
           .from('content')
-          .update({ file_url: fileUrl, file_name: fileName })
+          .update(updateData)
           .eq('id', content.id);
 
         if (updateError) throw updateError;
@@ -188,8 +210,10 @@ export const UploadContent = () => {
       setBody("");
       setType("");
       setSelectedDepartment("");
+      setAuthor("");
       setPublished(false);
       setFile(null);
+      setThumbnailImage(null);
       
     } catch (error: any) {
       console.error('Error uploading content:', error);
@@ -255,6 +279,20 @@ export const UploadContent = () => {
       </div>
 
       <div className="space-y-2">
+        <Label htmlFor="author" className="text-gray-700 font-medium">Publisher/Author Name</Label>
+        <Input
+          id="author"
+          value={author}
+          onChange={(e) => setAuthor(e.target.value)}
+          placeholder="e.g., John Doe, Research Institute (defaults to AfroStrategia)"
+          className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500"
+        />
+        <p className="text-xs text-gray-500">
+          This name will appear as the publisher on the website. Leave blank to use "AfroStrategia"
+        </p>
+      </div>
+
+      <div className="space-y-2">
         <Label htmlFor="body" className="text-gray-700 font-medium">Content Body</Label>
         <Textarea
           id="body"
@@ -267,16 +305,30 @@ export const UploadContent = () => {
       </div>
 
       <div className="space-y-2">
+        <Label htmlFor="thumbnail" className="text-gray-700 font-medium">Thumbnail Image</Label>
+        <Input
+          id="thumbnail"
+          type="file"
+          accept=".jpg,.jpeg,.png,.webp"
+          onChange={(e) => setThumbnailImage(e.target.files?.[0] || null)}
+          className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500 file:bg-emerald-50 file:text-emerald-700 file:border-emerald-200"
+        />
+        <p className="text-xs text-gray-500">
+          Upload a thumbnail image for the content (JPG, PNG, WebP)
+        </p>
+      </div>
+
+      <div className="space-y-2">
         <Label htmlFor="file" className="text-gray-700 font-medium">Upload Supporting File (Images, PDFs, etc.)</Label>
         <Input
           id="file"
           type="file"
-          accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.mp4,.webm,.mp3,.wav"
+          accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.webp,.mp4,.webm,.mp3,.wav"
           onChange={(e) => setFile(e.target.files?.[0] || null)}
           className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500 file:bg-emerald-50 file:text-emerald-700 file:border-emerald-200"
         />
         <p className="text-xs text-gray-500">
-          Supported formats: PDF, Word documents, images (JPG, PNG, GIF), videos (MP4, WebM), audio (MP3, WAV)
+          Supported formats: PDF, Word documents, images (JPG, PNG, GIF, WebP), videos (MP4, WebM), audio (MP3, WAV)
         </p>
       </div>
 
