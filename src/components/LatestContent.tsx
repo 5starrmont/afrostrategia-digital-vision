@@ -163,12 +163,35 @@ export const LatestContent = () => {
     const mediaType = item.media_type?.toLowerCase();
     
     if (mediaType === 'video' || type === 'video') return 'Watch';
-    if (mediaType === 'blog' || type === 'blog') return 'Read';
+    if (mediaType === 'blog' || type === 'blog') return 'View';
     if (type === 'infographic' || type === 'infographics') return 'View';
-    if (type === 'research' || type === 'report' || type === 'policy-brief' || type === 'policy') return 'Read';
-    if (type === 'news-update' || type === 'op-ed') return 'Read';
+    if (type === 'research' || type === 'report' || type === 'policy-brief' || type === 'policy') return 'View';
+    if (type === 'news-update' || type === 'op-ed') return 'View';
     
     return 'View';
+  };
+
+  const getButtonIcon = (item: Content) => {
+    const type = item.type.toLowerCase();
+    const mediaType = item.media_type?.toLowerCase();
+    
+    if (mediaType === 'video' || type === 'video') return Play;
+    if (mediaType === 'blog' || type === 'blog') return Eye;
+    return FileText;
+  };
+
+  const shouldShowDownloadButton = (item: Content) => {
+    const type = item.type.toLowerCase();
+    return (
+      (type === 'research' || 
+       type === 'report' || 
+       type === 'policy-brief' || 
+       type === 'policy' ||
+       type === 'infographic' ||
+       type === 'infographics' ||
+       type === 'op-ed') && 
+      item.file_url
+    );
   };
 
   const handleOpenContent = (item: Content) => {
@@ -304,18 +327,21 @@ export const LatestContent = () => {
                       </CardDescription>
                     )}
                     
-                    <div className="flex items-center justify-between pt-4 border-t border-border/50">
+                    <div className={`flex items-center pt-4 border-t border-border/50 ${shouldShowDownloadButton(item) ? 'justify-between' : 'justify-center'}`}>
                       <Button
                         variant="outline"
                         size="sm"
                         className="border-primary/20 text-primary hover:bg-primary/5 hover:border-primary/40 transition-all duration-300"
                         onClick={() => handleOpenContent(item)}
                       >
-                        <MediaIcon className="h-4 w-4 mr-2" />
+                        {(() => {
+                          const ButtonIcon = getButtonIcon(item);
+                          return <ButtonIcon className="h-4 w-4 mr-2" />;
+                        })()}
                         {getButtonText(item)}
                       </Button>
                       
-                      {item.file_url && (
+                      {shouldShowDownloadButton(item) && (
                         <Button
                           variant="default"
                           size="sm"
