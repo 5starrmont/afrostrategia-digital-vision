@@ -158,6 +158,19 @@ export const LatestContent = () => {
     }
   };
 
+  const getButtonText = (item: Content) => {
+    const type = item.type.toLowerCase();
+    const mediaType = item.media_type?.toLowerCase();
+    
+    if (mediaType === 'video' || type === 'video') return 'Watch';
+    if (mediaType === 'blog' || type === 'blog') return 'Read';
+    if (type === 'infographic' || type === 'infographics') return 'View';
+    if (type === 'research' || type === 'report' || type === 'policy-brief' || type === 'policy') return 'Read';
+    if (type === 'news-update' || type === 'op-ed') return 'Read';
+    
+    return 'View';
+  };
+
   const handleOpenContent = (item: Content) => {
     if (item.media_type === 'blog' && item.slug) {
       // Open blog in same window or navigate to blog detail page
@@ -299,7 +312,7 @@ export const LatestContent = () => {
                         onClick={() => handleOpenContent(item)}
                       >
                         <MediaIcon className="h-4 w-4 mr-2" />
-                        {item.media_type === 'blog' ? 'Read' : item.media_type === 'video' ? 'Watch' : 'View'}
+                        {getButtonText(item)}
                       </Button>
                       
                       {item.file_url && (
