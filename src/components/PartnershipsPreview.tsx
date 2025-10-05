@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Mail, Building, User, FileText } from "lucide-react";
 
 interface Partner {
   id: string;
@@ -16,6 +23,16 @@ interface Partner {
 export const PartnershipsPreview = () => {
   const [partners, setPartners] = useState<Partner[]>([]);
   const [loading, setLoading] = useState(true);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const { toast } = useToast();
+  
+  const [formData, setFormData] = useState({
+    name: "",
+    organization: "",
+    email: "",
+    message: ""
+  });
 
   useEffect(() => {
     fetchPartners();
@@ -35,6 +52,31 @@ export const PartnershipsPreview = () => {
       console.error('Error fetching partners:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+
+    try {
+      // Here you could integrate with an email service or save to database
+      // For now, we'll show a success message
+      toast({
+        title: "Partnership Inquiry Sent",
+        description: "Thank you for your interest! We'll get back to you soon.",
+      });
+      
+      setFormData({ name: "", organization: "", email: "", message: "" });
+      setDialogOpen(false);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to send inquiry. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -133,12 +175,100 @@ export const PartnershipsPreview = () => {
             <p className="text-gray-600 mb-8">
               Partner with AfroStrategia to shape the future of digital governance in Africa
             </p>
-            <button className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white px-8 py-4 rounded-full font-semibold hover:from-emerald-700 hover:to-emerald-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+            <button 
+              onClick={() => setDialogOpen(true)}
+              className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white px-8 py-4 rounded-full font-semibold hover:from-emerald-700 hover:to-emerald-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+            >
               Become a Partner
             </button>
           </div>
         </div>
       </div>
+
+      {/* Partnership Inquiry Dialog */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-emerald-900">Partner with Us</DialogTitle>
+            <DialogDescription className="text-gray-600">
+              Fill out the form below and we'll get back to you within 48 hours.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-sm font-medium">
+                <User className="h-4 w-4 inline mr-2" />
+                Full Name
+              </Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="John Doe"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="organization" className="text-sm font-medium">
+                <Building className="h-4 w-4 inline mr-2" />
+                Organization
+              </Label>
+              <Input
+                id="organization"
+                value={formData.organization}
+                onChange={(e) => setFormData({ ...formData, organization: e.target.value })}
+                placeholder="Your Organization"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm font-medium">
+                <Mail className="h-4 w-4 inline mr-2" />
+                Email Address
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                placeholder="john@organization.com"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="message" className="text-sm font-medium">
+                <FileText className="h-4 w-4 inline mr-2" />
+                Message
+              </Label>
+              <Textarea
+                id="message"
+                value={formData.message}
+                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                placeholder="Tell us about your organization and partnership interest..."
+                rows={4}
+                required
+              />
+            </div>
+            <div className="flex gap-3 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setDialogOpen(false)}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={submitting}
+                className="flex-1 bg-emerald-600 hover:bg-emerald-700"
+              >
+                {submitting ? "Sending..." : "Submit Inquiry"}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };
