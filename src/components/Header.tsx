@@ -51,9 +51,14 @@ export const Header = () => {
 
   const scrollToSection = (href: string) => {
     if (href.startsWith('#')) {
-      const element = document.querySelector(href);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
+      // If we're not on the home page, navigate to home first
+      if (location.pathname !== '/') {
+        window.location.href = '/' + href;
+      } else {
+        const element = document.querySelector(href);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
       }
     }
   };
