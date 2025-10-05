@@ -51,22 +51,15 @@ export const Header = () => {
 
   const scrollToSection = (href: string) => {
     if (href.startsWith('#')) {
-      // If we're not on the home page, navigate to home first
-      if (location.pathname !== '/') {
-        window.location.href = '/' + href;
-      } else {
-        const element = document.querySelector(href);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
-        }
+      const element = document.querySelector(href);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
       }
     }
   };
 
   const handleNavClick = (href: string) => {
-    if (href.startsWith('#')) {
-      scrollToSection(href);
-    } else {
+    if (!href.startsWith('#')) {
       // For page navigation, scroll to top immediately
       window.scrollTo(0, 0);
     }
@@ -105,17 +98,19 @@ export const Header = () => {
                   {item.label}
                 </Link>
               ) : (
-                <a
+                <Link
                   key={item.label}
-                  href={item.href}
+                  to={'/' + item.href}
                   onClick={(e) => {
-                    e.preventDefault();
-                    handleNavClick(item.href);
+                    if (location.pathname === '/') {
+                      e.preventDefault();
+                      scrollToSection(item.href);
+                    }
                   }}
                   className="text-gray-700 hover:text-emerald-700 px-3 py-2 text-sm font-medium transition-colors cursor-pointer"
                 >
                   {item.label}
-                </a>
+                </Link>
               )
             ))}
             
