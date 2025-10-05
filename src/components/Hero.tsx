@@ -36,14 +36,15 @@ export const Hero = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button 
-                size="lg" 
-                className="bg-emerald-700 hover:bg-emerald-800 text-white"
-                onClick={scrollToAbout}
-              >
-                Explore Our Research
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
+              <Link to="/research">
+                <Button 
+                  size="lg" 
+                  className="bg-emerald-700 hover:bg-emerald-800 text-white w-full sm:w-auto"
+                >
+                  Explore Our Research
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
               <Button 
                 variant="outline" 
                 size="lg" 
