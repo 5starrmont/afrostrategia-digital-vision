@@ -73,67 +73,32 @@ export const SecuritySettings = () => {
 
     setLoading(true);
     try {
-      // First check if user exists by getting all users (admin only)
-      const { data: usersData, error: usersError } = await supabase
-        .from('profiles')
-        .select('user_id, display_name')
-        .limit(1000);
-      
-      if (usersError) {
-        // Fallback to auth.users if profiles query fails
-        throw new Error("Unable to verify user. Please ensure the user has signed up first.");
-      }
-      
-      const targetUser = usersData?.find(profile => 
-        profile.display_name?.toLowerCase().includes(newUserEmail.toLowerCase())
-      );
-      
-      if (!targetUser) {
+      // Call the database function to assign role by email
+      const { data, error } = await supabase.rpc('assign_role_by_email', {
+        user_email: newUserEmail,
+        user_role: newUserRole
+      });
+
+      if (error) throw error;
+
+      // Parse the JSONB response
+      const result = data as { success: boolean; error?: string; action?: string };
+
+      if (!result.success) {
         toast({
-          title: "User not found",
-          description: "No user found with that email address. They need to sign up first.",
+          title: "Role assignment failed",
+          description: result.error || "Unknown error occurred",
           variant: "destructive",
         });
         setLoading(false);
         return;
       }
 
-      // Check if user already has a role
-      const { data: existingRole } = await supabase
-        .from('user_roles')
-        .select('id, role')
-        .eq('user_id', targetUser.user_id)
-        .single();
-
-      if (existingRole) {
-        // Update existing role
-        const { error } = await supabase
-          .from('user_roles')
-          .update({ role: newUserRole })
-          .eq('user_id', targetUser.user_id);
-
-        if (error) throw error;
-        
-        toast({
-          title: "Role updated",
-          description: `User role updated to ${newUserRole}.`,
-        });
-      } else {
-        // Insert new role
-        const { error } = await supabase
-          .from('user_roles')
-          .insert({
-            user_id: targetUser.user_id,
-            role: newUserRole
-          });
-
-        if (error) throw error;
-        
-        toast({
-          title: "Role assigned",
-          description: `User assigned ${newUserRole} role.`,
-        });
-      }
+      const action = result.action === 'updated' ? 'updated' : 'assigned';
+      toast({
+        title: `Role ${action}`,
+        description: `User role ${action === 'updated' ? 'updated to' : 'assigned as'} ${newUserRole}.`,
+      });
 
       setNewUserEmail("");
       setNewUserRole("user");

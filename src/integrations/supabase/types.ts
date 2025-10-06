@@ -314,6 +314,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      assign_role_by_email: {
+        Args: {
+          user_email: string
+          user_role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: Json
+      }
       get_admin_stats: {
         Args: Record<PropertyKey, never>
         Returns: {
