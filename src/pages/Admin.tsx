@@ -24,20 +24,30 @@ const Admin = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Check if user has admin or moderator role
+  // Check if user has admin role (not moderator)
   const checkUserRole = async (userId: string) => {
     try {
       const { data, error } = await supabase
         .from('user_roles')
         .select('role')
-        .eq('user_id', userId)
-        .in('role', ['admin', 'moderator']);
+        .eq('user_id', userId);
       
       if (error) {
         console.error('Error checking user role:', error);
         setHasAdminRole(false);
+      } else if (data && data.length > 0) {
+        const userRole = data[0].role;
+        
+        // If user is a moderator, redirect to moderator dashboard
+        if (userRole === 'moderator') {
+          navigate('/moderator');
+          return;
+        }
+        
+        // Only allow admin role
+        setHasAdminRole(userRole === 'admin');
       } else {
-        setHasAdminRole(data && data.length > 0);
+        setHasAdminRole(false);
       }
     } catch (error) {
       console.error('Error checking user role:', error);
