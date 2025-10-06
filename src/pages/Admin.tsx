@@ -63,7 +63,7 @@ const Admin = () => {
       const { data: { session } } = await supabase.auth.getSession();
       setUser(session?.user ?? null);
       if (session?.user) {
-        checkUserRole(session.user.id);
+        await checkUserRole(session.user.id);
       } else {
         setRoleLoading(false);
       }
@@ -73,17 +73,17 @@ const Admin = () => {
     checkAuth();
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       setUser(session?.user ?? null);
-      setLoading(false);
       
       if (session?.user) {
         setRoleLoading(true);
-        checkUserRole(session.user.id);
+        await checkUserRole(session.user.id);
       } else {
         setHasAdminRole(false);
         setRoleLoading(false);
       }
+      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
