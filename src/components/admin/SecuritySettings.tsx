@@ -26,7 +26,7 @@ interface UserRole {
 export const SecuritySettings = () => {
   const [userRoles, setUserRoles] = useState<UserRole[]>([]);
   const [newUserEmail, setNewUserEmail] = useState("");
-  const [newUserRole, setNewUserRole] = useState<"admin" | "moderator" | "user">("user");
+  const [newUserRole, setNewUserRole] = useState<"admin" | "moderator">("moderator");
   const [loading, setLoading] = useState(false);
   const [rolesLoading, setRolesLoading] = useState(true);
   const { toast } = useToast();
@@ -101,7 +101,7 @@ export const SecuritySettings = () => {
       });
 
       setNewUserEmail("");
-      setNewUserRole("user");
+      setNewUserRole("moderator");
       fetchUserRoles();
       
     } catch (error: any) {
@@ -203,12 +203,11 @@ export const SecuritySettings = () => {
             
             <div className="space-y-2">
               <Label htmlFor="userRole" className="text-gray-700 font-medium">Role</Label>
-              <Select value={newUserRole} onValueChange={(value: "admin" | "moderator" | "user") => setNewUserRole(value)}>
+              <Select value={newUserRole} onValueChange={(value: "admin" | "moderator") => setNewUserRole(value)}>
                 <SelectTrigger className="border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-emerald-200">
-                  <SelectItem value="user" className="hover:bg-emerald-50">User</SelectItem>
                   <SelectItem value="moderator" className="hover:bg-emerald-50">Moderator</SelectItem>
                   <SelectItem value="admin" className="hover:bg-emerald-50">Administrator</SelectItem>
                 </SelectContent>

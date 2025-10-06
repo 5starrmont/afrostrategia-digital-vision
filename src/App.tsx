@@ -15,6 +15,7 @@ import Research from "./pages/Research";
 import Publications from "./pages/Publications";
 import Admin from "./pages/Admin";
 import Auth from "./pages/Auth";
+import Moderator from "./pages/Moderator";
 import EnvironmentalTechnology from "./pages/EnvironmentalTechnology";
 
 const queryClient = new QueryClient();
@@ -36,6 +37,7 @@ const App = () => (
           <Route path="/publications" element={<Publications />} />
           <Route path="/environmental-technology" element={<EnvironmentalTechnology />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/moderator" element={<Moderator />} />
           <Route path="/auth" element={<Auth />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
