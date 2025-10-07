@@ -17,46 +17,69 @@ const Moderator = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) {
-      navigate("/auth");
-      return;
-    }
-
-    setUser(user);
-
-    // Check if user has moderator role
-    const { data: roleData } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', user.id)
-      .eq('role', 'moderator')
-      .maybeSingle();
-
-    if (roleData) {
-      setIsModerator(true);
-    } else {
-      // If not moderator, check if admin and redirect
-      const { data: adminData } = await supabase
+    const checkUserAccess = async (userId: string) => {
+      console.log('Moderator page - Checking role for user:', userId);
+      
+      // Check if user has moderator role
+      const { data: roleData, error } = await supabase
         .from('user_roles')
         .select('role')
-        .eq('user_id', user.id)
-        .eq('role', 'admin')
-        .maybeSingle();
+        .eq('user_id', userId)
+        .single();
 
-      if (adminData) {
-        navigate("/admin");
+      console.log('Moderator page - Role data:', roleData, 'Error:', error);
+
+      if (error) {
+        console.error('Error checking user role:', error);
+        setIsModerator(false);
+        setLoading(false);
         return;
       }
-    }
+      
+      if (roleData) {
+        // If user is admin, redirect to admin dashboard
+        if (roleData.role === 'admin') {
+          console.log('User is admin, redirecting to /admin');
+          navigate('/admin');
+          return;
+        }
+        console.log('User role is:', roleData.role);
+        setIsModerator(roleData.role === 'moderator');
+      } else {
+        setIsModerator(false);
+      }
+      setLoading(false);
+    };
 
-    setLoading(false);
-  };
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session?.user) {
+        navigate('/auth');
+        return;
+      }
+
+      setUser(session.user);
+      await checkUserAccess(session.user.id);
+    };
+
+    checkAuth();
+
+    // Listen for auth changes - synchronous callback to avoid deadlock
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!session?.user) {
+        navigate('/auth');
+      } else {
+        setUser(session.user);
+        // Defer async operations with setTimeout
+        setTimeout(() => {
+          checkUserAccess(session.user.id);
+        }, 0);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();

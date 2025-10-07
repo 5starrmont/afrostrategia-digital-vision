@@ -79,13 +79,16 @@ const Admin = () => {
 
     checkAuth();
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    // Listen for auth changes - MUST be synchronous callback
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
       
       if (session?.user) {
         setRoleLoading(true);
-        await checkUserRole(session.user.id);
+        // Defer the async role check to avoid deadlock
+        setTimeout(() => {
+          checkUserRole(session.user.id);
+        }, 0);
       } else {
         setHasAdminRole(false);
         setRoleLoading(false);
