@@ -21,16 +21,11 @@ interface ResearchPaper {
   public: boolean;
   sensitivity_level: string | null;
   uploaded_by: string | null;
-  author: string | null;
-  department: {
-    name: string;
-    slug: string;
-  } | null;
 }
 
 const Research = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedDepartment, setSelectedDepartment] = useState<string>("all");
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [researchPapers, setResearchPapers] = useState<ResearchPaper[]>([]);
   const [loading, setLoading] = useState(true);
@@ -65,10 +60,7 @@ const Research = () => {
     try {
       const { data, error } = await supabase
         .from('reports')
-        .select(`
-          *,
-          department:departments(name, slug)
-        `)
+        .select('*')
         .eq('public', true)
         .order('created_at', { ascending: false });
 
@@ -89,11 +81,8 @@ const Research = () => {
   const filteredPapers = researchPapers.filter(paper => {
     const matchesSearch = paper.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (paper.description?.toLowerCase().includes(searchTerm.toLowerCase()) || false);
-    const matchesDepartment = selectedDepartment === "all" || paper.department?.slug === selectedDepartment;
-    return matchesSearch && matchesDepartment;
+    return matchesSearch;
   });
-
-  const departments = [...new Set(researchPapers.filter(paper => paper.department).map(paper => paper.department!))];
 
   const totalPages = Math.ceil(filteredPapers.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -154,16 +143,16 @@ const Research = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center justify-between">
-                     <div className="flex items-center space-x-4 text-sm text-gray-500">
-                       <div className="flex items-center space-x-1">
-                         <User className="h-4 w-4" />
-                         <span>{paper.author || 'AfroStrategia'}</span>
-                       </div>
-                       <div className="flex items-center space-x-1">
-                         <Calendar className="h-4 w-4" />
-                         <span>{formatDate(paper.created_at)}</span>
-                       </div>
-                     </div>
+                    <div className="flex items-center space-x-4 text-sm text-gray-500">
+                      <div className="flex items-center space-x-1">
+                        <User className="h-4 w-4" />
+                        <span>AfroStrategia</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <Calendar className="h-4 w-4" />
+                        <span>{formatDate(paper.created_at)}</span>
+                      </div>
+                    </div>
                       {paper.file_url && (
                         <div className="flex items-center space-x-2">
                           <Button 
@@ -228,7 +217,7 @@ const Research = () => {
             </div>
           </div>
 
-          {/* Search and Filters */}
+          {/* Search */}
           <div className="flex flex-col sm:flex-row gap-4 mb-8">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -242,22 +231,6 @@ const Research = () => {
                 className="pl-10"
               />
             </div>
-            <Select value={selectedDepartment} onValueChange={(value) => {
-              setSelectedDepartment(value);
-              setCurrentPage(1);
-            }}>
-              <SelectTrigger className="w-full sm:w-64">
-                <SelectValue placeholder="Filter by Department" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Departments</SelectItem>
-                {departments.map(dept => (
-                  <SelectItem key={dept.slug} value={dept.slug}>
-                    {dept.name.replace('Department of ', '')}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
           </div>
 
           {/* Research Grid */}
@@ -280,16 +253,16 @@ const Research = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="flex items-center justify-between">
-                       <div className="flex flex-col space-y-1 text-sm text-gray-500">
-                         <div className="flex items-center space-x-1">
-                           <User className="h-4 w-4" />
-                           <span>{paper.author || 'AfroStrategia'}</span>
-                         </div>
-                         <div className="flex items-center space-x-1">
-                           <Calendar className="h-4 w-4" />
-                           <span>{formatDate(paper.created_at)}</span>
-                         </div>
-                       </div>
+                      <div className="flex flex-col space-y-1 text-sm text-gray-500">
+                        <div className="flex items-center space-x-1">
+                          <User className="h-4 w-4" />
+                          <span>AfroStrategia</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <Calendar className="h-4 w-4" />
+                          <span>{formatDate(paper.created_at)}</span>
+                        </div>
+                      </div>
                       {paper.file_url ? (
                         <div className="flex items-center space-x-1">
                           <Button 
