@@ -27,26 +27,33 @@ const Admin = () => {
   // Check if user has admin role (not moderator)
   const checkUserRole = async (userId: string) => {
     try {
+      console.log('Checking role for user:', userId);
       const { data, error } = await supabase
         .from('user_roles')
         .select('role')
         .eq('user_id', userId);
+      
+      console.log('Role check result:', { data, error });
       
       if (error) {
         console.error('Error checking user role:', error);
         setHasAdminRole(false);
       } else if (data && data.length > 0) {
         const userRole = data[0].role;
+        console.log('User role is:', userRole);
         
         // If user is a moderator, redirect to moderator dashboard
         if (userRole === 'moderator') {
+          console.log('Redirecting moderator to /moderator');
           navigate('/moderator');
           return;
         }
         
         // Only allow admin role
+        console.log('Setting hasAdminRole to:', userRole === 'admin');
         setHasAdminRole(userRole === 'admin');
       } else {
+        console.log('No role data found');
         setHasAdminRole(false);
       }
     } catch (error) {
