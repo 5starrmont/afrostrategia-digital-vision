@@ -83,7 +83,7 @@ const Moderator = () => {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    navigate("/auth");
+    navigate("/admin");
   };
 
   if (loading) {
