@@ -160,7 +160,7 @@ const Research = () => {
                     <div className="flex items-center space-x-4 text-sm text-gray-500">
                       <div className="flex items-center space-x-1">
                         <User className="h-4 w-4" />
-                        <span>AfroStrategia</span>
+                        <span>{paper.author || 'AfroStrategia'}</span>
                       </div>
                       <div className="flex items-center space-x-1">
                         <Calendar className="h-4 w-4" />
