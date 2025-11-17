@@ -99,6 +99,7 @@ const Publications = () => {
           id,
           title,
           description,
+          author,
           created_at,
           file_url,
           file_name,
@@ -124,7 +125,7 @@ const Publications = () => {
         media_url: null,
         thumbnail_url: report.thumbnail_url,
         slug: null,
-        author: 'AfroStrategia',
+        author: report.author || 'AfroStrategia',
         read_time: null,
         department: report.departments ? {
           name: report.departments.name,
