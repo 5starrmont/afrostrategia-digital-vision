@@ -14,6 +14,7 @@ import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import { SecuritySettings } from "@/components/admin/SecuritySettings";
 import { LoginForm } from "@/components/admin/LoginForm";
 import ManagePartners from "@/components/admin/ManagePartners";
+import ManageOpportunities from "@/components/admin/ManageOpportunities";
 
 const Admin = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -207,7 +208,7 @@ const Admin = () => {
 
       <main className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 bg-white/60 backdrop-blur-sm border border-emerald-100">
+          <TabsList className="grid w-full grid-cols-7 bg-white/60 backdrop-blur-sm border border-emerald-100">
             <TabsTrigger 
               value="dashboard"
               className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
@@ -231,6 +232,12 @@ const Admin = () => {
               className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
             >
               Manage Content
+            </TabsTrigger>
+            <TabsTrigger 
+              value="opportunities"
+              className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
+            >
+              Careers
             </TabsTrigger>
             <TabsTrigger 
               value="partners"
@@ -290,6 +297,18 @@ const Admin = () => {
               </CardHeader>
               <CardContent className="p-6">
                 <ManageContent />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="opportunities">
+            <Card className="bg-white/80 backdrop-blur-sm border-emerald-100 shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-t-lg">
+                <CardTitle className="text-white">Manage Careers</CardTitle>
+                <p className="text-emerald-100">Create and manage job, internship, and attachment opportunities</p>
+              </CardHeader>
+              <CardContent className="p-6">
+                <ManageOpportunities />
               </CardContent>
             </Card>
           </TabsContent>
