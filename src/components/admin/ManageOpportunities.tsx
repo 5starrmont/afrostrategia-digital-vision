@@ -204,10 +204,10 @@ const ManageOpportunities = () => {
 
   const getTypeBadgeColor = (type: string) => {
     switch (type) {
-      case 'job': return 'bg-primary/10 text-primary';
-      case 'internship': return 'bg-blue-500/10 text-blue-600';
-      case 'attachment': return 'bg-purple-500/10 text-purple-600';
-      default: return 'bg-muted text-muted-foreground';
+      case 'job': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+      case 'internship': return 'bg-blue-100 text-blue-700 border-blue-200';
+      case 'attachment': return 'bg-purple-100 text-purple-700 border-purple-200';
+      default: return 'bg-gray-100 text-gray-700 border-gray-200';
     }
   };
 
@@ -221,7 +221,7 @@ const ManageOpportunities = () => {
         <h2 className="text-2xl font-bold text-foreground">Manage Opportunities</h2>
         <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) resetForm(); }}>
           <DialogTrigger asChild>
-            <Button>
+            <Button className="bg-emerald-600 hover:bg-emerald-700 text-white">
               <Plus className="h-4 w-4 mr-2" />
               Add Opportunity
             </Button>
@@ -371,10 +371,10 @@ const ManageOpportunities = () => {
               </div>
 
               <div className="flex justify-end gap-2">
-                <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+                <Button type="button" variant="outline" onClick={() => setDialogOpen(false)} className="border-emerald-200 text-emerald-700 hover:bg-emerald-50">
                   Cancel
                 </Button>
-                <Button type="submit">
+                <Button type="submit" className="bg-emerald-600 hover:bg-emerald-700 text-white">
                   {editingOpp ? 'Update' : 'Create'} Opportunity
                 </Button>
               </div>
@@ -384,54 +384,55 @@ const ManageOpportunities = () => {
       </div>
 
       {opportunities.length === 0 ? (
-        <Card className="text-center py-12">
+        <Card className="text-center py-12 border-emerald-200">
           <CardContent>
-            <Briefcase className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-            <h3 className="text-xl font-semibold text-foreground mb-2">No Opportunities Yet</h3>
+            <Briefcase className="h-16 w-16 mx-auto text-emerald-600 mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">No Opportunities Yet</h3>
             <p className="text-muted-foreground mb-4">Create your first job, internship, or attachment posting.</p>
-            <Button onClick={() => setDialogOpen(true)}>
+            <Button onClick={() => setDialogOpen(true)} className="bg-emerald-600 hover:bg-emerald-700 text-white">
               <Plus className="h-4 w-4 mr-2" />
               Add Opportunity
             </Button>
           </CardContent>
         </Card>
       ) : (
-        <Card>
+        <Card className="border-emerald-200">
           <CardContent className="p-0">
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Department</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Created</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                <TableRow className="bg-emerald-600 hover:bg-emerald-700">
+                  <TableHead className="text-white font-medium">Title</TableHead>
+                  <TableHead className="text-white font-medium">Type</TableHead>
+                  <TableHead className="text-white font-medium">Department</TableHead>
+                  <TableHead className="text-white font-medium">Status</TableHead>
+                  <TableHead className="text-white font-medium">Created</TableHead>
+                  <TableHead className="text-right text-white font-medium">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {opportunities.map(opp => (
-                  <TableRow key={opp.id}>
-                    <TableCell className="font-medium">{opp.title}</TableCell>
+                  <TableRow key={opp.id} className="hover:bg-emerald-50">
+                    <TableCell className="font-medium text-gray-900">{opp.title}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className={getTypeBadgeColor(opp.type)}>
                         {opp.type.charAt(0).toUpperCase() + opp.type.slice(1)}
                       </Badge>
                     </TableCell>
-                    <TableCell>{opp.department?.name || '-'}</TableCell>
+                    <TableCell className="text-gray-700">{opp.department?.name || '-'}</TableCell>
                     <TableCell>
                       <Switch
                         checked={opp.is_active}
                         onCheckedChange={() => toggleActive(opp.id, opp.is_active)}
+                        className="data-[state=checked]:bg-emerald-600"
                       />
                     </TableCell>
-                    <TableCell>{format(new Date(opp.created_at), 'MMM d, yyyy')}</TableCell>
+                    <TableCell className="text-gray-700">{format(new Date(opp.created_at), 'MMM d, yyyy')}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
-                        <Button size="sm" variant="outline" onClick={() => handleEdit(opp)}>
+                        <Button size="sm" variant="outline" onClick={() => handleEdit(opp)} className="border-emerald-200 text-emerald-700 hover:bg-emerald-50">
                           <Pencil className="h-4 w-4" />
                         </Button>
-                        <Button size="sm" variant="destructive" onClick={() => handleDelete(opp.id)}>
+                        <Button size="sm" variant="outline" onClick={() => handleDelete(opp.id)} className="border-red-200 text-red-700 hover:bg-red-50">
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
