@@ -154,6 +154,71 @@ export type Database = {
         }
         Relationships: []
       }
+      opportunities: {
+        Row: {
+          application_deadline: string | null
+          application_email: string | null
+          application_url: string | null
+          created_at: string
+          created_by: string | null
+          department_id: string | null
+          description: string
+          employment_type: string | null
+          id: string
+          is_active: boolean
+          location: string | null
+          requirements: string | null
+          responsibilities: string | null
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          application_deadline?: string | null
+          application_email?: string | null
+          application_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          department_id?: string | null
+          description: string
+          employment_type?: string | null
+          id?: string
+          is_active?: boolean
+          location?: string | null
+          requirements?: string | null
+          responsibilities?: string | null
+          title: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          application_deadline?: string | null
+          application_email?: string | null
+          application_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          department_id?: string | null
+          description?: string
+          employment_type?: string | null
+          id?: string
+          is_active?: boolean
+          location?: string | null
+          requirements?: string | null
+          responsibilities?: string | null
+          title?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "opportunities_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       partners: {
         Row: {
           active: boolean | null

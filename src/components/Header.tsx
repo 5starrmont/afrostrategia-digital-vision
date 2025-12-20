@@ -32,6 +32,7 @@ export const Header = () => {
     { label: "About", href: "#about" },
     { label: "Team", href: "#team" },
     { label: "Research", href: "/research" },
+    { label: "Careers", href: "/careers" },
     { label: "Partnerships", href: "#partnerships" },
     { label: "Contact", href: "#contact" },
   ];
