@@ -73,13 +73,13 @@ const Careers = () => {
   const getTypeBadgeStyles = (type: string) => {
     switch (type) {
       case 'job':
-        return 'bg-primary/10 text-primary border-primary/20 hover:bg-primary/20';
+        return 'bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-200';
       case 'internship':
-        return 'bg-accent text-accent-foreground border-border';
+        return 'bg-yellow-100 text-yellow-700 border-yellow-200 hover:bg-yellow-200';
       case 'attachment':
-        return 'bg-secondary text-secondary-foreground border-border';
+        return 'bg-emerald-50 text-emerald-600 border-emerald-100 hover:bg-emerald-100';
       default:
-        return 'bg-muted text-muted-foreground border-border';
+        return 'bg-gray-100 text-gray-700 border-gray-200';
     }
   };
 
@@ -120,21 +120,23 @@ const Careers = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white">
       <Header />
       
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary via-primary/90 to-primary/80 py-24">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-50" />
-        <div className="container mx-auto px-4 text-center relative z-10">
-          <div className="inline-flex items-center gap-2 bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/20 rounded-full px-4 py-2 mb-6">
-            <Users className="h-4 w-4 text-primary-foreground" />
-            <span className="text-sm font-medium text-primary-foreground">Join Our Team</span>
+      <section className="relative overflow-hidden bg-gradient-to-br from-emerald-50 via-white to-yellow-50 py-20 lg:py-28">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          <div className="inline-flex items-center gap-2 bg-emerald-100 border border-emerald-200 rounded-full px-4 py-2 mb-6">
+            <Users className="h-4 w-4 text-emerald-600" />
+            <span className="text-sm font-medium text-emerald-700">Join Our Team</span>
           </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6">
-            Careers at AfroStrategia
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
+            Careers at{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-yellow-600">
+              AfroStrategia
+            </span>
           </h1>
-          <p className="text-lg md:text-xl text-primary-foreground/80 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             Join our team and help shape Africa's digital future. Explore opportunities for jobs, 
             internships, and attachments across our various departments.
           </p>
@@ -142,28 +144,28 @@ const Careers = () => {
       </section>
 
       {/* Stats Bar */}
-      <section className="bg-card border-b border-border">
-        <div className="container mx-auto px-4 py-6">
+      <section className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
             <div className="flex items-center gap-8">
               <div className="text-center md:text-left">
-                <p className="text-3xl font-bold text-foreground">{opportunities.length}</p>
-                <p className="text-sm text-muted-foreground">Open Positions</p>
+                <p className="text-3xl font-bold text-gray-900">{opportunities.length}</p>
+                <p className="text-sm text-gray-600">Open Positions</p>
               </div>
-              <div className="h-12 w-px bg-border hidden md:block" />
+              <div className="h-12 w-px bg-gray-200 hidden md:block" />
               <div className="text-center md:text-left">
-                <p className="text-3xl font-bold text-foreground">{departments.length}</p>
-                <p className="text-sm text-muted-foreground">Departments</p>
+                <p className="text-3xl font-bold text-gray-900">{departments.length}</p>
+                <p className="text-sm text-gray-600">Departments</p>
               </div>
             </div>
             
             {/* Filters */}
             <div className="flex flex-col sm:flex-row gap-3">
               <Select value={selectedType} onValueChange={setSelectedType}>
-                <SelectTrigger className="w-[160px] bg-background">
+                <SelectTrigger className="w-[160px] border-gray-300 bg-white">
                   <SelectValue placeholder="Filter by type" />
                 </SelectTrigger>
-                <SelectContent className="bg-popover">
+                <SelectContent className="bg-white">
                   <SelectItem value="all">All Types</SelectItem>
                   <SelectItem value="job">Jobs</SelectItem>
                   <SelectItem value="internship">Internships</SelectItem>
@@ -172,10 +174,10 @@ const Careers = () => {
               </Select>
 
               <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
-                <SelectTrigger className="w-[180px] bg-background">
+                <SelectTrigger className="w-[180px] border-gray-300 bg-white">
                   <SelectValue placeholder="Filter by department" />
                 </SelectTrigger>
-                <SelectContent className="bg-popover">
+                <SelectContent className="bg-white">
                   <SelectItem value="all">All Departments</SelectItem>
                   {departments.map(dept => (
                     <SelectItem key={dept.id} value={dept.slug}>
@@ -190,33 +192,33 @@ const Careers = () => {
       </section>
 
       {/* Opportunities List */}
-      <section className="py-12 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <h2 className="text-xl font-semibold text-foreground mb-6">
+      <section className="py-12 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">
             {filteredOpportunities.length} {filteredOpportunities.length === 1 ? 'Opportunity' : 'Opportunities'} Available
           </h2>
 
           {loading ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3].map(i => (
-                <Card key={i} className="animate-pulse">
+                <Card key={i} className="animate-pulse bg-white">
                   <CardContent className="p-6">
-                    <div className="h-5 bg-muted rounded w-1/3 mb-4"></div>
-                    <div className="h-6 bg-muted rounded w-2/3 mb-3"></div>
-                    <div className="h-4 bg-muted rounded w-full mb-2"></div>
-                    <div className="h-4 bg-muted rounded w-1/2"></div>
+                    <div className="h-5 bg-gray-200 rounded w-1/3 mb-4"></div>
+                    <div className="h-6 bg-gray-200 rounded w-2/3 mb-3"></div>
+                    <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
+                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
                   </CardContent>
                 </Card>
               ))}
             </div>
           ) : filteredOpportunities.length === 0 ? (
-            <Card className="text-center py-16 bg-card">
+            <Card className="text-center py-16 bg-white">
               <CardContent>
-                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
-                  <Briefcase className="h-8 w-8 text-muted-foreground" />
+                <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
+                  <Briefcase className="h-8 w-8 text-emerald-600" />
                 </div>
-                <h3 className="text-xl font-semibold text-foreground mb-2">No Opportunities Available</h3>
-                <p className="text-muted-foreground max-w-md mx-auto">
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">No Opportunities Available</h3>
+                <p className="text-gray-600 max-w-md mx-auto">
                   Check back later for new openings, or adjust your filters to see more results.
                 </p>
               </CardContent>
@@ -226,7 +228,7 @@ const Careers = () => {
               {filteredOpportunities.map(opp => (
                 <Card 
                   key={opp.id} 
-                  className="group cursor-pointer bg-card hover:shadow-lg hover:border-primary/30 transition-all duration-300 overflow-hidden"
+                  className="group cursor-pointer bg-white hover:shadow-lg hover:border-emerald-300 transition-all duration-300 overflow-hidden border-gray-200"
                   onClick={() => handleCardClick(opp)}
                 >
                   <CardContent className="p-6">
@@ -236,45 +238,45 @@ const Careers = () => {
                         {opp.type.charAt(0).toUpperCase() + opp.type.slice(1)}
                       </Badge>
                       {isDeadlineNear(opp.application_deadline) && (
-                        <Badge variant="destructive" className="text-xs">
+                        <Badge className="bg-red-100 text-red-700 border-red-200 text-xs">
                           Closing Soon
                         </Badge>
                       )}
                     </div>
                     
                     {/* Title */}
-                    <h3 className="text-lg font-semibold text-foreground mb-3 group-hover:text-primary transition-colors line-clamp-2">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3 group-hover:text-emerald-700 transition-colors line-clamp-2">
                       {opp.title}
                     </h3>
                     
                     {/* Department & Location */}
                     <div className="space-y-2 mb-4">
                       {opp.department && (
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Building2 className="h-4 w-4 shrink-0" />
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <Building2 className="h-4 w-4 shrink-0 text-emerald-600" />
                           <span className="truncate">{opp.department.name}</span>
                         </div>
                       )}
                       {opp.location && (
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <MapPin className="h-4 w-4 shrink-0" />
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <MapPin className="h-4 w-4 shrink-0 text-yellow-600" />
                           <span className="truncate">{opp.location}</span>
                         </div>
                       )}
                     </div>
 
                     {/* Description Preview */}
-                    <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
+                    <p className="text-sm text-gray-600 line-clamp-2 mb-4">
                       {opp.description}
                     </p>
 
                     {/* Footer */}
-                    <div className="flex items-center justify-between pt-4 border-t border-border">
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                      <div className="flex items-center gap-1 text-xs text-gray-500">
                         <Clock className="h-3 w-3" />
                         <span>{format(new Date(opp.created_at), 'MMM d, yyyy')}</span>
                       </div>
-                      <div className="flex items-center gap-1 text-sm font-medium text-primary group-hover:gap-2 transition-all">
+                      <div className="flex items-center gap-1 text-sm font-medium text-emerald-600 group-hover:gap-2 transition-all">
                         <span>View Details</span>
                         <ArrowRight className="h-4 w-4" />
                       </div>
@@ -289,7 +291,7 @@ const Careers = () => {
 
       {/* Opportunity Details Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-background">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white">
           {selectedOpportunity && (
             <>
               <DialogHeader>
@@ -298,37 +300,37 @@ const Careers = () => {
                     {selectedOpportunity.type.charAt(0).toUpperCase() + selectedOpportunity.type.slice(1)}
                   </Badge>
                   {selectedOpportunity.employment_type && (
-                    <Badge variant="secondary">
+                    <Badge className="bg-gray-100 text-gray-700 border-gray-200">
                       {getEmploymentTypeBadge(selectedOpportunity.employment_type)}
                     </Badge>
                   )}
                   {selectedOpportunity.department && (
-                    <Badge variant="outline">
+                    <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">
                       {selectedOpportunity.department.name}
                     </Badge>
                   )}
                 </div>
-                <DialogTitle className="text-2xl font-bold text-foreground">
+                <DialogTitle className="text-2xl font-bold text-gray-900">
                   {selectedOpportunity.title}
                 </DialogTitle>
               </DialogHeader>
 
               <div className="space-y-6 mt-4">
                 {/* Meta Info */}
-                <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                <div className="flex flex-wrap gap-4 text-sm text-gray-600">
                   {selectedOpportunity.location && (
                     <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4" />
+                      <MapPin className="h-4 w-4 text-yellow-600" />
                       <span>{selectedOpportunity.location}</span>
                     </div>
                   )}
                   <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4" />
+                    <Clock className="h-4 w-4 text-emerald-600" />
                     <span>Posted {format(new Date(selectedOpportunity.created_at), 'MMMM d, yyyy')}</span>
                   </div>
                   {selectedOpportunity.application_deadline && (
                     <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4" />
+                      <Calendar className="h-4 w-4 text-red-500" />
                       <span>Deadline: {format(new Date(selectedOpportunity.application_deadline), 'MMMM d, yyyy')}</span>
                     </div>
                   )}
@@ -336,15 +338,15 @@ const Careers = () => {
 
                 {/* Description */}
                 <div>
-                  <h4 className="font-semibold text-foreground mb-2">About This Role</h4>
-                  <p className="text-muted-foreground leading-relaxed">{selectedOpportunity.description}</p>
+                  <h4 className="font-semibold text-gray-900 mb-2">About This Role</h4>
+                  <p className="text-gray-600 leading-relaxed">{selectedOpportunity.description}</p>
                 </div>
 
                 {/* Requirements */}
                 {selectedOpportunity.requirements && (
                   <div>
-                    <h4 className="font-semibold text-foreground mb-2">Requirements</h4>
-                    <p className="text-muted-foreground whitespace-pre-line leading-relaxed">
+                    <h4 className="font-semibold text-gray-900 mb-2">Requirements</h4>
+                    <p className="text-gray-600 whitespace-pre-line leading-relaxed">
                       {selectedOpportunity.requirements}
                     </p>
                   </div>
@@ -353,19 +355,19 @@ const Careers = () => {
                 {/* Responsibilities */}
                 {selectedOpportunity.responsibilities && (
                   <div>
-                    <h4 className="font-semibold text-foreground mb-2">Responsibilities</h4>
-                    <p className="text-muted-foreground whitespace-pre-line leading-relaxed">
+                    <h4 className="font-semibold text-gray-900 mb-2">Responsibilities</h4>
+                    <p className="text-gray-600 whitespace-pre-line leading-relaxed">
                       {selectedOpportunity.responsibilities}
                     </p>
                   </div>
                 )}
 
                 {/* Apply Button */}
-                <div className="pt-4 border-t border-border">
+                <div className="pt-4 border-t border-gray-200">
                   <Button 
                     onClick={() => handleApply(selectedOpportunity)} 
                     size="lg"
-                    className="w-full sm:w-auto"
+                    className="w-full sm:w-auto bg-emerald-700 hover:bg-emerald-800 text-white"
                   >
                     {selectedOpportunity.application_url ? (
                       <>
