@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { BackButton } from "@/components/BackButton";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileText, Download, Calendar, User, Play, Eye, Clock, Search, Filter } from "lucide-react";
+import { FileText, Download, Calendar, User, Play, Eye, Clock, Search, Filter, ArrowRight, ChevronRight } from "lucide-react";
 import { format } from "date-fns";
+import { Link } from "react-router-dom";
 
 interface Content {
   id: string;
@@ -41,7 +41,6 @@ const Publications = () => {
   useEffect(() => {
     fetchContent();
 
-    // Set up real-time updates for both content and reports
     const contentChannel = supabase
       .channel('publications-updates')
       .on('postgres_changes',
@@ -80,7 +79,6 @@ const Publications = () => {
 
   const fetchContent = async () => {
     try {
-      // Fetch published content
       const { data: contentData, error: contentError } = await supabase
         .from('content')
         .select(`
@@ -92,7 +90,6 @@ const Publications = () => {
 
       if (contentError) throw contentError;
 
-      // Fetch public reports
       const { data: reportsData, error: reportsError } = await supabase
         .from('reports')
         .select(`
@@ -112,7 +109,6 @@ const Publications = () => {
 
       if (reportsError) throw reportsError;
 
-      // Transform reports to match content structure
       const transformedReports = (reportsData || []).map(report => ({
         id: report.id,
         title: report.title,
@@ -134,7 +130,6 @@ const Publications = () => {
         source: 'reports' as const
       }));
 
-      // Merge and sort all content by date
       const allContent = [...(contentData || []).map(c => ({ ...c, source: 'content' as const })), ...transformedReports]
         .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
@@ -149,60 +144,29 @@ const Publications = () => {
   const getTypeColor = (type: string) => {
     switch (type.toLowerCase()) {
       case 'report':
-        return 'bg-emerald-100 text-emerald-800';
+        return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400';
       case 'policy':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400';
       case 'research':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400';
       case 'blog':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400';
       case 'video':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400';
       case 'infographic':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400';
       default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getMediaIcon = (mediaType: string | null) => {
-    switch (mediaType?.toLowerCase()) {
-      case 'video':
-        return Play;
-      case 'image':
-        return Eye;
-      case 'blog':
-        return FileText;
-      default:
-        return FileText;
+        return 'bg-muted text-muted-foreground';
     }
   };
 
   const handleOpenContent = (item: Content) => {
-    try {
-      console.log('Attempting to open content:', item.title);
-      console.log('Available URLs:', { 
-        slug: item.slug, 
-        media_url: item.media_url, 
-        file_url: item.file_url 
-      });
-      
-      if (item.media_type === 'blog' && item.slug) {
-        console.log('Opening blog post with slug:', item.slug);
-        window.open(`/blog/${item.slug}`, '_blank');
-      } else if (item.media_url) {
-        console.log('Opening media URL:', item.media_url);
-        window.open(item.media_url, '_blank');
-      } else if (item.file_url) {
-        console.log('Opening file URL:', item.file_url);
-        window.open(item.file_url, '_blank');
-      } else {
-        console.error('No URL available for content:', item.title);
-        alert('Sorry, this content is not available for viewing.');
-      }
-    } catch (error) {
-      console.error('Error opening content:', error);
-      alert('There was an error opening this content. Please try again.');
+    if (item.media_type === 'blog' && item.slug) {
+      window.open(`/blog/${item.slug}`, '_blank');
+    } else if (item.media_url) {
+      window.open(item.media_url, '_blank');
+    } else if (item.file_url) {
+      window.open(item.file_url, '_blank');
     }
   };
 
@@ -218,14 +182,20 @@ const Publications = () => {
   const contentTypes = [...new Set(content.map(item => item.type))];
   const departments = [...new Set(content.filter(item => item.department).map(item => item.department!))];
 
+  const featuredPost = filteredContent[0];
+  const remainingPosts = filteredContent.slice(1);
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="text-center">
-            <div className="animate-pulse">
-              <div className="h-8 bg-gray-300 rounded w-64 mx-auto mb-4"></div>
-              <div className="h-4 bg-gray-300 rounded w-96 mx-auto"></div>
+      <div className="min-h-screen bg-background">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+          <div className="animate-pulse space-y-8">
+            <div className="h-8 bg-muted rounded w-48"></div>
+            <div className="h-64 bg-muted rounded-lg"></div>
+            <div className="space-y-4">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="h-32 bg-muted rounded-lg"></div>
+              ))}
             </div>
           </div>
         </div>
@@ -234,206 +204,254 @@ const Publications = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background relative overflow-hidden">
-      {/* Hero section */}
-      <div className="relative pt-20 pb-16 bg-gradient-to-br from-emerald-50 to-yellow-50">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-500/10 via-transparent to-transparent"></div>
-        <div className="absolute top-20 left-10 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-yellow-500/10 rounded-full blur-3xl"></div>
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <BackButton />
-          <div className="text-center">
-            <h1 className="text-5xl lg:text-6xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent mb-6">
-              Publications & Research
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-              Comprehensive collection of our research papers, policy briefs, strategic reports, and multimedia content 
-              shaping Africa's digital transformation through evidence-based insights.
-            </p>
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="border-b border-border/50 bg-background/80 backdrop-blur-sm sticky top-0 z-50">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between">
+            <BackButton />
+            <h1 className="text-xl font-bold text-foreground">Blog & Publications</h1>
+            <div className="w-20" />
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Filters section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="bg-card/50 backdrop-blur-sm border rounded-lg p-6 mb-12">
-          <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Filter className="h-5 w-5" />
-              <span className="font-medium">Filter by:</span>
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Filters */}
+        <div className="mb-12">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search articles..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 bg-muted/50 border-border/50 focus:bg-background"
+              />
             </div>
-            <div className="flex flex-col sm:flex-row gap-4 flex-1">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search publications..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              <Select value={selectedType} onValueChange={setSelectedType}>
-                <SelectTrigger className="w-full sm:w-48">
-                  <SelectValue placeholder="Content Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
-                  {contentTypes.map(type => (
-                    <SelectItem key={type} value={type.toLowerCase()}>{type}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
-                <SelectTrigger className="w-full sm:w-48">
-                  <SelectValue placeholder="Department" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Departments</SelectItem>
-                  {departments.map(dept => (
-                    <SelectItem key={dept.slug} value={dept.slug}>
-                      {dept.name.replace('Department of ', '')}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <Select value={selectedType} onValueChange={setSelectedType}>
+              <SelectTrigger className="w-full sm:w-40 bg-muted/50 border-border/50">
+                <SelectValue placeholder="Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Types</SelectItem>
+                {contentTypes.map(type => (
+                  <SelectItem key={type} value={type.toLowerCase()}>{type}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
+              <SelectTrigger className="w-full sm:w-48 bg-muted/50 border-border/50">
+                <SelectValue placeholder="Department" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Departments</SelectItem>
+                {departments.map(dept => (
+                  <SelectItem key={dept.slug} value={dept.slug}>
+                    {dept.name.replace('Department of ', '')}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-        </div>
-
-        {/* Results */}
-        <div className="mb-8">
-          <p className="text-muted-foreground">
-            Showing {filteredContent.length} of {content.length} publications
+          <p className="text-sm text-muted-foreground mt-4">
+            {filteredContent.length} article{filteredContent.length !== 1 ? 's' : ''}
           </p>
         </div>
 
         {filteredContent.length === 0 ? (
           <div className="text-center py-20">
-            <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
-              <FileText className="h-12 w-12 text-muted-foreground" />
+            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+              <FileText className="h-8 w-8 text-muted-foreground" />
             </div>
-            <h3 className="text-2xl font-semibold text-foreground mb-3">No Publications Found</h3>
-            <p className="text-muted-foreground text-lg max-w-md mx-auto">
-              Try adjusting your search criteria or filters to find relevant content.
+            <h3 className="text-lg font-medium text-foreground mb-2">No articles found</h3>
+            <p className="text-muted-foreground text-sm">
+              Try adjusting your search or filters.
             </p>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
-            {filteredContent.map((item, index) => {
-              const MediaIcon = getMediaIcon(item.media_type);
-              return (
-                <Card 
-                  key={item.id} 
-                  className="group relative overflow-hidden border-0 bg-card/50 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
-                  style={{ animationDelay: `${index * 50}ms` }}
-                >
-                  {/* Thumbnail image for visual content */}
-                  {item.thumbnail_url && (
-                    <div className="relative h-48 overflow-hidden">
+          <div className="space-y-12">
+            {/* Featured Post */}
+            {featuredPost && (
+              <article 
+                className="group cursor-pointer"
+                onClick={() => handleOpenContent(featuredPost)}
+              >
+                <div className="grid md:grid-cols-2 gap-8 items-center">
+                  {featuredPost.thumbnail_url ? (
+                    <div className="relative aspect-[16/10] overflow-hidden rounded-xl bg-muted">
                       <img 
-                        src={item.thumbnail_url} 
-                        alt={item.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        src={featuredPost.thumbnail_url} 
+                        alt={featuredPost.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
-                      {item.media_type === 'video' && (
-                        <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                          <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
-                            <Play className="h-8 w-8 text-white ml-1" />
+                      {featuredPost.type.toLowerCase() === 'video' && (
+                        <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                          <div className="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
+                            <Play className="h-6 w-6 text-foreground ml-1" />
                           </div>
                         </div>
                       )}
-                      {item.media_type === 'blog' && item.read_time && (
-                        <div className="absolute top-4 right-4 bg-black/70 backdrop-blur-sm rounded-full px-3 py-1 flex items-center">
-                          <Clock className="h-3 w-3 text-white mr-1" />
-                          <span className="text-xs text-white">{item.read_time} min</span>
-                        </div>
-                      )}
+                    </div>
+                  ) : (
+                    <div className="aspect-[16/10] rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                      <FileText className="h-16 w-16 text-primary/40" />
                     </div>
                   )}
-                  
-                  <CardHeader className="pb-4 relative">
-                    <div className="flex items-start justify-between mb-4">
-                      <Badge className={`${getTypeColor(item.type)} font-medium px-3 py-1 text-xs uppercase tracking-wide`}>
-                        {item.type}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <Badge className={`${getTypeColor(featuredPost.type)} text-xs font-medium`}>
+                        {featuredPost.type}
                       </Badge>
-                      {item.department && (
-                        <Badge 
-                          variant="outline" 
-                          className="text-xs bg-background/50 border-emerald-600/20 text-emerald-600 font-medium"
-                        >
-                          {item.department.name.replace('Department of ', '')}
-                        </Badge>
+                      {featuredPost.department && (
+                        <span className="text-xs text-muted-foreground">
+                          {featuredPost.department.name.replace('Department of ', '')}
+                        </span>
                       )}
                     </div>
-                    <CardTitle className="text-xl font-bold leading-tight group-hover:text-emerald-600 transition-colors duration-300 line-clamp-2 mb-3">
-                      {item.title}
-                    </CardTitle>
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
-                      <div className="flex items-center">
-                        <Calendar className="h-4 w-4 mr-2" />
-                        <time dateTime={item.created_at}>
-                          {format(new Date(item.created_at), 'MMMM dd, yyyy')}
-                        </time>
-                      </div>
-                      {item.author && (
-                        <div className="flex items-center">
-                          <User className="h-4 w-4 mr-1" />
-                          <span className="text-xs">{item.author}</span>
-                        </div>
-                      )}
-                    </div>
-                  </CardHeader>
-                  
-                  <CardContent className="pt-0 relative">
-                    {item.body && (
-                      <CardDescription className="text-muted-foreground mb-6 line-clamp-3 leading-relaxed">
-                        {item.body}
-                      </CardDescription>
+                    <h2 className="text-2xl md:text-3xl font-bold text-foreground leading-tight group-hover:text-primary transition-colors">
+                      {featuredPost.title}
+                    </h2>
+                    {featuredPost.body && (
+                      <p className="text-muted-foreground leading-relaxed line-clamp-3">
+                        {featuredPost.body}
+                      </p>
                     )}
-                    
-                    <div className="flex items-center justify-between pt-4 border-t border-border/50">
-                      <Button
-                        variant="outline"
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      {featuredPost.author && (
+                        <span className="font-medium text-foreground">{featuredPost.author}</span>
+                      )}
+                      <time dateTime={featuredPost.created_at}>
+                        {format(new Date(featuredPost.created_at), 'MMM d, yyyy')}
+                      </time>
+                      {featuredPost.read_time && (
+                        <span>{featuredPost.read_time} min read</span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-4 pt-2">
+                      <Button 
+                        variant="default" 
                         size="sm"
-                        className="border-emerald-600/20 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-600/40 transition-all duration-300"
-                        onClick={() => handleOpenContent(item)}
+                        className="gap-2"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleOpenContent(featuredPost);
+                        }}
                       >
-                        <MediaIcon className="h-4 w-4 mr-2" />
-                        {item.media_type === 'blog' ? 'Read' : item.media_type === 'video' ? 'Watch' : 'View'}
+                        Read Article
+                        <ArrowRight className="h-4 w-4" />
                       </Button>
-                      
-                      {item.file_url && (
-                        <Button
-                          variant="default"
+                      {featuredPost.file_url && (
+                        <Button 
+                          variant="outline" 
                           size="sm"
-                          className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-md hover:shadow-lg transition-all duration-300"
-                          onClick={() => {
-                            try {
-                              console.log('Attempting to download file:', item.file_url);
-                              console.log('File name:', item.file_name);
-                              
-                              // Try direct navigation first
-                              window.open(item.file_url!, '_blank');
-                              
-                            } catch (error) {
-                              console.error('Error downloading file:', error);
-                              alert('There was an error downloading this file. Please try again.');
-                            }
+                          className="gap-2"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            window.open(featuredPost.file_url!, '_blank');
                           }}
                         >
-                          <Download className="h-4 w-4 mr-2" />
+                          <Download className="h-4 w-4" />
                           Download
                         </Button>
                       )}
                     </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+                  </div>
+                </div>
+              </article>
+            )}
+
+            {/* Divider */}
+            {remainingPosts.length > 0 && (
+              <div className="border-t border-border/50" />
+            )}
+
+            {/* Article List */}
+            <div className="space-y-0 divide-y divide-border/50">
+              {remainingPosts.map((item) => (
+                <article 
+                  key={item.id}
+                  className="group py-8 first:pt-0 cursor-pointer"
+                  onClick={() => handleOpenContent(item)}
+                >
+                  <div className="flex gap-6">
+                    {/* Thumbnail */}
+                    {item.thumbnail_url ? (
+                      <div className="hidden sm:block flex-shrink-0 w-48 h-32 rounded-lg overflow-hidden bg-muted">
+                        <img 
+                          src={item.thumbnail_url} 
+                          alt={item.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                    ) : (
+                      <div className="hidden sm:flex flex-shrink-0 w-48 h-32 rounded-lg bg-gradient-to-br from-muted to-muted/50 items-center justify-center">
+                        <FileText className="h-8 w-8 text-muted-foreground/40" />
+                      </div>
+                    )}
+                    
+                    {/* Content */}
+                    <div className="flex-1 min-w-0 space-y-3">
+                      <div className="flex items-center gap-3 flex-wrap">
+                        <Badge className={`${getTypeColor(item.type)} text-xs font-medium`}>
+                          {item.type}
+                        </Badge>
+                        {item.department && (
+                          <span className="text-xs text-muted-foreground">
+                            {item.department.name.replace('Department of ', '')}
+                          </span>
+                        )}
+                      </div>
+                      
+                      <h3 className="text-lg font-semibold text-foreground leading-snug group-hover:text-primary transition-colors line-clamp-2">
+                        {item.title}
+                      </h3>
+                      
+                      {item.body && (
+                        <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
+                          {item.body}
+                        </p>
+                      )}
+                      
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        {item.author && (
+                          <span className="font-medium text-foreground/80">{item.author}</span>
+                        )}
+                        <time dateTime={item.created_at}>
+                          {format(new Date(item.created_at), 'MMM d, yyyy')}
+                        </time>
+                        {item.read_time && (
+                          <span className="flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            {item.read_time} min
+                          </span>
+                        )}
+                        {item.file_url && (
+                          <button 
+                            className="flex items-center gap-1 hover:text-primary transition-colors"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              window.open(item.file_url!, '_blank');
+                            }}
+                          >
+                            <Download className="h-3 w-3" />
+                            PDF
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Arrow */}
+                    <div className="hidden md:flex items-center">
+                      <ChevronRight className="h-5 w-5 text-muted-foreground/50 group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 };
