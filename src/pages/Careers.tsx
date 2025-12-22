@@ -40,6 +40,8 @@ const Careers = () => {
   const [selectedDepartment, setSelectedDepartment] = useState<string>('all');
   const [selectedOpportunity, setSelectedOpportunity] = useState<Opportunity | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+  const [pendingEmailApplication, setPendingEmailApplication] = useState<Opportunity | null>(null);
 
   useEffect(() => {
     fetchOpportunities();
@@ -104,8 +106,39 @@ const Careers = () => {
     if (opp.application_url) {
       window.open(opp.application_url, '_blank');
     } else if (opp.application_email) {
-      window.location.href = `mailto:${opp.application_email}?subject=Application for ${opp.title}`;
+      setPendingEmailApplication(opp);
+      setEmailDialogOpen(true);
     }
+  };
+
+  const handleEmailProviderSelect = (provider: string) => {
+    if (!pendingEmailApplication?.application_email) return;
+    
+    const email = pendingEmailApplication.application_email;
+    const subject = encodeURIComponent(`Application for ${pendingEmailApplication.title}`);
+    
+    let url = '';
+    switch (provider) {
+      case 'gmail':
+        url = `https://mail.google.com/mail/?view=cm&to=${email}&su=${subject}`;
+        break;
+      case 'yahoo':
+        url = `https://compose.mail.yahoo.com/?to=${email}&subject=${subject}`;
+        break;
+      case 'outlook':
+        url = `https://outlook.live.com/mail/0/deeplink/compose?to=${email}&subject=${subject}`;
+        break;
+      case 'default':
+      default:
+        window.location.href = `mailto:${email}?subject=${decodeURIComponent(subject)}`;
+        setEmailDialogOpen(false);
+        setPendingEmailApplication(null);
+        return;
+    }
+    
+    window.open(url, '_blank');
+    setEmailDialogOpen(false);
+    setPendingEmailApplication(null);
   };
 
   const handleCardClick = (opp: Opportunity) => {
@@ -387,6 +420,59 @@ const Careers = () => {
               </div>
             </>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Email Provider Selection Dialog */}
+      <Dialog open={emailDialogOpen} onOpenChange={setEmailDialogOpen}>
+        <DialogContent className="max-w-sm bg-white">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-semibold text-gray-900">
+              Choose Email Provider
+            </DialogTitle>
+          </DialogHeader>
+          <div className="grid grid-cols-2 gap-3 mt-4">
+            <Button
+              variant="outline"
+              className="flex flex-col items-center gap-2 h-auto py-4 border-gray-200 hover:border-emerald-300 hover:bg-emerald-50"
+              onClick={() => handleEmailProviderSelect('gmail')}
+            >
+              <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center">
+                <Mail className="h-4 w-4 text-red-600" />
+              </div>
+              <span className="text-sm font-medium text-gray-700">Gmail</span>
+            </Button>
+            <Button
+              variant="outline"
+              className="flex flex-col items-center gap-2 h-auto py-4 border-gray-200 hover:border-emerald-300 hover:bg-emerald-50"
+              onClick={() => handleEmailProviderSelect('outlook')}
+            >
+              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                <Mail className="h-4 w-4 text-blue-600" />
+              </div>
+              <span className="text-sm font-medium text-gray-700">Outlook</span>
+            </Button>
+            <Button
+              variant="outline"
+              className="flex flex-col items-center gap-2 h-auto py-4 border-gray-200 hover:border-emerald-300 hover:bg-emerald-50"
+              onClick={() => handleEmailProviderSelect('yahoo')}
+            >
+              <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
+                <Mail className="h-4 w-4 text-purple-600" />
+              </div>
+              <span className="text-sm font-medium text-gray-700">Yahoo</span>
+            </Button>
+            <Button
+              variant="outline"
+              className="flex flex-col items-center gap-2 h-auto py-4 border-gray-200 hover:border-emerald-300 hover:bg-emerald-50"
+              onClick={() => handleEmailProviderSelect('default')}
+            >
+              <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                <Mail className="h-4 w-4 text-gray-600" />
+              </div>
+              <span className="text-sm font-medium text-gray-700">Default App</span>
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
 
