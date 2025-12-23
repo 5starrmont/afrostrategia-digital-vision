@@ -2,10 +2,9 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { BackButton } from "@/components/BackButton";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileText, Download, Play, Clock, Search, ArrowRight, Sparkles, TrendingUp, BookOpen } from "lucide-react";
+import { FileText, Play, Clock, Search, BookOpen } from "lucide-react";
 import { format } from "date-fns";
 
 interface Content {
@@ -140,25 +139,6 @@ const Publications = () => {
     }
   };
 
-  const getTypeStyles = (type: string) => {
-    switch (type.toLowerCase()) {
-      case 'report':
-        return { bg: 'bg-emerald-600', text: 'text-emerald-600', light: 'bg-emerald-50' };
-      case 'policy':
-        return { bg: 'bg-yellow-600', text: 'text-yellow-600', light: 'bg-yellow-50' };
-      case 'research':
-        return { bg: 'bg-emerald-700', text: 'text-emerald-700', light: 'bg-emerald-50' };
-      case 'blog':
-        return { bg: 'bg-yellow-500', text: 'text-yellow-600', light: 'bg-yellow-50' };
-      case 'video':
-        return { bg: 'bg-red-500', text: 'text-red-600', light: 'bg-red-50' };
-      case 'infographic':
-        return { bg: 'bg-emerald-500', text: 'text-emerald-600', light: 'bg-emerald-50' };
-      default:
-        return { bg: 'bg-muted', text: 'text-muted-foreground', light: 'bg-muted' };
-    }
-  };
-
   const handleOpenContent = (item: Content) => {
     if (item.media_type === 'blog' && item.slug) {
       window.open(`/blog/${item.slug}`, '_blank');
@@ -182,22 +162,19 @@ const Publications = () => {
   const departments = [...new Set(content.filter(item => item.department).map(item => item.department!))];
 
   const featuredPost = filteredContent[0];
-  const secondaryPosts = filteredContent.slice(1, 4);
-  const remainingPosts = filteredContent.slice(4);
+  const remainingPosts = filteredContent.slice(1);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-yellow-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <div className="min-h-screen bg-background">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="animate-pulse space-y-8">
-            <div className="h-12 bg-emerald-100 rounded-lg w-64"></div>
-            <div className="grid lg:grid-cols-2 gap-8">
-              <div className="h-96 bg-emerald-100 rounded-2xl"></div>
-              <div className="space-y-4">
-                {[1, 2, 3].map(i => (
-                  <div key={i} className="h-28 bg-yellow-100 rounded-xl"></div>
-                ))}
-              </div>
+            <div className="h-8 bg-muted rounded w-48"></div>
+            <div className="h-64 bg-muted rounded-lg"></div>
+            <div className="grid md:grid-cols-2 gap-6">
+              {[1, 2, 3, 4].map(i => (
+                <div key={i} className="h-48 bg-muted rounded-lg"></div>
+              ))}
             </div>
           </div>
         </div>
@@ -206,49 +183,36 @@ const Publications = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-yellow-50">
-      {/* Hero Header */}
-      <header className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-emerald-800"></div>
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-yellow-400 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-emerald-300 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
-        </div>
-        
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <BackButton className="text-white/80 hover:text-white mb-8" />
-          
-          <div className="text-center pb-12 pt-4">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-emerald-100 text-sm mb-6">
-              <Sparkles className="h-4 w-4" />
-              <span>Insights & Publications</span>
-            </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
-              The <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-400">AfroStrategia</span> Blog
-            </h1>
-            <p className="text-lg text-emerald-100 max-w-2xl mx-auto">
-              Research, insights, and perspectives on Africa's digital transformation journey
-            </p>
-          </div>
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="border-b border-border bg-background">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <BackButton className="mb-6" />
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
+            Publications
+          </h1>
+          <p className="text-muted-foreground text-lg">
+            Research, insights, and perspectives on Africa's digital transformation
+          </p>
         </div>
       </header>
 
-      {/* Filters Bar */}
-      <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-lg border-b border-emerald-100 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+      {/* Filters */}
+      <div className="border-b border-border bg-background sticky top-0 z-40">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex flex-col sm:flex-row gap-4 items-center">
             <div className="relative flex-1 max-w-md w-full">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-emerald-600" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search articles, research, videos..."
+                placeholder="Search publications..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-11 bg-emerald-50/50 border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500 rounded-full"
+                className="pl-10"
               />
             </div>
             <div className="flex gap-3 w-full sm:w-auto">
               <Select value={selectedType} onValueChange={setSelectedType}>
-                <SelectTrigger className="w-full sm:w-36 bg-white border-emerald-200 rounded-full">
+                <SelectTrigger className="w-full sm:w-36">
                   <SelectValue placeholder="Type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -259,7 +223,7 @@ const Publications = () => {
                 </SelectContent>
               </Select>
               <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
-                <SelectTrigger className="w-full sm:w-44 bg-white border-emerald-200 rounded-full">
+                <SelectTrigger className="w-full sm:w-44">
                   <SelectValue placeholder="Department" />
                 </SelectTrigger>
                 <SelectContent>
@@ -276,243 +240,142 @@ const Publications = () => {
         </div>
       </div>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {filteredContent.length === 0 ? (
           <div className="text-center py-20">
-            <div className="w-20 h-20 bg-gradient-to-br from-emerald-100 to-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <BookOpen className="h-10 w-10 text-emerald-600" />
-            </div>
-            <h3 className="text-2xl font-bold text-foreground mb-3">No articles found</h3>
-            <p className="text-muted-foreground max-w-md mx-auto">
-              We couldn't find any content matching your criteria. Try adjusting your search or filters.
+            <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-foreground mb-2">No publications found</h3>
+            <p className="text-muted-foreground">
+              Try adjusting your search or filters.
             </p>
           </div>
         ) : (
-          <div className="space-y-16">
-            {/* Featured Section */}
+          <div className="space-y-12">
+            {/* Featured Article */}
             {featuredPost && (
-              <section>
-                <div className="flex items-center gap-3 mb-8">
-                  <div className="h-1 w-12 bg-gradient-to-r from-emerald-600 to-yellow-500 rounded-full"></div>
-                  <h2 className="text-sm font-semibold text-emerald-700 uppercase tracking-wider">Featured</h2>
-                </div>
-                
-                <div className="grid lg:grid-cols-5 gap-8">
-                  {/* Main Featured */}
-                  <article 
-                    className="lg:col-span-3 group cursor-pointer"
-                    onClick={() => handleOpenContent(featuredPost)}
-                  >
-                    <div className="relative aspect-[16/10] overflow-hidden rounded-2xl mb-6 bg-gradient-to-br from-emerald-100 to-yellow-100">
-                      {featuredPost.thumbnail_url ? (
-                        <img 
-                          src={featuredPost.thumbnail_url} 
-                          alt={featuredPost.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <FileText className="h-20 w-20 text-emerald-300" />
-                        </div>
-                      )}
-                      {featuredPost.type.toLowerCase() === 'video' && (
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-center justify-center">
-                          <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
-                            <Play className="h-7 w-7 text-emerald-700 ml-1" />
-                          </div>
-                        </div>
-                      )}
-                      <div className="absolute top-4 left-4">
-                        <Badge className={`${getTypeStyles(featuredPost.type).bg} text-white border-0 px-3 py-1`}>
-                          {featuredPost.type}
-                        </Badge>
+              <article 
+                className="group cursor-pointer"
+                onClick={() => handleOpenContent(featuredPost)}
+              >
+                <div className="grid md:grid-cols-2 gap-8 items-center">
+                  <div className="aspect-[4/3] bg-muted rounded-lg overflow-hidden">
+                    {featuredPost.thumbnail_url ? (
+                      <img 
+                        src={featuredPost.thumbnail_url} 
+                        alt={featuredPost.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <FileText className="h-16 w-16 text-muted-foreground/50" />
                       </div>
-                    </div>
-                    
-                    <div className="space-y-4">
+                    )}
+                    {featuredPost.type.toLowerCase() === 'video' && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-14 h-14 bg-background/90 rounded-full flex items-center justify-center shadow-lg">
+                          <Play className="h-6 w-6 text-foreground ml-1" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <Badge variant="secondary">{featuredPost.type}</Badge>
                       {featuredPost.department && (
-                        <span className="text-sm font-medium text-emerald-600">
+                        <span className="text-sm text-muted-foreground">
                           {featuredPost.department.name.replace('Department of ', '')}
                         </span>
                       )}
-                      <h3 className="text-2xl lg:text-3xl font-bold text-foreground leading-tight group-hover:text-emerald-700 transition-colors">
-                        {featuredPost.title}
-                      </h3>
-                      {featuredPost.body && (
-                        <p className="text-muted-foreground leading-relaxed line-clamp-3 text-lg">
-                          {featuredPost.body}
-                        </p>
-                      )}
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground pt-2">
-                        {featuredPost.author && (
-                          <span className="font-semibold text-foreground">{featuredPost.author}</span>
-                        )}
-                        <span>•</span>
-                        <time>{format(new Date(featuredPost.created_at), 'MMMM d, yyyy')}</time>
-                        {featuredPost.read_time && (
-                          <>
-                            <span>•</span>
-                            <span className="flex items-center gap-1">
-                              <Clock className="h-3.5 w-3.5" />
-                              {featuredPost.read_time} min read
-                            </span>
-                          </>
-                        )}
-                      </div>
                     </div>
-                  </article>
-
-                  {/* Secondary Featured */}
-                  <div className="lg:col-span-2 space-y-6">
-                    {secondaryPosts.map((item) => (
-                      <article 
-                        key={item.id}
-                        className="group cursor-pointer flex gap-4 p-4 rounded-xl hover:bg-white hover:shadow-lg transition-all duration-300"
-                        onClick={() => handleOpenContent(item)}
-                      >
-                        <div className="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden bg-gradient-to-br from-emerald-100 to-yellow-100">
-                          {item.thumbnail_url ? (
-                            <img 
-                              src={item.thumbnail_url} 
-                              alt={item.title}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <FileText className="h-8 w-8 text-emerald-300" />
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0 space-y-2">
-                          <div className="flex items-center gap-2">
-                            <span className={`w-2 h-2 rounded-full ${getTypeStyles(item.type).bg}`}></span>
-                            <span className="text-xs font-medium text-muted-foreground">{item.type}</span>
-                          </div>
-                          <h4 className="font-semibold text-foreground leading-snug line-clamp-2 group-hover:text-emerald-700 transition-colors">
-                            {item.title}
-                          </h4>
-                          <time className="text-xs text-muted-foreground">
-                            {format(new Date(item.created_at), 'MMM d, yyyy')}
-                          </time>
-                        </div>
-                      </article>
-                    ))}
+                    <h2 className="text-2xl md:text-3xl font-bold text-foreground group-hover:text-primary transition-colors leading-tight">
+                      {featuredPost.title}
+                    </h2>
+                    {featuredPost.body && (
+                      <p className="text-muted-foreground line-clamp-3">
+                        {featuredPost.body}
+                      </p>
+                    )}
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      {featuredPost.author && (
+                        <span className="font-medium text-foreground">{featuredPost.author}</span>
+                      )}
+                      <time>{format(new Date(featuredPost.created_at), 'MMM d, yyyy')}</time>
+                      {featuredPost.read_time && (
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-3.5 w-3.5" />
+                          {featuredPost.read_time} min
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </section>
+              </article>
             )}
 
-            {/* All Articles Grid */}
+            {/* Divider */}
             {remainingPosts.length > 0 && (
-              <section>
-                <div className="flex items-center gap-3 mb-8">
-                  <div className="h-1 w-12 bg-gradient-to-r from-yellow-500 to-emerald-600 rounded-full"></div>
-                  <h2 className="text-sm font-semibold text-emerald-700 uppercase tracking-wider">All Publications</h2>
-                  <span className="text-sm text-muted-foreground">({filteredContent.length} articles)</span>
-                </div>
+              <div className="border-t border-border" />
+            )}
 
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {remainingPosts.map((item) => (
-                    <article 
-                      key={item.id}
-                      className="group cursor-pointer bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-emerald-100/50"
-                      onClick={() => handleOpenContent(item)}
-                    >
-                      <div className="relative aspect-[16/10] overflow-hidden bg-gradient-to-br from-emerald-50 to-yellow-50">
+            {/* Article List */}
+            {remainingPosts.length > 0 && (
+              <div className="space-y-8">
+                {remainingPosts.map((item) => (
+                  <article 
+                    key={item.id}
+                    className="group cursor-pointer"
+                    onClick={() => handleOpenContent(item)}
+                  >
+                    <div className="flex gap-6">
+                      <div className="flex-shrink-0 w-32 h-24 md:w-48 md:h-32 bg-muted rounded-lg overflow-hidden">
                         {item.thumbnail_url ? (
                           <img 
                             src={item.thumbnail_url} 
                             alt={item.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
-                            <FileText className="h-12 w-12 text-emerald-200" />
+                            <FileText className="h-8 w-8 text-muted-foreground/50" />
                           </div>
                         )}
-                        {item.type.toLowerCase() === 'video' && (
-                          <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                            <div className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center">
-                              <Play className="h-5 w-5 text-emerald-700 ml-0.5" />
-                            </div>
-                          </div>
-                        )}
-                        <div className="absolute top-3 left-3">
-                          <Badge className={`${getTypeStyles(item.type).bg} text-white border-0 text-xs`}>
-                            {item.type}
-                          </Badge>
-                        </div>
                       </div>
-                      
-                      <div className="p-5 space-y-3">
-                        {item.department && (
-                          <span className="text-xs font-medium text-emerald-600">
-                            {item.department.name.replace('Department of ', '')}
-                          </span>
-                        )}
-                        <h3 className="font-bold text-foreground leading-snug line-clamp-2 group-hover:text-emerald-700 transition-colors">
+                      <div className="flex-1 min-w-0 space-y-2">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Badge variant="outline" className="text-xs">{item.type}</Badge>
+                          {item.department && (
+                            <span className="text-xs text-muted-foreground">
+                              {item.department.name.replace('Department of ', '')}
+                            </span>
+                          )}
+                        </div>
+                        <h3 className="text-lg md:text-xl font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">
                           {item.title}
                         </h3>
                         {item.body && (
-                          <p className="text-sm text-muted-foreground line-clamp-2">
+                          <p className="text-muted-foreground text-sm line-clamp-2 hidden md:block">
                             {item.body}
                           </p>
                         )}
-                        <div className="flex items-center justify-between pt-3 border-t border-emerald-50">
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            {item.author && (
-                              <span className="font-medium text-foreground">{item.author}</span>
-                            )}
-                            {item.author && <span>•</span>}
-                            <time>{format(new Date(item.created_at), 'MMM d')}</time>
-                          </div>
-                          {item.file_url && (
-                            <button 
-                              className="p-1.5 rounded-full hover:bg-emerald-50 text-emerald-600 transition-colors"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                window.open(item.file_url!, '_blank');
-                              }}
-                            >
-                              <Download className="h-4 w-4" />
-                            </button>
+                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                          {item.author && <span>{item.author}</span>}
+                          <time>{format(new Date(item.created_at), 'MMM d, yyyy')}</time>
+                          {item.read_time && (
+                            <span className="flex items-center gap-1">
+                              <Clock className="h-3 w-3" />
+                              {item.read_time} min
+                            </span>
                           )}
                         </div>
                       </div>
-                    </article>
-                  ))}
-                </div>
-              </section>
+                    </div>
+                  </article>
+                ))}
+              </div>
             )}
           </div>
         )}
       </main>
-
-      {/* Newsletter CTA */}
-      <section className="bg-gradient-to-r from-emerald-700 to-emerald-800 py-16 mt-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full text-emerald-100 text-sm mb-6">
-            <TrendingUp className="h-4 w-4" />
-            <span>Stay Updated</span>
-          </div>
-          <h2 className="text-3xl font-bold text-white mb-4">
-            Get the latest insights delivered to your inbox
-          </h2>
-          <p className="text-emerald-100 mb-8 max-w-2xl mx-auto">
-            Subscribe to our newsletter for research updates, policy briefs, and exclusive content on Africa's digital future.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
-            <Input 
-              placeholder="Enter your email" 
-              className="bg-white/10 border-white/20 text-white placeholder:text-emerald-200 rounded-full"
-            />
-            <Button className="bg-yellow-500 hover:bg-yellow-400 text-emerald-900 font-semibold rounded-full px-8">
-              Subscribe
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      </section>
     </div>
   );
 };
