@@ -1,4 +1,5 @@
-import React from 'react'
+// Force cache refresh - v2
+import * as React from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
