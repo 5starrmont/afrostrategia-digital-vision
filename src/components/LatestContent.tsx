@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { FileText, Download, Calendar, User, Play, Eye, Clock, ExternalLink } from "lucide-react";
+import { FileText, Calendar, User, ArrowRight, Clock, ChevronRight } from "lucide-react";
 import { format } from "date-fns";
 
 interface Content {
@@ -35,7 +35,6 @@ export const LatestContent = () => {
   useEffect(() => {
     fetchContent();
 
-    // Set up real-time updates for published content
     const channel = supabase
       .channel('published-content-updates')
       .on('postgres_changes',
@@ -58,7 +57,6 @@ export const LatestContent = () => {
 
   const fetchContent = async () => {
     try {
-      // Fetch published content (excluding research/reports as those come from reports table)
       const { data: contentData, error: contentError } = await supabase
         .from('content')
         .select(`
@@ -72,7 +70,6 @@ export const LatestContent = () => {
 
       if (contentError) throw contentError;
 
-      // Fetch public reports
       const { data: reportsData, error: reportsError } = await supabase
         .from('reports')
         .select(`
@@ -92,7 +89,6 @@ export const LatestContent = () => {
 
       if (reportsError) throw reportsError;
 
-      // Transform reports to match content structure
       const transformedReports = (reportsData || []).map(report => ({
         id: report.id,
         title: report.title,
@@ -114,10 +110,9 @@ export const LatestContent = () => {
         source: 'reports' as const
       }));
 
-      // Merge and sort all content by date
       const allContent = [...(contentData || []).map(c => ({ ...c, source: 'content' as const })), ...transformedReports]
         .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-        .slice(0, 6);
+        .slice(0, 5);
 
       setContent(allContent);
     } catch (error) {
@@ -130,92 +125,35 @@ export const LatestContent = () => {
   const getTypeColor = (type: string) => {
     switch (type.toLowerCase()) {
       case 'report':
-        return 'bg-emerald-100 text-emerald-800';
+        return 'bg-brand-emerald/10 text-brand-emerald border-brand-emerald/20';
       case 'policy':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-brand-yellow/10 text-brand-yellow-dark border-brand-yellow/30';
       case 'research':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-blue-500/10 text-blue-600 border-blue-500/20';
       case 'blog':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-purple-500/10 text-purple-600 border-purple-500/20';
       case 'video':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-500/10 text-red-600 border-red-500/20';
       case 'infographic':
-        return 'bg-green-100 text-green-800';
+        return 'bg-teal-500/10 text-teal-600 border-teal-500/20';
       default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getMediaIcon = (mediaType: string | null) => {
-    switch (mediaType?.toLowerCase()) {
-      case 'video':
-        return Play;
-      case 'image':
-        return Eye;
-      case 'blog':
-        return FileText;
-      default:
-        return FileText;
-    }
-  };
-
-  const getButtonText = (item: Content) => {
-    const type = item.type.toLowerCase();
-    const mediaType = item.media_type?.toLowerCase();
-    
-    if (mediaType === 'video' || type === 'video') return 'Watch';
-    if (mediaType === 'blog' || type === 'blog') return 'View';
-    if (type === 'infographic' || type === 'infographics') return 'View';
-    if (type === 'research' || type === 'report' || type === 'policy-brief' || type === 'policy') return 'View';
-    if (type === 'news-update' || type === 'op-ed') return 'View';
-    
-    return 'View';
-  };
-
-  const getButtonIcon = (item: Content) => {
-    const type = item.type.toLowerCase();
-    const mediaType = item.media_type?.toLowerCase();
-    
-    if (mediaType === 'video' || type === 'video') return Play;
-    if (mediaType === 'blog' || type === 'blog') return Eye;
-    return FileText;
-  };
-
-  const shouldShowDownloadButton = (item: Content) => {
-    const type = item.type.toLowerCase();
-    return (
-      (type === 'research' || 
-       type === 'report' || 
-       type === 'policy-brief' || 
-       type === 'policy' ||
-       type === 'infographic' ||
-       type === 'infographics' ||
-       type === 'op-ed') && 
-      item.file_url
-    );
-  };
-
-  const handleOpenContent = (item: Content) => {
-    if (item.media_type === 'blog' && item.slug) {
-      // Open blog in same window or navigate to blog detail page
-      window.open(`/blog/${item.slug}`, '_blank');
-    } else if (item.media_url) {
-      // Open media content in new window
-      window.open(item.media_url, '_blank');
-    } else if (item.file_url) {
-      // Open file in new window
-      window.open(item.file_url, '_blank');
+        return 'bg-muted text-muted-foreground border-border';
     }
   };
 
   if (loading) {
     return (
-      <section className="py-20 bg-gradient-to-br from-emerald-50 to-yellow-50">
+      <section className="py-24 bg-gradient-to-b from-background to-muted/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <div className="animate-pulse">
-              <div className="h-8 bg-gray-300 rounded w-64 mx-auto mb-4"></div>
-              <div className="h-4 bg-gray-300 rounded w-96 mx-auto"></div>
+          <div className="animate-pulse space-y-8">
+            <div className="h-10 bg-muted rounded w-80 mx-auto"></div>
+            <div className="grid lg:grid-cols-2 gap-8">
+              <div className="h-96 bg-muted rounded-2xl"></div>
+              <div className="space-y-4">
+                {[1, 2, 3, 4].map(i => (
+                  <div key={i} className="h-20 bg-muted rounded-xl"></div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -223,164 +161,230 @@ export const LatestContent = () => {
     );
   }
 
+  const featuredPost = content[0];
+  const recentPosts = content.slice(1, 5);
+
   return (
-    <section className="py-24 bg-gradient-to-br from-background via-muted/30 to-background relative overflow-hidden">
-      {/* Decorative background elements */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent"></div>
-      <div className="absolute top-20 left-10 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-20 right-10 w-96 h-96 bg-yellow-500/10 rounded-full blur-3xl"></div>
+    <section className="py-24 bg-gradient-to-b from-background via-muted/20 to-background relative overflow-hidden">
+      {/* Decorative elements */}
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-border to-transparent"></div>
+      <div className="absolute -top-40 -right-40 w-80 h-80 bg-brand-emerald/5 rounded-full blur-3xl"></div>
+      <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-brand-yellow/5 rounded-full blur-3xl"></div>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        <div className="text-center mb-20">
-          <h2 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent mb-6">
-            Latest Content & Publications
-          </h2>
-          <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-            Explore our most recent research papers, policy briefs, and strategic publications 
-            shaping Africa's digital future through evidence-based insights and innovative solutions.
-          </p>
+        {/* Section Header */}
+        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between mb-14 gap-6">
+          <div>
+            <Badge variant="outline" className="mb-4 border-brand-emerald/30 text-brand-emerald bg-brand-emerald/5">
+              <FileText className="h-3 w-3 mr-1" />
+              Latest Updates
+            </Badge>
+            <h2 className="text-4xl lg:text-5xl font-bold text-foreground mb-3">
+              From Our <span className="text-brand-emerald">Blog</span>
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-xl">
+              Insights, research, and strategic perspectives shaping Africa's digital transformation.
+            </p>
+          </div>
+          <Link to="/publications">
+            <Button 
+              variant="outline" 
+              size="lg"
+              className="border-brand-emerald text-brand-emerald hover:bg-brand-emerald hover:text-white transition-all duration-300 group"
+            >
+              View All Posts
+              <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </Link>
         </div>
 
         {content.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
-              <FileText className="h-12 w-12 text-muted-foreground" />
+          <div className="text-center py-20 bg-muted/30 rounded-3xl border border-border/50">
+            <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
+              <FileText className="h-10 w-10 text-muted-foreground" />
             </div>
-            <h3 className="text-2xl font-semibold text-foreground mb-3">No Content Available</h3>
-            <p className="text-muted-foreground text-lg max-w-md mx-auto">
-              Check back soon for our latest publications and research insights.
+            <h3 className="text-2xl font-semibold text-foreground mb-3">No Posts Yet</h3>
+            <p className="text-muted-foreground max-w-md mx-auto">
+              Check back soon for our latest publications and insights.
             </p>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
-            {content.map((item, index) => {
-              const MediaIcon = getMediaIcon(item.media_type);
-              return (
-                <Card 
-                  key={item.id} 
-                  className="group relative overflow-hidden border-0 bg-card/50 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  {/* Thumbnail image for visual content */}
-                  {item.thumbnail_url && (
-                    <div className="relative h-48 overflow-hidden">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
+            {/* Featured Post */}
+            {featuredPost && (
+              <article className="group relative">
+                <div className="relative overflow-hidden rounded-2xl bg-card border border-border/50 shadow-lg hover:shadow-xl transition-all duration-500">
+                  {/* Featured Image */}
+                  <div className="relative h-64 lg:h-80 overflow-hidden bg-gradient-to-br from-brand-emerald/20 to-brand-yellow/10">
+                    {featuredPost.thumbnail_url ? (
                       <img 
-                        src={item.thumbnail_url} 
-                        alt={item.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        src={featuredPost.thumbnail_url} 
+                        alt={featuredPost.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                       />
-                      {item.media_type === 'video' && (
-                        <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                          <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
-                            <Play className="h-8 w-8 text-white ml-1" />
-                          </div>
-                        </div>
-                      )}
-                      {item.media_type === 'blog' && item.read_time && (
-                        <div className="absolute top-4 right-4 bg-black/70 backdrop-blur-sm rounded-full px-3 py-1 flex items-center">
-                          <Clock className="h-3 w-3 text-white mr-1" />
-                          <span className="text-xs text-white">{item.read_time} min</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  
-                  {/* Gradient overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  
-                  <CardHeader className="pb-4 relative">
-                    <div className="flex items-start justify-between mb-4">
-                      <Badge className={`${getTypeColor(item.type)} font-medium px-3 py-1 text-xs uppercase tracking-wide`}>
-                        {item.type}
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <FileText className="h-20 w-20 text-brand-emerald/30" />
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                    
+                    {/* Type Badge */}
+                    <div className="absolute top-4 left-4">
+                      <Badge className={`${getTypeColor(featuredPost.type)} border font-medium`}>
+                        {featuredPost.type}
                       </Badge>
-                      {item.department && (
-                        <Badge 
-                          variant="outline" 
-                          className="text-xs bg-background/50 border-primary/20 text-primary font-medium"
-                        >
-                          {item.department.name.replace('Department of ', '')}
-                        </Badge>
-                      )}
                     </div>
-                    <CardTitle className="text-xl font-bold leading-tight group-hover:text-primary transition-colors duration-300 line-clamp-2 mb-3">
-                      {item.title}
-                    </CardTitle>
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                    
+                    {/* Featured Label */}
+                    <div className="absolute top-4 right-4">
+                      <Badge className="bg-brand-yellow text-brand-yellow-dark font-semibold border-0">
+                        Featured
+                      </Badge>
+                    </div>
+                  </div>
+                  
+                  {/* Content */}
+                  <div className="p-6 lg:p-8">
+                    <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-4">
                       <div className="flex items-center">
-                        <Calendar className="h-4 w-4 mr-2" />
-                        <time dateTime={item.created_at}>
-                          {format(new Date(item.created_at), 'MMMM dd, yyyy')}
+                        <Calendar className="h-4 w-4 mr-1.5" />
+                        <time dateTime={featuredPost.created_at}>
+                          {format(new Date(featuredPost.created_at), 'MMM dd, yyyy')}
                         </time>
                       </div>
-                      {item.author && (
+                      {featuredPost.author && (
                         <div className="flex items-center">
-                          <User className="h-4 w-4 mr-1" />
-                          <span className="text-xs">{item.author}</span>
+                          <User className="h-4 w-4 mr-1.5" />
+                          <span>{featuredPost.author}</span>
+                        </div>
+                      )}
+                      {featuredPost.read_time && (
+                        <div className="flex items-center">
+                          <Clock className="h-4 w-4 mr-1.5" />
+                          <span>{featuredPost.read_time} min read</span>
                         </div>
                       )}
                     </div>
-                  </CardHeader>
-                  
-                  <CardContent className="pt-0 relative">
-                    {item.body && (
-                      <CardDescription className="text-muted-foreground mb-6 line-clamp-3 leading-relaxed">
-                        {item.body}
-                      </CardDescription>
+                    
+                    <h3 className="text-2xl lg:text-3xl font-bold text-foreground group-hover:text-brand-emerald transition-colors duration-300 mb-4 line-clamp-2">
+                      {featuredPost.title}
+                    </h3>
+                    
+                    {featuredPost.body && (
+                      <p className="text-muted-foreground leading-relaxed line-clamp-3 mb-6">
+                        {featuredPost.body}
+                      </p>
                     )}
                     
-                    <div className={`flex items-center pt-4 border-t border-border/50 ${shouldShowDownloadButton(item) ? 'justify-between' : 'justify-center'}`}>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="border-primary/20 text-primary hover:bg-primary/5 hover:border-primary/40 transition-all duration-300"
-                        onClick={() => handleOpenContent(item)}
-                      >
-                        {(() => {
-                          const ButtonIcon = getButtonIcon(item);
-                          return <ButtonIcon className="h-4 w-4 mr-2" />;
-                        })()}
-                        {getButtonText(item)}
-                      </Button>
-                      
-                      {shouldShowDownloadButton(item) && (
-                        <Button
-                          variant="default"
-                          size="sm"
-                          className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-md hover:shadow-lg transition-all duration-300"
-                          onClick={() => {
-                            const link = document.createElement('a');
-                            link.href = item.file_url!;
-                            link.target = '_blank';
-                            link.rel = 'noopener noreferrer';
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
-                          }}
-                        >
-                          <Download className="h-4 w-4 mr-2" />
-                          Download
-                        </Button>
+                    <Button 
+                      variant="ghost" 
+                      className="text-brand-emerald hover:text-brand-emerald hover:bg-brand-emerald/10 p-0 h-auto font-semibold group/btn"
+                      onClick={() => {
+                        if (featuredPost.media_type === 'blog' && featuredPost.slug) {
+                          window.open(`/blog/${featuredPost.slug}`, '_blank');
+                        } else if (featuredPost.media_url) {
+                          window.open(featuredPost.media_url, '_blank');
+                        } else if (featuredPost.file_url) {
+                          window.open(featuredPost.file_url, '_blank');
+                        }
+                      }}
+                    >
+                      Read Full Article
+                      <ChevronRight className="ml-1 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
+                    </Button>
+                  </div>
+                </div>
+              </article>
+            )}
+
+            {/* Recent Posts List */}
+            <div className="flex flex-col">
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-6">
+                Recent Posts
+              </h3>
+              <div className="space-y-4 flex-1">
+                {recentPosts.map((post, index) => (
+                  <article 
+                    key={post.id}
+                    className="group flex gap-4 p-4 rounded-xl bg-card/50 border border-border/50 hover:border-brand-emerald/30 hover:bg-card transition-all duration-300 cursor-pointer"
+                    onClick={() => {
+                      if (post.media_type === 'blog' && post.slug) {
+                        window.open(`/blog/${post.slug}`, '_blank');
+                      } else if (post.media_url) {
+                        window.open(post.media_url, '_blank');
+                      } else if (post.file_url) {
+                        window.open(post.file_url, '_blank');
+                      }
+                    }}
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    {/* Thumbnail */}
+                    <div className="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden bg-gradient-to-br from-brand-emerald/10 to-brand-yellow/5">
+                      {post.thumbnail_url ? (
+                        <img 
+                          src={post.thumbnail_url} 
+                          alt={post.title}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <FileText className="h-6 w-6 text-brand-emerald/40" />
+                        </div>
                       )}
                     </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+                    
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge variant="outline" className={`${getTypeColor(post.type)} text-xs border`}>
+                          {post.type}
+                        </Badge>
+                        {post.department && (
+                          <span className="text-xs text-muted-foreground">
+                            {post.department.name.replace('Department of ', '')}
+                          </span>
+                        )}
+                      </div>
+                      <h4 className="font-semibold text-foreground group-hover:text-brand-emerald transition-colors line-clamp-2 text-sm lg:text-base mb-1">
+                        {post.title}
+                      </h4>
+                      <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                        <time dateTime={post.created_at}>
+                          {format(new Date(post.created_at), 'MMM dd, yyyy')}
+                        </time>
+                        {post.author && (
+                          <>
+                            <span>•</span>
+                            <span>{post.author}</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Arrow */}
+                    <div className="flex-shrink-0 flex items-center">
+                      <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-brand-emerald group-hover:translate-x-1 transition-all" />
+                    </div>
+                  </article>
+                ))}
+              </div>
+              
+              {/* Mobile CTA */}
+              <div className="mt-6 lg:hidden">
+                <Link to="/publications" className="block">
+                  <Button 
+                    variant="outline" 
+                    className="w-full border-brand-emerald text-brand-emerald hover:bg-brand-emerald hover:text-white"
+                  >
+                    View All Posts
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
           </div>
         )}
-
-        <div className="text-center mt-16">
-          <a href="/publications">
-            <Button 
-              variant="outline"
-              size="lg"
-              className="border-emerald-600 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-700 px-10 py-4 font-semibold text-lg transition-all duration-300 shadow-md hover:shadow-lg"
-            >
-              Explore More
-              <FileText className="ml-2 h-5 w-5" />
-            </Button>
-          </a>
-        </div>
       </div>
     </section>
   );
