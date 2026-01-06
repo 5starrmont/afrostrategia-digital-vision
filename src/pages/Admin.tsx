@@ -15,6 +15,7 @@ import { SecuritySettings } from "@/components/admin/SecuritySettings";
 import { LoginForm } from "@/components/admin/LoginForm";
 import ManagePartners from "@/components/admin/ManagePartners";
 import ManageOpportunities from "@/components/admin/ManageOpportunities";
+import { BlogEditor } from "@/components/admin/BlogEditor";
 
 const Admin = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -208,7 +209,7 @@ const Admin = () => {
 
       <main className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-7 bg-white/60 backdrop-blur-sm border border-emerald-100">
+          <TabsList className="grid w-full grid-cols-8 bg-white/60 backdrop-blur-sm border border-emerald-100">
             <TabsTrigger 
               value="dashboard"
               className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
@@ -216,22 +217,28 @@ const Admin = () => {
               Dashboard
             </TabsTrigger>
             <TabsTrigger 
+              value="blog"
+              className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
+            >
+              Blog
+            </TabsTrigger>
+            <TabsTrigger 
               value="reports"
               className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
             >
-              Upload Reports
+              Reports
             </TabsTrigger>
             <TabsTrigger 
               value="content"
               className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
             >
-              Upload Content
+              Content
             </TabsTrigger>
             <TabsTrigger 
               value="manage"
               className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
             >
-              Manage Content
+              Manage
             </TabsTrigger>
             <TabsTrigger 
               value="opportunities"
@@ -261,6 +268,18 @@ const Admin = () => {
               </CardHeader>
               <CardContent className="p-6">
                 <AdminDashboard onNavigateToTab={setActiveTab} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="blog">
+            <Card className="bg-white/80 backdrop-blur-sm border-emerald-100 shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-t-lg">
+                <CardTitle className="text-white">Blog Editor</CardTitle>
+                <p className="text-emerald-100">Create, edit, and publish blog posts</p>
+              </CardHeader>
+              <CardContent className="p-6">
+                <BlogEditor />
               </CardContent>
             </Card>
           </TabsContent>
