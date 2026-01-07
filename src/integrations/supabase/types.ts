@@ -64,6 +64,7 @@ export type Database = {
           file_size: number | null
           file_type: string | null
           file_url: string | null
+          gallery_images: string[] | null
           id: string
           media_type: string | null
           media_url: string | null
@@ -86,6 +87,7 @@ export type Database = {
           file_size?: number | null
           file_type?: string | null
           file_url?: string | null
+          gallery_images?: string[] | null
           id?: string
           media_type?: string | null
           media_url?: string | null
@@ -108,6 +110,7 @@ export type Database = {
           file_size?: number | null
           file_type?: string | null
           file_url?: string | null
+          gallery_images?: string[] | null
           id?: string
           media_type?: string | null
           media_url?: string | null

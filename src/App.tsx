@@ -18,6 +18,7 @@ import Auth from "./pages/Auth";
 import Moderator from "./pages/Moderator";
 import EnvironmentalTechnology from "./pages/EnvironmentalTechnology";
 import Careers from "./pages/Careers";
+import BlogPost from "./pages/BlogPost";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ const App = () => (
           <Route path="/publications" element={<Publications />} />
           <Route path="/environmental-technology" element={<EnvironmentalTechnology />} />
           <Route path="/careers" element={<Careers />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/moderator" element={<Moderator />} />
           <Route path="/auth" element={<Auth />} />
