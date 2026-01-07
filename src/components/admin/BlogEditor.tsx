@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Pencil, Trash2, Plus, Eye, Loader2 } from "lucide-react";
+import { Pencil, Trash2, Plus, Eye, Loader2, X, ImagePlus } from "lucide-react";
 import { format } from "date-fns";
 
 interface Department {
@@ -27,6 +27,8 @@ interface BlogPost {
   published: boolean | null;
   created_at: string;
   thumbnail_url: string | null;
+  gallery_images: string[] | null;
+  slug: string | null;
   department_id: string | null;
   departments?: { name: string } | null;
 }
@@ -47,6 +49,9 @@ export const BlogEditor = () => {
   const [published, setPublished] = useState(false);
   const [thumbnailImage, setThumbnailImage] = useState<File | null>(null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
+  const [galleryImages, setGalleryImages] = useState<File[]>([]);
+  const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
+  const [existingGalleryImages, setExistingGalleryImages] = useState<string[]>([]);
 
   const { toast } = useToast();
 
@@ -73,7 +78,7 @@ export const BlogEditor = () => {
     try {
       const { data, error } = await supabase
         .from('content')
-        .select('id, title, body, author, published, created_at, thumbnail_url, department_id, departments(name)')
+        .select('id, title, body, author, published, created_at, thumbnail_url, gallery_images, slug, department_id, departments(name)')
         .eq('type', 'blog')
         .order('created_at', { ascending: false });
 
@@ -94,6 +99,9 @@ export const BlogEditor = () => {
     setPublished(false);
     setThumbnailImage(null);
     setThumbnailPreview(null);
+    setGalleryImages([]);
+    setGalleryPreviews([]);
+    setExistingGalleryImages([]);
     setEditingBlog(null);
   };
 
@@ -110,6 +118,9 @@ export const BlogEditor = () => {
     setSelectedDepartment(blog.department_id || "");
     setPublished(blog.published || false);
     setThumbnailPreview(blog.thumbnail_url);
+    setExistingGalleryImages(blog.gallery_images || []);
+    setGalleryImages([]);
+    setGalleryPreviews([]);
     setIsDialogOpen(true);
   };
 
@@ -125,9 +136,33 @@ export const BlogEditor = () => {
     }
   };
 
+  const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length > 0) {
+      setGalleryImages((prev) => [...prev, ...files]);
+      
+      files.forEach((file) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setGalleryPreviews((prev) => [...prev, reader.result as string]);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  };
+
+  const removeGalleryImage = (index: number) => {
+    setGalleryImages((prev) => prev.filter((_, i) => i !== index));
+    setGalleryPreviews((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const removeExistingGalleryImage = (index: number) => {
+    setExistingGalleryImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleFileUpload = async (file: File, contentId: string, folder: string = 'thumbnails') => {
     const fileExt = file.name.split('.').pop();
-    const fileName = `${contentId}-${Date.now()}.${fileExt}`;
+    const fileName = `${contentId}-${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
     const filePath = `${folder}/${fileName}`;
 
     const { error: uploadError } = await supabase.storage
@@ -141,6 +176,14 @@ export const BlogEditor = () => {
       .getPublicUrl(filePath);
 
     return publicUrl;
+  };
+
+  const generateSlug = (title: string) => {
+    return title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '')
+      .substring(0, 100);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -174,6 +217,17 @@ export const BlogEditor = () => {
           thumbnailUrl = await handleFileUpload(thumbnailImage, editingBlog.id);
         }
 
+        // Upload new gallery images
+        const newGalleryUrls: string[] = [];
+        for (const file of galleryImages) {
+          const url = await handleFileUpload(file, editingBlog.id, 'gallery');
+          newGalleryUrls.push(url);
+        }
+
+        const allGalleryImages = [...existingGalleryImages, ...newGalleryUrls];
+
+        const slug = editingBlog.slug || generateSlug(title);
+
         const { error } = await supabase
           .from('content')
           .update({
@@ -183,6 +237,8 @@ export const BlogEditor = () => {
             department_id: selectedDepartment,
             published,
             thumbnail_url: thumbnailUrl,
+            gallery_images: allGalleryImages,
+            slug,
             updated_at: new Date().toISOString(),
           })
           .eq('id', editingBlog.id);
@@ -204,16 +260,20 @@ export const BlogEditor = () => {
         });
       } else {
         // Create new blog
+        const slug = generateSlug(title);
+        
         const { data: content, error: insertError } = await supabase
           .from('content')
           .insert({
             title,
             body: sanitizedBody,
             type: 'blog',
+            media_type: 'blog',
             department_id: selectedDepartment,
             published,
             created_by: user?.id,
             author: author || 'AfroStrategia',
+            slug,
           })
           .select()
           .single();
@@ -226,6 +286,19 @@ export const BlogEditor = () => {
           await supabase
             .from('content')
             .update({ thumbnail_url: thumbnailUrl })
+            .eq('id', content.id);
+        }
+
+        // Upload gallery images
+        if (galleryImages.length > 0 && content) {
+          const galleryUrls: string[] = [];
+          for (const file of galleryImages) {
+            const url = await handleFileUpload(file, content.id, 'gallery');
+            galleryUrls.push(url);
+          }
+          await supabase
+            .from('content')
+            .update({ gallery_images: galleryUrls })
             .eq('id', content.id);
         }
 
@@ -410,7 +483,7 @@ export const BlogEditor = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="thumbnail">Thumbnail Image</Label>
+                <Label htmlFor="thumbnail">Thumbnail Image (Main Cover)</Label>
                 <Input
                   id="thumbnail"
                   type="file"
@@ -419,12 +492,80 @@ export const BlogEditor = () => {
                   className="border-emerald-200"
                 />
                 {thumbnailPreview && (
-                  <div className="mt-2">
+                  <div className="mt-2 relative inline-block">
                     <img 
                       src={thumbnailPreview} 
                       alt="Thumbnail preview" 
                       className="w-40 h-24 object-cover rounded-lg border"
                     />
+                  </div>
+                )}
+              </div>
+
+              {/* Gallery Images */}
+              <div className="space-y-2">
+                <Label>Gallery Images (Additional Images)</Label>
+                <div className="border-2 border-dashed border-emerald-200 rounded-lg p-4">
+                  <label className="flex flex-col items-center justify-center cursor-pointer">
+                    <ImagePlus className="h-8 w-8 text-emerald-500 mb-2" />
+                    <span className="text-sm text-gray-600">Click to add more images</span>
+                    <Input
+                      type="file"
+                      accept=".jpg,.jpeg,.png,.webp"
+                      onChange={handleGalleryChange}
+                      multiple
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+
+                {/* Existing gallery images */}
+                {existingGalleryImages.length > 0 && (
+                  <div className="mt-3">
+                    <p className="text-sm text-gray-600 mb-2">Existing Images:</p>
+                    <div className="flex flex-wrap gap-3">
+                      {existingGalleryImages.map((url, index) => (
+                        <div key={index} className="relative group">
+                          <img 
+                            src={url} 
+                            alt={`Gallery ${index + 1}`} 
+                            className="w-24 h-16 object-cover rounded-lg border"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeExistingGalleryImage(index)}
+                            className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* New gallery image previews */}
+                {galleryPreviews.length > 0 && (
+                  <div className="mt-3">
+                    <p className="text-sm text-gray-600 mb-2">New Images to Upload:</p>
+                    <div className="flex flex-wrap gap-3">
+                      {galleryPreviews.map((preview, index) => (
+                        <div key={index} className="relative group">
+                          <img 
+                            src={preview} 
+                            alt={`New gallery ${index + 1}`} 
+                            className="w-24 h-16 object-cover rounded-lg border"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeGalleryImage(index)}
+                            className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
