@@ -113,22 +113,7 @@ const Research = () => {
       day: 'numeric'
     });
   };
-  const handleDownload = async (url: string, filename: string) => {
-    try {
-      const response = await fetch(url);
-      const blob = await response.blob();
-      const blobUrl = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(blobUrl);
-    } catch (error) {
-      console.error('Download error:', error);
-    }
-  };
+
 
   return (
     <div className="min-h-screen bg-white">
@@ -183,15 +168,45 @@ const Research = () => {
                       </div>
                     </div>
                       {paper.file_url && (
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="text-emerald-600 hover:text-emerald-700"
-                          onClick={() => handleDownload(paper.file_url!, paper.file_name || 'document.pdf')}
-                        >
-                          <Download className="h-4 w-4 mr-1" />
-                          Download
-                        </Button>
+                        <div className="flex items-center space-x-2">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="text-emerald-600 hover:text-emerald-700"
+                            onClick={() => {
+                              try {
+                                window.open(paper.file_url, '_blank');
+                              } catch (error) {
+                                console.error('Error opening file:', error);
+                                alert('There was an error opening this file. Please try again.');
+                              }
+                            }}
+                          >
+                            <ArrowRight className="h-4 w-4 mr-1" />
+                            View
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="text-emerald-600 hover:text-emerald-700"
+                            onClick={() => {
+                              try {
+                                const link = document.createElement('a');
+                                link.href = paper.file_url!;
+                                link.download = paper.file_name || 'document.pdf';
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                              } catch (error) {
+                                console.error('Error downloading file:', error);
+                                alert('There was an error downloading this file. Please try again.');
+                              }
+                            }}
+                          >
+                            <Download className="h-4 w-4 mr-1" />
+                            Download
+                          </Button>
+                        </div>
                       )}
                   </div>
                 </CardContent>
@@ -277,17 +292,46 @@ const Research = () => {
                         </div>
                       </div>
                       {paper.file_url ? (
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="text-emerald-600 hover:text-emerald-700"
-                          onClick={() => handleDownload(paper.file_url!, paper.file_name || 'document.pdf')}
-                        >
-                          <Download className="h-4 w-4" />
-                        </Button>
+                        <div className="flex items-center space-x-1">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="text-emerald-600 hover:text-emerald-700"
+                            onClick={() => {
+                              try {
+                                window.open(paper.file_url, '_blank');
+                              } catch (error) {
+                                console.error('Error opening file:', error);
+                                alert('There was an error opening this file. Please try again.');
+                              }
+                            }}
+                          >
+                            <ArrowRight className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="text-emerald-600 hover:text-emerald-700"
+                            onClick={() => {
+                              try {
+                                const link = document.createElement('a');
+                                link.href = paper.file_url!;
+                                link.download = paper.file_name || 'document.pdf';
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                              } catch (error) {
+                                console.error('Error downloading file:', error);
+                                alert('There was an error downloading this file. Please try again.');
+                              }
+                            }}
+                          >
+                            <Download className="h-4 w-4" />
+                          </Button>
+                        </div>
                       ) : (
                         <Button variant="ghost" size="sm" className="text-emerald-600 hover:text-emerald-700" disabled>
-                          <Download className="h-4 w-4" />
+                          <ArrowRight className="h-4 w-4" />
                         </Button>
                       )}
                     </div>
