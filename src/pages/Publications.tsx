@@ -177,9 +177,28 @@ const Publications = () => {
     if (item.media_type === "blog" && item.slug) {
       navigate(`/blog/${item.slug}`);
     } else if (item.media_url) {
-      window.open(item.media_url, "_blank");
+      // For videos/external media, navigate in same tab
+      window.location.href = item.media_url;
     } else if (item.file_url) {
-      window.open(item.file_url, "_blank");
+      // For files, trigger download
+      handleDownload(item.file_url, item.file_name || 'document');
+    }
+  };
+
+  const handleDownload = async (url: string, filename: string) => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error('Download error:', error);
     }
   };
 

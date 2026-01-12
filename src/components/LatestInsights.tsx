@@ -78,17 +78,28 @@ export const LatestInsights = () => {
     return 'text-emerald-700 bg-emerald-100';
   };
 
-  const handleContentClick = (insight: InsightContent) => {
+  const handleDownload = async (url: string, filename: string) => {
     try {
-      if (insight.file_url) {
-        window.open(insight.file_url, '_blank');
-      } else {
-        console.error('No file URL available for insight:', insight.title);
-        alert('Sorry, this content is not available for viewing.');
-      }
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
     } catch (error) {
-      console.error('Error opening insight:', error);
-      alert('There was an error opening this content. Please try again.');
+      console.error('Download error:', error);
+    }
+  };
+
+  const handleContentClick = (insight: InsightContent) => {
+    if (insight.file_url) {
+      handleDownload(insight.file_url, insight.file_name || 'document.pdf');
+    } else {
+      alert('Sorry, this content is not available for viewing.');
     }
   };
 
@@ -176,32 +187,7 @@ export const LatestInsights = () => {
                           className="text-emerald-600 hover:text-emerald-700 flex-1"
                           onClick={(e) => {
                             e.stopPropagation();
-                            window.open(insight.file_url, '_blank');
-                          }}
-                        >
-                          <ArrowRight className="h-4 w-4 mr-1" />
-                          View
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="text-emerald-600 hover:text-emerald-700 flex-1"
-                          onClick={async (e) => {
-                            e.stopPropagation();
-                            try {
-                              const response = await fetch(insight.file_url!);
-                              const blob = await response.blob();
-                              const url = window.URL.createObjectURL(blob);
-                              const link = document.createElement('a');
-                              link.href = url;
-                              link.download = insight.file_name || 'document.pdf';
-                              document.body.appendChild(link);
-                              link.click();
-                              document.body.removeChild(link);
-                              window.URL.revokeObjectURL(url);
-                            } catch (error) {
-                              console.error('Download error:', error);
-                            }
+                            handleDownload(insight.file_url!, insight.file_name || 'document.pdf');
                           }}
                         >
                           <Download className="h-4 w-4 mr-1" />
