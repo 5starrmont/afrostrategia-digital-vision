@@ -7,8 +7,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { BookOpen, Clock, FileText, Play, Search, TrendingUp } from "lucide-react";
+import { BookOpen, Clock, FileText, Play, Search, TrendingUp, Sparkles, ArrowRight, ChevronRight, Filter, LayoutGrid, List } from "lucide-react";
 import { format } from "date-fns";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 interface Content {
   id: string;
@@ -39,6 +41,8 @@ const Publications = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState<string>("all");
   const [selectedDepartment, setSelectedDepartment] = useState<string>("all");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 
   // SEO (no extra deps)
   useEffect(() => {
@@ -216,65 +220,55 @@ const Publications = () => {
   const featuredPost = filteredContent[0];
   const remainingPosts = filteredContent.slice(1);
 
-  const FiltersUI = ({ layout }: { layout: "bar" | "sidebar" }) => {
-    const isBar = layout === "bar";
+  const getTypeColor = (type: string) => {
+    switch (type.toLowerCase()) {
+      case 'report':
+        return 'bg-primary/10 text-primary border-primary/20 hover:bg-primary/20';
+      case 'policy':
+        return 'bg-brand/10 text-brand border-brand/20 hover:bg-brand/20';
+      case 'research':
+        return 'bg-blue-500/10 text-blue-600 border-blue-500/20 hover:bg-blue-500/20';
+      case 'blog':
+        return 'bg-purple-500/10 text-purple-600 border-purple-500/20 hover:bg-purple-500/20';
+      case 'video':
+        return 'bg-red-500/10 text-red-600 border-red-500/20 hover:bg-red-500/20';
+      case 'infographic':
+        return 'bg-teal-500/10 text-teal-600 border-teal-500/20 hover:bg-teal-500/20';
+      default:
+        return 'bg-muted text-muted-foreground border-border hover:bg-accent';
+    }
+  };
 
-    return (
-      <div className={isBar ? "flex flex-col sm:flex-row gap-4 items-center" : "space-y-4"}>
-        <div className={isBar ? "relative flex-1 max-w-md w-full" : "relative"}>
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search publications..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-
-        <div className={isBar ? "flex gap-3 w-full sm:w-auto" : "grid grid-cols-1 gap-3"}>
-          <Select value={selectedType} onValueChange={setSelectedType}>
-            <SelectTrigger className={isBar ? "w-full sm:w-40" : "w-full"}>
-              <SelectValue placeholder="Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
-              {contentTypes.map((type) => (
-                <SelectItem key={type} value={type.toLowerCase()}>
-                  {type}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
-            <SelectTrigger className={isBar ? "w-full sm:w-56" : "w-full"}>
-              <SelectValue placeholder="Department" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Departments</SelectItem>
-              {departments.map((dept) => (
-                <SelectItem key={dept.slug} value={dept.slug}>
-                  {dept.name.replace("Department of ", "")}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-    );
+  const getTypeIcon = (type: string) => {
+    switch (type.toLowerCase()) {
+      case 'video':
+        return <Play className="h-3 w-3" />;
+      case 'research':
+        return <BookOpen className="h-3 w-3" />;
+      default:
+        return <FileText className="h-3 w-3" />;
+    }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="animate-pulse space-y-8">
-            <div className="h-10 bg-muted rounded w-72" />
-            <div className="h-64 bg-muted rounded-xl" />
-            <div className="grid md:grid-cols-2 gap-6">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="h-40 bg-muted rounded-xl" />
-              ))}
+      <div className="min-h-screen bg-background">
+        {/* Animated loading skeleton */}
+        <div className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-brand/5" />
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 relative">
+            <div className="space-y-8">
+              <div className="space-y-4">
+                <div className="h-6 w-32 bg-muted rounded-full animate-pulse" />
+                <div className="h-12 w-96 bg-muted rounded-lg animate-pulse" />
+                <div className="h-6 w-72 bg-muted rounded animate-pulse" />
+              </div>
+              <div className="h-80 bg-gradient-to-br from-muted to-muted/50 rounded-3xl animate-pulse" />
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <div key={i} className="h-64 bg-muted rounded-2xl animate-pulse" style={{ animationDelay: `${i * 100}ms` }} />
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -283,190 +277,471 @@ const Publications = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent">
-      <header className="border-b border-border bg-background/70 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-          <BackButton className="mb-6" />
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Dynamic background */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-brand/5 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-accent/20 rounded-full blur-3xl opacity-50" />
+      </div>
 
-          <div className="max-w-3xl">
-            <div className="h-1 w-20 rounded-full bg-gradient-to-r from-primary to-brand mb-4" />
-            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">Latest Content & Publications</h1>
-            <p className="text-muted-foreground text-lg">
-              Research, reports, and insights shaping Africas digital transformation.
-            </p>
-          </div>
+      {/* Hero Section */}
+      <header className="relative border-b border-border/50 bg-background/80 backdrop-blur-xl">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-brand/5" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16 relative">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <BackButton className="mb-8" />
+
+            <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
+              <div className="max-w-2xl">
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2, duration: 0.5 }}
+                  className="flex items-center gap-3 mb-4"
+                >
+                  <Badge className="bg-primary/10 text-primary border-primary/20 px-3 py-1">
+                    <Sparkles className="h-3 w-3 mr-1.5" />
+                    Latest Updates
+                  </Badge>
+                  <span className="text-sm text-muted-foreground">
+                    {content.length} publications
+                  </span>
+                </motion.div>
+                
+                <motion.h1
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3, duration: 0.5 }}
+                  className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4"
+                >
+                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-foreground via-foreground to-primary">
+                    Latest Content
+                  </span>
+                  <br />
+                  <span className="text-primary">&</span>{" "}
+                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-brand to-foreground">
+                    Publications
+                  </span>
+                </motion.h1>
+                
+                <motion.p
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4, duration: 0.5 }}
+                  className="text-lg text-muted-foreground"
+                >
+                  Research, reports, and strategic insights shaping Africa's digital transformation.
+                </motion.p>
+              </div>
+
+              {/* Quick Stats */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.5, duration: 0.5 }}
+                className="flex gap-4"
+              >
+                {Object.entries(typeCounts).slice(0, 3).map(([type, count], index) => (
+                  <motion.div
+                    key={type}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6 + index * 0.1, duration: 0.4 }}
+                    className="bg-card/80 backdrop-blur border border-border/50 rounded-2xl p-4 min-w-[100px] text-center hover:border-primary/30 transition-colors cursor-pointer"
+                    onClick={() => setSelectedType(type.toLowerCase())}
+                  >
+                    <div className="text-2xl font-bold text-foreground">{count}</div>
+                    <div className="text-xs text-muted-foreground capitalize">{type}</div>
+                  </motion.div>
+                ))}
+              </motion.div>
+            </div>
+          </motion.div>
         </div>
       </header>
 
-      {/* Mobile filter bar */}
-      <div className="lg:hidden sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur">
+      {/* Filters Bar */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6, duration: 0.4 }}
+        className="sticky top-0 z-40 border-b border-border/50 bg-background/80 backdrop-blur-xl"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <FiltersUI layout="bar" />
-        </div>
-      </div>
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        {filteredContent.length === 0 ? (
-          <section className="text-center py-20">
-            <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-foreground mb-2">No publications found</h2>
-            <p className="text-muted-foreground">Try adjusting your search or filters.</p>
-          </section>
-        ) : (
-          <div className="grid gap-8 lg:grid-cols-[280px_1fr_280px]">
-            {/* Left sidebar (desktop) */}
-            <aside className="hidden lg:block">
-              <div className="sticky top-24 space-y-6">
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-base">Filter</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <FiltersUI layout="sidebar" />
-                    <Separator />
-                    <div className="text-sm text-muted-foreground">
-                      Showing <span className="font-medium text-foreground">{filteredContent.length}</span> results
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-base flex items-center gap-2">
-                      <TrendingUp className="h-4 w-4 text-primary" />
-                      Content types
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    {contentTypes.map((type) => {
-                      const active = selectedType !== "all" && selectedType.toLowerCase() === type.toLowerCase();
-                      return (
-                        <button
-                          key={type}
-                          type="button"
-                          onClick={() => setSelectedType(active ? "all" : type.toLowerCase())}
-                          className={
-                            "w-full flex items-center justify-between rounded-md px-3 py-2 text-sm transition-colors " +
-                            (active
-                              ? "bg-primary text-primary-foreground"
-                              : "hover:bg-accent text-foreground")
-                          }
-                        >
-                          <span className="font-medium">{type}</span>
-                          <span className={active ? "text-primary-foreground/80" : "text-muted-foreground"}>
-                            {typeCounts[type] ?? 0}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </CardContent>
-                </Card>
+          <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+            <div className="flex flex-1 gap-3 items-center w-full sm:w-auto">
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search publications..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 bg-card/50 border-border/50 focus:border-primary/50 transition-colors"
+                />
               </div>
-            </aside>
+              
+              <Select value={selectedType} onValueChange={setSelectedType}>
+                <SelectTrigger className="w-40 bg-card/50 border-border/50">
+                  <SelectValue placeholder="Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Types</SelectItem>
+                  {contentTypes.map((type) => (
+                    <SelectItem key={type} value={type.toLowerCase()}>
+                      {type}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
-            {/* Center content */}
-            <section className="space-y-10">
-              {/* Featured */}
+              <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
+                <SelectTrigger className="w-48 bg-card/50 border-border/50 hidden sm:flex">
+                  <SelectValue placeholder="Department" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Departments</SelectItem>
+                  {departments.map((dept) => (
+                    <SelectItem key={dept.slug} value={dept.slug}>
+                      {dept.name.replace("Department of ", "")}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground hidden sm:inline">
+                {filteredContent.length} results
+              </span>
+              <Separator orientation="vertical" className="h-6 hidden sm:block" />
+              <div className="flex gap-1 bg-muted/50 rounded-lg p-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={`h-8 w-8 p-0 ${viewMode === 'grid' ? 'bg-background shadow-sm' : ''}`}
+                  onClick={() => setViewMode('grid')}
+                >
+                  <LayoutGrid className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={`h-8 w-8 p-0 ${viewMode === 'list' ? 'bg-background shadow-sm' : ''}`}
+                  onClick={() => setViewMode('list')}
+                >
+                  <List className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Category Pills */}
+          <div className="flex gap-2 mt-4 overflow-x-auto pb-2 scrollbar-hide">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setSelectedType("all")}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
+                selectedType === "all"
+                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
+                  : "bg-card border border-border hover:border-primary/50 text-foreground"
+              }`}
+            >
+              All
+            </motion.button>
+            {contentTypes.map((type) => (
+              <motion.button
+                key={type}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setSelectedType(selectedType === type.toLowerCase() ? "all" : type.toLowerCase())}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap flex items-center gap-1.5 ${
+                  selectedType === type.toLowerCase()
+                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
+                    : `border ${getTypeColor(type)}`
+                }`}
+              >
+                {getTypeIcon(type)}
+                {type}
+                <span className="ml-1 opacity-60">({typeCounts[type] || 0})</span>
+              </motion.button>
+            ))}
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
+        <AnimatePresence mode="wait">
+          {filteredContent.length === 0 ? (
+            <motion.section
+              key="empty"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="text-center py-20"
+            >
+              <div className="w-24 h-24 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-6">
+                <BookOpen className="h-12 w-12 text-muted-foreground" />
+              </div>
+              <h2 className="text-2xl font-semibold text-foreground mb-3">No publications found</h2>
+              <p className="text-muted-foreground mb-6">Try adjusting your search or filters.</p>
+              <Button onClick={() => { setSearchTerm(""); setSelectedType("all"); setSelectedDepartment("all"); }}>
+                Clear Filters
+              </Button>
+            </motion.section>
+          ) : (
+            <motion.div
+              key="content"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="space-y-12"
+            >
+              {/* Featured Post */}
               {featuredPost && (
-                <article>
-                  <Card className="overflow-hidden">
-                    <div className="grid md:grid-cols-5 gap-0">
-                      <div className="md:col-span-2">
-                        <div className="relative aspect-[4/3] bg-muted">
+                <motion.article
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                  className="group relative"
+                >
+                  <div
+                    className="relative overflow-hidden rounded-3xl bg-card border border-border/50 shadow-xl cursor-pointer"
+                    onClick={() => handleOpenContent(featuredPost)}
+                    onMouseEnter={() => setHoveredCard(featuredPost.id)}
+                    onMouseLeave={() => setHoveredCard(null)}
+                  >
+                    <div className="grid lg:grid-cols-2 gap-0">
+                      {/* Image Section */}
+                      <div className="relative aspect-[16/10] lg:aspect-auto lg:h-full overflow-hidden">
+                        <motion.div
+                          animate={{ scale: hoveredCard === featuredPost.id ? 1.05 : 1 }}
+                          transition={{ duration: 0.6, ease: "easeOut" }}
+                          className="absolute inset-0"
+                        >
                           {featuredPost.thumbnail_url ? (
                             <img
-                              loading="lazy"
                               src={featuredPost.thumbnail_url}
                               alt={featuredPost.title}
-                              className="h-full w-full object-cover"
+                              className="w-full h-full object-cover"
                             />
                           ) : (
-                            <div className="h-full w-full flex items-center justify-center">
-                              <FileText className="h-12 w-12 text-muted-foreground/50" />
+                            <div className="w-full h-full bg-gradient-to-br from-primary/20 via-accent to-brand/20 flex items-center justify-center">
+                              <FileText className="h-20 w-20 text-primary/30" />
                             </div>
                           )}
-
-                          {featuredPost.type.toLowerCase() === "video" && (
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <div className="w-14 h-14 bg-background/90 rounded-full flex items-center justify-center shadow-lg">
-                                <Play className="h-6 w-6 text-foreground ml-1" />
-                              </div>
-                            </div>
-                          )}
+                        </motion.div>
+                        
+                        {/* Overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent lg:bg-gradient-to-r" />
+                        
+                        {/* Featured Label */}
+                        <div className="absolute top-4 left-4 flex gap-2">
+                          <Badge className="bg-brand text-brand-foreground border-0 shadow-lg">
+                            <Sparkles className="h-3 w-3 mr-1" />
+                            Featured
+                          </Badge>
                         </div>
+
+                        {/* Video Play Button */}
+                        {featuredPost.type.toLowerCase() === "video" && (
+                          <motion.div
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            className="absolute inset-0 flex items-center justify-center"
+                          >
+                            <div className="w-20 h-20 bg-background/90 rounded-full flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
+                              <Play className="h-8 w-8 text-foreground ml-1" />
+                            </div>
+                          </motion.div>
+                        )}
                       </div>
 
-                      <div className="md:col-span-3 p-6">
-                        <div className="flex items-center gap-3 flex-wrap mb-3">
-                          <Badge className="bg-primary text-primary-foreground">{featuredPost.type}</Badge>
+                      {/* Content Section */}
+                      <div className="p-8 lg:p-12 flex flex-col justify-center">
+                        <div className="flex items-center gap-3 flex-wrap mb-4">
+                          <Badge className={`border ${getTypeColor(featuredPost.type)}`}>
+                            {getTypeIcon(featuredPost.type)}
+                            <span className="ml-1">{featuredPost.type}</span>
+                          </Badge>
                           {featuredPost.department && (
-                            <Badge variant="outline">{featuredPost.department.name.replace("Department of ", "")}</Badge>
+                            <Badge variant="outline" className="text-muted-foreground">
+                              {featuredPost.department.name.replace("Department of ", "")}
+                            </Badge>
                           )}
                         </div>
 
-                        <button
-                          type="button"
-                          onClick={() => handleOpenContent(featuredPost)}
-                          className="text-left"
-                        >
-                          <h2 className="text-2xl md:text-3xl font-bold text-foreground hover:text-primary transition-colors leading-tight">
-                            {featuredPost.title}
-                          </h2>
-                        </button>
+                        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-4 group-hover:text-primary transition-colors leading-tight">
+                          {featuredPost.title}
+                        </h2>
 
                         {featuredPost.body && (
-                          <p className="text-muted-foreground mt-3 line-clamp-3">{featuredPost.body}</p>
+                          <p className="text-muted-foreground text-lg mb-6 line-clamp-3">
+                            {featuredPost.body}
+                          </p>
                         )}
 
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground mt-5">
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground mb-6">
                           {featuredPost.author && (
                             <span className="font-medium text-foreground">{featuredPost.author}</span>
                           )}
+                          <span>•</span>
                           <time>{format(new Date(featuredPost.created_at), "MMM d, yyyy")}</time>
                           {featuredPost.read_time && (
-                            <span className="flex items-center gap-1">
-                              <Clock className="h-3.5 w-3.5" />
-                              {featuredPost.read_time} min
-                            </span>
+                            <>
+                              <span>•</span>
+                              <span className="flex items-center gap-1">
+                                <Clock className="h-3.5 w-3.5" />
+                                {featuredPost.read_time} min read
+                              </span>
+                            </>
                           )}
                         </div>
+
+                        <Button className="w-fit group/btn bg-primary hover:bg-primary/90">
+                          Read Article
+                          <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
+                        </Button>
                       </div>
                     </div>
-                  </Card>
-                </article>
+                  </div>
+                </motion.article>
               )}
 
-              {/* List */}
+              {/* Content Grid/List */}
               {remainingPosts.length > 0 && (
-                <div className="space-y-4">
-                  {remainingPosts.map((item) => (
-                    <article key={item.id}>
-                      <Card className="transition-colors hover:bg-accent">
-                        <button
-                          type="button"
+                <div className={viewMode === 'grid' 
+                  ? "grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
+                  : "space-y-4"
+                }>
+                  {remainingPosts.map((item, index) => (
+                    <motion.article
+                      key={item.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.05, duration: 0.4 }}
+                      className="group"
+                      onMouseEnter={() => setHoveredCard(item.id)}
+                      onMouseLeave={() => setHoveredCard(null)}
+                    >
+                      {viewMode === 'grid' ? (
+                        // Grid Card
+                        <Card
+                          className="overflow-hidden border-border/50 hover:border-primary/30 hover:shadow-xl transition-all duration-300 cursor-pointer h-full"
                           onClick={() => handleOpenContent(item)}
-                          className="w-full text-left"
                         >
+                          <div className="relative aspect-[16/10] overflow-hidden bg-muted">
+                            <motion.div
+                              animate={{ scale: hoveredCard === item.id ? 1.08 : 1 }}
+                              transition={{ duration: 0.4 }}
+                              className="w-full h-full"
+                            >
+                              {item.thumbnail_url ? (
+                                <img
+                                  src={item.thumbnail_url}
+                                  alt={item.title}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full bg-gradient-to-br from-primary/10 to-brand/10 flex items-center justify-center">
+                                  <FileText className="h-10 w-10 text-muted-foreground/50" />
+                                </div>
+                              )}
+                            </motion.div>
+                            
+                            {/* Overlay on hover */}
+                            <motion.div
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: hoveredCard === item.id ? 1 : 0 }}
+                              className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
+                            />
+
+                            {/* Video play icon */}
+                            {item.type.toLowerCase() === "video" && (
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <motion.div
+                                  animate={{ scale: hoveredCard === item.id ? 1.1 : 1 }}
+                                  className="w-12 h-12 bg-background/90 rounded-full flex items-center justify-center shadow-lg"
+                                >
+                                  <Play className="h-5 w-5 text-foreground ml-0.5" />
+                                </motion.div>
+                              </div>
+                            )}
+
+                            {/* Type badge */}
+                            <div className="absolute top-3 left-3">
+                              <Badge className={`border text-xs ${getTypeColor(item.type)}`}>
+                                {item.type}
+                              </Badge>
+                            </div>
+                          </div>
+
                           <CardContent className="p-5">
-                            <div className="flex gap-5">
-                              <div className="flex-shrink-0 w-28 h-20 md:w-40 md:h-28 bg-muted rounded-lg overflow-hidden">
-                                {item.thumbnail_url ? (
-                                  <img
-                                    loading="lazy"
-                                    src={item.thumbnail_url}
-                                    alt={item.title}
-                                    className="w-full h-full object-cover"
-                                  />
-                                ) : (
-                                  <div className="w-full h-full flex items-center justify-center">
-                                    <FileText className="h-7 w-7 text-muted-foreground/50" />
-                                  </div>
-                                )}
+                            {item.department && (
+                              <span className="text-xs text-muted-foreground mb-2 block">
+                                {item.department.name.replace("Department of ", "")}
+                              </span>
+                            )}
+                            
+                            <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 mb-2">
+                              {item.title}
+                            </h3>
+
+                            {item.body && (
+                              <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
+                                {item.body}
+                              </p>
+                            )}
+
+                            <div className="flex items-center justify-between text-xs text-muted-foreground">
+                              <div className="flex items-center gap-2">
+                                {item.author && <span>{item.author}</span>}
+                                <span>•</span>
+                                <time>{format(new Date(item.created_at), "MMM d")}</time>
+                              </div>
+                              <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform text-primary" />
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ) : (
+                        // List Card
+                        <Card
+                          className="overflow-hidden border-border/50 hover:border-primary/30 hover:bg-accent/50 transition-all duration-300 cursor-pointer"
+                          onClick={() => handleOpenContent(item)}
+                        >
+                          <CardContent className="p-4 sm:p-5">
+                            <div className="flex gap-4 sm:gap-6">
+                              <div className="flex-shrink-0 w-24 h-20 sm:w-40 sm:h-28 rounded-xl overflow-hidden bg-muted">
+                                <motion.div
+                                  animate={{ scale: hoveredCard === item.id ? 1.05 : 1 }}
+                                  transition={{ duration: 0.3 }}
+                                  className="w-full h-full"
+                                >
+                                  {item.thumbnail_url ? (
+                                    <img
+                                      src={item.thumbnail_url}
+                                      alt={item.title}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  ) : (
+                                    <div className="w-full h-full bg-gradient-to-br from-primary/10 to-brand/10 flex items-center justify-center">
+                                      <FileText className="h-8 w-8 text-muted-foreground/50" />
+                                    </div>
+                                  )}
+                                </motion.div>
                               </div>
 
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 flex-wrap mb-2">
-                                  <Badge variant="secondary">{item.type}</Badge>
+                                  <Badge className={`border text-xs ${getTypeColor(item.type)}`}>
+                                    {item.type}
+                                  </Badge>
                                   {item.department && (
                                     <span className="text-xs text-muted-foreground">
                                       {item.department.name.replace("Department of ", "")}
@@ -474,91 +749,51 @@ const Publications = () => {
                                   )}
                                 </div>
 
-                                <h3 className="text-lg md:text-xl font-semibold text-foreground leading-snug line-clamp-2">
+                                <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 mb-2">
                                   {item.title}
                                 </h3>
 
                                 {item.body && (
-                                  <p className="text-sm text-muted-foreground mt-2 line-clamp-2 hidden md:block">
+                                  <p className="text-sm text-muted-foreground line-clamp-2 mb-3 hidden sm:block">
                                     {item.body}
                                   </p>
                                 )}
 
-                                <div className="flex items-center gap-3 text-xs text-muted-foreground mt-3">
+                                <div className="flex items-center gap-3 text-xs text-muted-foreground">
                                   {item.author && <span>{item.author}</span>}
+                                  <span>•</span>
                                   <time>{format(new Date(item.created_at), "MMM d, yyyy")}</time>
                                   {item.read_time && (
-                                    <span className="flex items-center gap-1">
-                                      <Clock className="h-3 w-3" />
-                                      {item.read_time} min
-                                    </span>
+                                    <>
+                                      <span>•</span>
+                                      <span className="flex items-center gap-1">
+                                        <Clock className="h-3 w-3" />
+                                        {item.read_time} min
+                                      </span>
+                                    </>
                                   )}
+                                </div>
+                              </div>
+
+                              <div className="hidden sm:flex items-center">
+                                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-all">
+                                  <ArrowRight className="h-5 w-5" />
                                 </div>
                               </div>
                             </div>
                           </CardContent>
-                        </button>
-                      </Card>
-                    </article>
+                        </Card>
+                      )}
+                    </motion.article>
                   ))}
                 </div>
               )}
-            </section>
-
-            {/* Right sidebar (desktop) */}
-            <aside className="hidden lg:block">
-              <div className="sticky top-24 space-y-6">
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-base">Quick stats</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3 text-sm">
-                    <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">All items</span>
-                      <span className="font-semibold text-foreground">{content.length}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Filtered</span>
-                      <span className="font-semibold text-foreground">{filteredContent.length}</span>
-                    </div>
-                    <Separator />
-                    <p className="text-muted-foreground">
-                      Tip: Use filters to browse by department, then scan titles in the list view.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-base">Departments</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    {departments.slice(0, 8).map((dept) => {
-                      const active = selectedDepartment !== "all" && selectedDepartment === dept.slug;
-                      return (
-                        <button
-                          key={dept.slug}
-                          type="button"
-                          onClick={() => setSelectedDepartment(active ? "all" : dept.slug)}
-                          className={
-                            "w-full text-left rounded-md px-3 py-2 text-sm transition-colors " +
-                            (active ? "bg-accent text-foreground" : "hover:bg-accent text-muted-foreground")
-                          }
-                        >
-                          {dept.name.replace("Department of ", "")}
-                        </button>
-                      );
-                    })}
-                  </CardContent>
-                </Card>
-              </div>
-            </aside>
-          </div>
-        )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
     </div>
   );
 };
 
 export default Publications;
-
