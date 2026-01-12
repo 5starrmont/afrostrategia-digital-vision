@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { BackButton } from "@/components/BackButton";
 import { Badge } from "@/components/ui/badge";
@@ -32,6 +33,7 @@ interface Content {
 }
 
 const Publications = () => {
+  const navigate = useNavigate();
   const [content, setContent] = useState<Content[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -173,7 +175,7 @@ const Publications = () => {
 
   const handleOpenContent = (item: Content) => {
     if (item.media_type === "blog" && item.slug) {
-      window.open(`/blog/${item.slug}`, "_blank");
+      navigate(`/blog/${item.slug}`);
     } else if (item.media_url) {
       window.open(item.media_url, "_blank");
     } else if (item.file_url) {
