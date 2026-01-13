@@ -4,10 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BookOpen, Clock, FileText, Play, Search, ArrowRight, ChevronRight, LayoutGrid, List, Filter, Calendar, User, TrendingUp, Newspaper, Video, FileBarChart } from "lucide-react";
+import { BookOpen, Clock, FileText, Play, Search, ArrowRight, ArrowUpRight, LayoutGrid, List, Filter, Calendar, User, TrendingUp, Newspaper, Video, FileBarChart, Sparkles } from "lucide-react";
 import { format } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -41,8 +40,7 @@ const Publications = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState<string>("all");
   const [selectedDepartment, setSelectedDepartment] = useState<string>("all");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<"magazine" | "grid">("magazine");
 
   useEffect(() => {
     const title = "Publications & Research | AfroStrategia Foundation";
@@ -149,43 +147,42 @@ const Publications = () => {
   const departments = useMemo(() => [...new Set(content.filter((item) => item.department).map((item) => item.department!))].sort((a, b) => a.name.localeCompare(b.name)), [content]);
   const typeCounts = useMemo(() => content.reduce<Record<string, number>>((acc, item) => { acc[item.type] = (acc[item.type] || 0) + 1; return acc; }, {}), [content]);
 
-  const featuredPost = filteredContent[0];
-  const remainingPosts = filteredContent.slice(1);
+  const heroPost = filteredContent[0];
+  const secondaryPosts = filteredContent.slice(1, 3);
+  const editorsPicks = filteredContent.slice(3, 6);
+  const remainingPosts = filteredContent.slice(6);
 
   const getTypeIcon = (type: string) => {
     switch (type.toLowerCase()) {
-      case 'video': return <Video className="h-4 w-4" />;
-      case 'research': return <FileBarChart className="h-4 w-4" />;
-      case 'blog': return <Newspaper className="h-4 w-4" />;
-      default: return <FileText className="h-4 w-4" />;
+      case 'video': return <Video className="h-3.5 w-3.5" />;
+      case 'research': return <FileBarChart className="h-3.5 w-3.5" />;
+      case 'blog': return <Newspaper className="h-3.5 w-3.5" />;
+      default: return <FileText className="h-3.5 w-3.5" />;
     }
   };
 
-  const getTypeStyle = (type: string, isActive = false) => {
-    if (isActive) return "bg-emerald-700 text-white shadow-lg";
+  const getTypeColor = (type: string) => {
     switch (type.toLowerCase()) {
-      case 'video': return 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100';
-      case 'research': return 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100';
-      case 'blog': return 'bg-yellow-50 text-yellow-700 border-yellow-200 hover:bg-yellow-100';
-      case 'policy': return 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100';
-      default: return 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100';
+      case 'video': return 'bg-red-500';
+      case 'research': return 'bg-primary';
+      case 'blog': return 'bg-brand';
+      case 'policy': return 'bg-blue-500';
+      default: return 'bg-muted-foreground';
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-background">
         <Header />
-        <div className="bg-gradient-to-br from-emerald-50 via-white to-yellow-50 py-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="space-y-8 animate-pulse">
-              <div className="h-8 w-48 bg-emerald-100 rounded-lg" />
-              <div className="h-14 w-96 bg-gray-200 rounded-lg" />
-              <div className="h-6 w-80 bg-gray-100 rounded" />
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
-                {[1, 2, 3, 4, 5, 6].map((i) => (
-                  <div key={i} className="h-72 bg-white rounded-2xl shadow-sm" />
-                ))}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="space-y-8 animate-pulse">
+            <div className="h-12 w-72 bg-muted rounded-lg" />
+            <div className="grid lg:grid-cols-2 gap-8">
+              <div className="h-[500px] bg-muted rounded-2xl" />
+              <div className="space-y-4">
+                <div className="h-60 bg-muted rounded-xl" />
+                <div className="h-60 bg-muted rounded-xl" />
               </div>
             </div>
           </div>
@@ -196,127 +193,101 @@ const Publications = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       <Header />
       
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-emerald-50 via-white to-yellow-50 py-16 lg:py-24 overflow-hidden">
-        {/* Decorative elements */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-100/50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-yellow-100/50 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="max-w-3xl"
-          >
+      {/* Masthead */}
+      <section className="border-b border-border">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="py-12 lg:py-16 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
+            <div className="max-w-2xl">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-3 mb-4"
+              >
+                <div className="h-1 w-12 bg-primary rounded-full" />
+                <span className="text-sm font-medium uppercase tracking-widest text-primary">
+                  Insights & Analysis
+                </span>
+              </motion.div>
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="text-5xl lg:text-7xl font-serif font-bold text-foreground tracking-tight leading-[0.9]"
+              >
+                The Digital
+                <br />
+                <span className="italic text-primary">Africa</span> Journal
+              </motion.h1>
+            </div>
+            
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border border-emerald-100 mb-6"
+              className="flex items-center gap-6 text-sm text-muted-foreground"
             >
-              <BookOpen className="h-4 w-4 text-emerald-600" />
-              <span className="text-sm font-medium text-gray-700">Publications & Research</span>
-              <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">{content.length} items</span>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                <span>{content.length} Publications</span>
+              </div>
+              <div className="hidden sm:block h-4 w-px bg-border" />
+              <span className="hidden sm:block">{format(new Date(), "MMMM yyyy")}</span>
             </motion.div>
-            
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-900 leading-tight mb-6"
-            >
-              Insights Shaping{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-yellow-600">
-                Africa's Digital Future
-              </span>
-            </motion.h1>
-            
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="text-lg text-gray-600 leading-relaxed mb-8"
-            >
-              Explore our comprehensive collection of research papers, policy briefs, blog articles, 
-              and multimedia content on digital governance, trade, and innovation across Africa.
-            </motion.p>
-
-            {/* Quick Stats */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="flex flex-wrap gap-4"
-            >
-              {Object.entries(typeCounts).slice(0, 4).map(([type, count], index) => (
-                <motion.button
-                  key={type}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.6 + index * 0.1 }}
-                  onClick={() => setSelectedType(selectedType === type.toLowerCase() ? "all" : type.toLowerCase())}
-                  className={`flex items-center gap-3 bg-white px-5 py-3 rounded-xl shadow-sm border transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 ${
-                    selectedType === type.toLowerCase() ? 'border-emerald-300 ring-2 ring-emerald-100' : 'border-gray-100'
-                  }`}
-                >
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                    type.toLowerCase() === 'research' ? 'bg-emerald-100 text-emerald-600' :
-                    type.toLowerCase() === 'blog' ? 'bg-yellow-100 text-yellow-600' :
-                    type.toLowerCase() === 'video' ? 'bg-red-100 text-red-600' :
-                    'bg-gray-100 text-gray-600'
-                  }`}>
-                    {getTypeIcon(type)}
-                  </div>
-                  <div className="text-left">
-                    <p className="text-2xl font-bold text-gray-900">{count}</p>
-                    <p className="text-xs text-gray-500 capitalize">{type}</p>
-                  </div>
-                </motion.button>
-              ))}
-            </motion.div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Filter Bar */}
-      <section className="sticky top-16 z-30 bg-white border-b border-gray-100 shadow-sm">
+      <section className="sticky top-16 z-30 bg-background/95 backdrop-blur-sm border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
-            {/* Search and Filters */}
-            <div className="flex flex-wrap gap-3 items-center w-full lg:w-auto">
-              <div className="relative flex-1 min-w-[240px] max-w-md">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+            <div className="flex flex-wrap gap-2 items-center">
+              <button
+                onClick={() => setSelectedType("all")}
+                className={`px-4 py-2 text-sm font-medium rounded-full transition-all ${
+                  selectedType === "all" 
+                    ? "bg-foreground text-background" 
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                }`}
+              >
+                All
+              </button>
+              {contentTypes.map((type) => (
+                <button
+                  key={type}
+                  onClick={() => setSelectedType(selectedType === type.toLowerCase() ? "all" : type.toLowerCase())}
+                  className={`px-4 py-2 text-sm font-medium rounded-full transition-all flex items-center gap-2 ${
+                    selectedType === type.toLowerCase()
+                      ? "bg-foreground text-background"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  }`}
+                >
+                  {getTypeIcon(type)}
+                  {type}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search publications..."
+                  placeholder="Search..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500"
+                  className="pl-9 w-48 bg-muted/50 border-0 focus-visible:ring-1 focus-visible:ring-primary"
                 />
               </div>
               
-              <Select value={selectedType} onValueChange={setSelectedType}>
-                <SelectTrigger className="w-36 border-gray-200">
-                  <Filter className="h-4 w-4 mr-2 text-gray-400" />
-                  <SelectValue placeholder="Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
-                  {contentTypes.map((type) => (
-                    <SelectItem key={type} value={type.toLowerCase()}>{type}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
               <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
-                <SelectTrigger className="w-48 border-gray-200 hidden md:flex">
+                <SelectTrigger className="w-40 bg-muted/50 border-0 hidden md:flex">
                   <SelectValue placeholder="Department" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Departments</SelectItem>
+                  <SelectItem value="all">All Topics</SelectItem>
                   {departments.map((dept) => (
                     <SelectItem key={dept.slug} value={dept.slug}>
                       {dept.name.replace("Department of ", "")}
@@ -325,348 +296,436 @@ const Publications = () => {
                 </SelectContent>
               </Select>
             </div>
-
-            {/* View Toggle & Results Count */}
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-500">
-                <span className="font-semibold text-gray-900">{filteredContent.length}</span> results
-              </span>
-              <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
-                <button
-                  onClick={() => setViewMode('grid')}
-                  className={`p-2 rounded-md transition-all ${viewMode === 'grid' ? 'bg-white shadow-sm text-emerald-600' : 'text-gray-400 hover:text-gray-600'}`}
-                >
-                  <LayoutGrid className="h-4 w-4" />
-                </button>
-                <button
-                  onClick={() => setViewMode('list')}
-                  className={`p-2 rounded-md transition-all ${viewMode === 'list' ? 'bg-white shadow-sm text-emerald-600' : 'text-gray-400 hover:text-gray-600'}`}
-                >
-                  <List className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Category Pills */}
-          <div className="flex gap-2 mt-4 overflow-x-auto pb-2 scrollbar-hide">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => setSelectedType("all")}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap border ${
-                selectedType === "all" ? "bg-emerald-700 text-white border-emerald-700" : "bg-white border-gray-200 text-gray-700 hover:border-emerald-200 hover:bg-emerald-50"
-              }`}
-            >
-              All Publications
-            </motion.button>
-            {contentTypes.map((type) => (
-              <motion.button
-                key={type}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setSelectedType(selectedType === type.toLowerCase() ? "all" : type.toLowerCase())}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap flex items-center gap-2 border ${
-                  selectedType === type.toLowerCase() ? getTypeStyle(type, true) : getTypeStyle(type)
-                }`}
-              >
-                {getTypeIcon(type)}
-                {type}
-                <span className="opacity-60">({typeCounts[type] || 0})</span>
-              </motion.button>
-            ))}
           </div>
         </div>
       </section>
 
       {/* Main Content */}
-      <main className="bg-gray-50 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <AnimatePresence mode="wait">
-            {filteredContent.length === 0 ? (
-              <motion.div
-                key="empty"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="text-center py-20"
-              >
-                <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-6">
-                  <BookOpen className="h-10 w-10 text-gray-400" />
-                </div>
-                <h2 className="text-2xl font-semibold text-gray-900 mb-3">No publications found</h2>
-                <p className="text-gray-600 mb-6">Try adjusting your search or filters.</p>
-                <Button 
-                  onClick={() => { setSearchTerm(""); setSelectedType("all"); setSelectedDepartment("all"); }}
-                  className="bg-emerald-700 hover:bg-emerald-800"
-                >
-                  Clear All Filters
-                </Button>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="content"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="space-y-12"
-              >
-                {/* Featured Post */}
-                {featuredPost && (
-                  <motion.article
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <AnimatePresence mode="wait">
+          {filteredContent.length === 0 ? (
+            <motion.div
+              key="empty"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="text-center py-24"
+            >
+              <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-6">
+                <BookOpen className="h-10 w-10 text-muted-foreground" />
+              </div>
+              <h3 className="text-xl font-semibold text-foreground mb-2">No publications found</h3>
+              <p className="text-muted-foreground">Try adjusting your filters or search terms</p>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="content"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              {/* Hero Section - Featured Story */}
+              {heroPost && (
+                <section className="mb-16">
+                  <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
-                    className="group"
+                    className="grid lg:grid-cols-2 gap-0 bg-foreground rounded-3xl overflow-hidden group cursor-pointer"
+                    onClick={() => handleOpenContent(heroPost)}
                   >
-                    <div
-                      className="relative overflow-hidden rounded-2xl bg-white shadow-lg hover:shadow-xl transition-all duration-500 cursor-pointer"
-                      onClick={() => handleOpenContent(featuredPost)}
-                      onMouseEnter={() => setHoveredCard(featuredPost.id)}
-                      onMouseLeave={() => setHoveredCard(null)}
-                    >
-                      <div className="grid lg:grid-cols-2 gap-0">
-                        {/* Image */}
-                        <div className="relative aspect-[16/10] lg:aspect-auto lg:min-h-[400px] overflow-hidden">
-                          <motion.div
-                            animate={{ scale: hoveredCard === featuredPost.id ? 1.05 : 1 }}
-                            transition={{ duration: 0.6 }}
-                            className="absolute inset-0"
-                          >
-                            {featuredPost.thumbnail_url ? (
-                              <img src={featuredPost.thumbnail_url} alt={featuredPost.title} className="w-full h-full object-cover" />
-                            ) : (
-                              <div className="w-full h-full bg-gradient-to-br from-emerald-100 to-yellow-100 flex items-center justify-center">
-                                <FileText className="h-20 w-20 text-emerald-300" />
-                              </div>
-                            )}
-                          </motion.div>
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:to-transparent" />
-                          
-                          {/* Featured Badge */}
-                          <div className="absolute top-4 left-4 flex gap-2">
-                            <span className="inline-flex items-center gap-1.5 bg-yellow-500 text-white px-3 py-1.5 rounded-full text-sm font-semibold shadow-lg">
-                              <TrendingUp className="h-3.5 w-3.5" />
-                              Featured
-                            </span>
-                          </div>
-
-                          {/* Video Play Button */}
-                          {featuredPost.type.toLowerCase() === "video" && (
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <motion.div
-                                whileHover={{ scale: 1.1 }}
-                                className="w-20 h-20 bg-white/95 rounded-full flex items-center justify-center shadow-2xl"
-                              >
-                                <Play className="h-8 w-8 text-emerald-700 ml-1" />
-                              </motion.div>
-                            </div>
-                          )}
+                    {/* Image */}
+                    <div className="relative aspect-[4/3] lg:aspect-auto overflow-hidden">
+                      {heroPost.thumbnail_url ? (
+                        <img
+                          src={heroPost.thumbnail_url}
+                          alt={heroPost.title}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-primary/20 to-brand/20 flex items-center justify-center">
+                          <BookOpen className="h-24 w-24 text-primary/30" />
                         </div>
-
-                        {/* Content */}
-                        <div className="p-8 lg:p-12 flex flex-col justify-center">
-                          <div className="flex items-center gap-3 flex-wrap mb-4">
-                            <Badge className={`border ${getTypeStyle(featuredPost.type)}`}>
-                              {getTypeIcon(featuredPost.type)}
-                              <span className="ml-1.5">{featuredPost.type}</span>
-                            </Badge>
-                            {featuredPost.department && (
-                              <Badge variant="outline" className="text-gray-600 border-gray-200">
-                                {featuredPost.department.name.replace("Department of ", "")}
-                              </Badge>
-                            )}
+                      )}
+                      {heroPost.media_type === "video" && (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="w-20 h-20 rounded-full bg-background/90 flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
+                            <Play className="h-8 w-8 text-foreground ml-1" fill="currentColor" />
                           </div>
-
-                          <h2 className="text-2xl lg:text-3xl xl:text-4xl font-bold text-gray-900 mb-4 group-hover:text-emerald-700 transition-colors leading-tight">
-                            {featuredPost.title}
-                          </h2>
-
-                          {featuredPost.body && (
-                            <p className="text-gray-600 text-lg mb-6 line-clamp-3">{featuredPost.body}</p>
-                          )}
-
-                          <div className="flex items-center gap-4 text-sm text-gray-500 mb-6">
-                            {featuredPost.author && (
-                              <span className="flex items-center gap-1.5">
-                                <User className="h-4 w-4" />
-                                {featuredPost.author}
-                              </span>
-                            )}
-                            <span className="flex items-center gap-1.5">
-                              <Calendar className="h-4 w-4" />
-                              {format(new Date(featuredPost.created_at), "MMM d, yyyy")}
-                            </span>
-                            {featuredPost.read_time && (
-                              <span className="flex items-center gap-1.5">
-                                <Clock className="h-4 w-4" />
-                                {featuredPost.read_time} min read
-                              </span>
-                            )}
-                          </div>
-
-                          <Button className="w-fit bg-emerald-700 hover:bg-emerald-800 text-white group/btn">
-                            Read Full Article
-                            <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
-                          </Button>
                         </div>
+                      )}
+                      <div className="absolute top-6 left-6">
+                        <span className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider text-white ${getTypeColor(heroPost.type)}`}>
+                          {heroPost.type}
+                        </span>
                       </div>
                     </div>
-                  </motion.article>
-                )}
+                    
+                    {/* Content */}
+                    <div className="p-8 lg:p-12 flex flex-col justify-center">
+                      <div className="mb-4">
+                        <span className="text-primary text-sm font-medium uppercase tracking-wider">
+                          Featured Story
+                        </span>
+                      </div>
+                      <h2 className="text-3xl lg:text-4xl xl:text-5xl font-serif font-bold text-background leading-tight mb-6 group-hover:text-primary transition-colors">
+                        {heroPost.title}
+                      </h2>
+                      {heroPost.body && (
+                        <p className="text-background/70 text-lg leading-relaxed mb-8 line-clamp-3">
+                          {heroPost.body.replace(/<[^>]*>/g, "").slice(0, 200)}...
+                        </p>
+                      )}
+                      <div className="flex items-center gap-6 text-background/60 text-sm">
+                        {heroPost.author && (
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                              <User className="h-4 w-4 text-primary" />
+                            </div>
+                            <span>{heroPost.author}</span>
+                          </div>
+                        )}
+                        <div className="flex items-center gap-2">
+                          <Calendar className="h-4 w-4" />
+                          <span>{format(new Date(heroPost.created_at), "MMM d, yyyy")}</span>
+                        </div>
+                        {heroPost.read_time && (
+                          <div className="flex items-center gap-2">
+                            <Clock className="h-4 w-4" />
+                            <span>{heroPost.read_time} min read</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="mt-8">
+                        <span className="inline-flex items-center gap-2 text-primary font-semibold group-hover:gap-4 transition-all">
+                          Read Full Story
+                          <ArrowRight className="h-5 w-5" />
+                        </span>
+                      </div>
+                    </div>
+                  </motion.div>
+                </section>
+              )}
 
-                {/* Content Grid/List */}
-                {remainingPosts.length > 0 && (
-                  <div className={viewMode === 'grid' ? "grid sm:grid-cols-2 lg:grid-cols-3 gap-6" : "space-y-4"}>
-                    {remainingPosts.map((item, index) => (
+              {/* Secondary Stories - Asymmetric Grid */}
+              {secondaryPosts.length > 0 && (
+                <section className="mb-16">
+                  <div className="grid md:grid-cols-2 gap-6">
+                    {secondaryPosts.map((post, index) => (
                       <motion.article
-                        key={item.id}
+                        key={post.id}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.05, duration: 0.4 }}
-                        className="group"
-                        onMouseEnter={() => setHoveredCard(item.id)}
-                        onMouseLeave={() => setHoveredCard(null)}
+                        transition={{ delay: index * 0.1 }}
+                        onClick={() => handleOpenContent(post)}
+                        className="group cursor-pointer bg-muted/30 rounded-2xl overflow-hidden hover:bg-muted/50 transition-colors"
                       >
-                        {viewMode === 'grid' ? (
-                          <Card
-                            className="overflow-hidden border-0 shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer h-full bg-white"
-                            onClick={() => handleOpenContent(item)}
-                          >
-                            <div className="relative aspect-[16/10] overflow-hidden">
-                              <motion.div
-                                animate={{ scale: hoveredCard === item.id ? 1.05 : 1 }}
-                                transition={{ duration: 0.4 }}
-                                className="w-full h-full"
-                              >
-                                {item.thumbnail_url ? (
-                                  <img src={item.thumbnail_url} alt={item.title} className="w-full h-full object-cover" />
-                                ) : (
-                                  <div className="w-full h-full bg-gradient-to-br from-emerald-50 to-yellow-50 flex items-center justify-center">
-                                    <FileText className="h-12 w-12 text-emerald-200" />
-                                  </div>
-                                )}
-                              </motion.div>
-
-                              {item.type.toLowerCase() === "video" && (
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                  <motion.div
-                                    animate={{ scale: hoveredCard === item.id ? 1.1 : 1 }}
-                                    className="w-14 h-14 bg-white/95 rounded-full flex items-center justify-center shadow-lg"
-                                  >
-                                    <Play className="h-6 w-6 text-emerald-700 ml-0.5" />
-                                  </motion.div>
-                                </div>
-                              )}
-
-                              <div className="absolute top-3 left-3">
-                                <Badge className={`border text-xs ${getTypeStyle(item.type)}`}>
-                                  {item.type}
-                                </Badge>
+                        <div className="flex flex-col sm:flex-row h-full">
+                          <div className="relative w-full sm:w-2/5 aspect-[4/3] sm:aspect-auto overflow-hidden">
+                            {post.thumbnail_url ? (
+                              <img
+                                src={post.thumbnail_url}
+                                alt={post.title}
+                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                              />
+                            ) : (
+                              <div className="w-full h-full min-h-[200px] bg-gradient-to-br from-primary/10 to-brand/10 flex items-center justify-center">
+                                <BookOpen className="h-12 w-12 text-primary/30" />
                               </div>
+                            )}
+                            {post.media_type === "video" && (
+                              <div className="absolute inset-0 flex items-center justify-center bg-foreground/20">
+                                <div className="w-12 h-12 rounded-full bg-background/90 flex items-center justify-center">
+                                  <Play className="h-5 w-5 text-foreground ml-0.5" fill="currentColor" />
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex-1 p-6 flex flex-col justify-center">
+                            <div className="flex items-center gap-3 mb-3">
+                              <span className={`w-2 h-2 rounded-full ${getTypeColor(post.type)}`} />
+                              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                                {post.type}
+                              </span>
                             </div>
-
-                            <CardContent className="p-5">
-                              {item.department && (
-                                <span className="text-xs text-emerald-600 font-medium mb-2 block">
-                                  {item.department.name.replace("Department of ", "")}
-                                </span>
-                              )}
-                              
-                              <h3 className="font-semibold text-gray-900 group-hover:text-emerald-700 transition-colors line-clamp-2 mb-2 text-lg">
-                                {item.title}
-                              </h3>
-
-                              {item.body && (
-                                <p className="text-sm text-gray-600 line-clamp-2 mb-4">{item.body}</p>
-                              )}
-
-                              <div className="flex items-center justify-between text-xs text-gray-500 pt-4 border-t border-gray-100">
-                                <div className="flex items-center gap-2">
-                                  {item.author && <span>{item.author}</span>}
-                                  <span>•</span>
-                                  <time>{format(new Date(item.created_at), "MMM d, yyyy")}</time>
-                                </div>
-                                <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform text-emerald-600" />
-                              </div>
-                            </CardContent>
-                          </Card>
-                        ) : (
-                          <Card
-                            className="overflow-hidden border-0 shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer bg-white"
-                            onClick={() => handleOpenContent(item)}
-                          >
-                            <CardContent className="p-4 sm:p-5">
-                              <div className="flex gap-4 sm:gap-6">
-                                <div className="flex-shrink-0 w-28 h-20 sm:w-44 sm:h-28 rounded-xl overflow-hidden">
-                                  <motion.div
-                                    animate={{ scale: hoveredCard === item.id ? 1.05 : 1 }}
-                                    transition={{ duration: 0.3 }}
-                                    className="w-full h-full"
-                                  >
-                                    {item.thumbnail_url ? (
-                                      <img src={item.thumbnail_url} alt={item.title} className="w-full h-full object-cover" />
-                                    ) : (
-                                      <div className="w-full h-full bg-gradient-to-br from-emerald-50 to-yellow-50 flex items-center justify-center">
-                                        <FileText className="h-8 w-8 text-emerald-200" />
-                                      </div>
-                                    )}
-                                  </motion.div>
-                                </div>
-
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex items-center gap-2 flex-wrap mb-2">
-                                    <Badge className={`border text-xs ${getTypeStyle(item.type)}`}>
-                                      {item.type}
-                                    </Badge>
-                                    {item.department && (
-                                      <span className="text-xs text-gray-500">
-                                        {item.department.name.replace("Department of ", "")}
-                                      </span>
-                                    )}
-                                  </div>
-
-                                  <h3 className="text-lg font-semibold text-gray-900 group-hover:text-emerald-700 transition-colors line-clamp-2 mb-2">
-                                    {item.title}
-                                  </h3>
-
-                                  {item.body && (
-                                    <p className="text-sm text-gray-600 line-clamp-2 mb-3 hidden sm:block">{item.body}</p>
-                                  )}
-
-                                  <div className="flex items-center gap-3 text-xs text-gray-500">
-                                    {item.author && <span>{item.author}</span>}
-                                    <span>•</span>
-                                    <time>{format(new Date(item.created_at), "MMM d, yyyy")}</time>
-                                    {item.read_time && (
-                                      <>
-                                        <span>•</span>
-                                        <span className="flex items-center gap-1">
-                                          <Clock className="h-3 w-3" />
-                                          {item.read_time} min
-                                        </span>
-                                      </>
-                                    )}
-                                  </div>
-                                </div>
-
-                                <div className="hidden sm:flex items-center">
-                                  <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center group-hover:bg-emerald-700 transition-all">
-                                    <ArrowRight className="h-5 w-5 text-emerald-600 group-hover:text-white transition-colors" />
-                                  </div>
-                                </div>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        )}
+                            <h3 className="text-xl font-bold text-foreground leading-snug mb-3 group-hover:text-primary transition-colors line-clamp-2">
+                              {post.title}
+                            </h3>
+                            {post.body && (
+                              <p className="text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-2">
+                                {post.body.replace(/<[^>]*>/g, "").slice(0, 120)}...
+                              </p>
+                            )}
+                            <div className="flex items-center gap-4 text-xs text-muted-foreground mt-auto">
+                              {post.author && <span>{post.author}</span>}
+                              <span>{format(new Date(post.created_at), "MMM d")}</span>
+                            </div>
+                          </div>
+                        </div>
                       </motion.article>
                     ))}
                   </div>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+                </section>
+              )}
+
+              {/* Editor's Picks Section */}
+              {editorsPicks.length > 0 && (
+                <section className="mb-16">
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center gap-3">
+                      <Sparkles className="h-5 w-5 text-brand" />
+                      <h2 className="text-2xl font-serif font-bold text-foreground">Editor's Picks</h2>
+                    </div>
+                    <div className="h-px flex-1 bg-border ml-6" />
+                  </div>
+                  
+                  <div className="grid md:grid-cols-3 gap-8">
+                    {editorsPicks.map((post, index) => (
+                      <motion.article
+                        key={post.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        onClick={() => handleOpenContent(post)}
+                        className="group cursor-pointer"
+                      >
+                        <div className="relative aspect-[16/10] rounded-xl overflow-hidden mb-4">
+                          {post.thumbnail_url ? (
+                            <img
+                              src={post.thumbnail_url}
+                              alt={post.title}
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-primary/10 to-brand/10 flex items-center justify-center">
+                              <BookOpen className="h-10 w-10 text-primary/30" />
+                            </div>
+                          )}
+                          {post.media_type === "video" && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-foreground/20">
+                              <div className="w-10 h-10 rounded-full bg-background/90 flex items-center justify-center">
+                                <Play className="h-4 w-4 text-foreground ml-0.5" fill="currentColor" />
+                              </div>
+                            </div>
+                          )}
+                          <div className="absolute bottom-3 left-3">
+                            <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-white ${getTypeColor(post.type)}`}>
+                              {post.type}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 mb-2">
+                          {post.department && (
+                            <span className="text-xs font-medium text-primary">
+                              {post.department.name.replace("Department of ", "")}
+                            </span>
+                          )}
+                        </div>
+                        <h3 className="text-lg font-bold text-foreground leading-snug mb-2 group-hover:text-primary transition-colors line-clamp-2">
+                          {post.title}
+                        </h3>
+                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                          {post.author && <span>{post.author}</span>}
+                          <span>•</span>
+                          <span>{format(new Date(post.created_at), "MMM d, yyyy")}</span>
+                        </div>
+                      </motion.article>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* Latest Stories - Magazine List */}
+              {remainingPosts.length > 0 && (
+                <section>
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center gap-3">
+                      <TrendingUp className="h-5 w-5 text-primary" />
+                      <h2 className="text-2xl font-serif font-bold text-foreground">Latest Stories</h2>
+                    </div>
+                    <div className="h-px flex-1 bg-border ml-6" />
+                  </div>
+
+                  <div className="grid lg:grid-cols-12 gap-12">
+                    {/* Main Column */}
+                    <div className="lg:col-span-8 space-y-0 divide-y divide-border">
+                      {remainingPosts.slice(0, 8).map((post, index) => (
+                        <motion.article
+                          key={post.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.05 }}
+                          onClick={() => handleOpenContent(post)}
+                          className="group cursor-pointer py-8 first:pt-0"
+                        >
+                          <div className="flex gap-6">
+                            {/* Number */}
+                            <div className="hidden sm:block flex-shrink-0">
+                              <span className="text-5xl font-serif font-bold text-muted/50">
+                                {String(index + 1).padStart(2, "0")}
+                              </span>
+                            </div>
+                            
+                            {/* Content */}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-3 mb-3">
+                                <span className={`w-2 h-2 rounded-full ${getTypeColor(post.type)}`} />
+                                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                                  {post.type}
+                                </span>
+                                {post.department && (
+                                  <>
+                                    <span className="text-muted-foreground">•</span>
+                                    <span className="text-xs text-primary font-medium">
+                                      {post.department.name.replace("Department of ", "")}
+                                    </span>
+                                  </>
+                                )}
+                              </div>
+                              <h3 className="text-xl font-bold text-foreground leading-snug mb-2 group-hover:text-primary transition-colors">
+                                {post.title}
+                              </h3>
+                              {post.body && (
+                                <p className="text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-2">
+                                  {post.body.replace(/<[^>]*>/g, "").slice(0, 160)}...
+                                </p>
+                              )}
+                              <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                                {post.author && (
+                                  <span className="font-medium text-foreground/80">{post.author}</span>
+                                )}
+                                <span>{format(new Date(post.created_at), "MMM d, yyyy")}</span>
+                                {post.read_time && (
+                                  <span className="flex items-center gap-1">
+                                    <Clock className="h-3 w-3" />
+                                    {post.read_time} min
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Thumbnail */}
+                            <div className="hidden md:block flex-shrink-0 w-32 h-24 rounded-lg overflow-hidden">
+                              {post.thumbnail_url ? (
+                                <img
+                                  src={post.thumbnail_url}
+                                  alt={post.title}
+                                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                />
+                              ) : (
+                                <div className="w-full h-full bg-gradient-to-br from-primary/10 to-brand/10 flex items-center justify-center">
+                                  <BookOpen className="h-6 w-6 text-primary/30" />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </motion.article>
+                      ))}
+                    </div>
+
+                    {/* Sidebar */}
+                    <aside className="lg:col-span-4">
+                      <div className="sticky top-36 space-y-8">
+                        {/* Topics */}
+                        <div className="bg-muted/30 rounded-2xl p-6">
+                          <h3 className="text-sm font-bold uppercase tracking-wider text-foreground mb-4">
+                            Browse by Topic
+                          </h3>
+                          <div className="flex flex-wrap gap-2">
+                            {departments.map((dept) => (
+                              <button
+                                key={dept.slug}
+                                onClick={() => setSelectedDepartment(selectedDepartment === dept.slug ? "all" : dept.slug)}
+                                className={`px-3 py-1.5 rounded-full text-sm transition-all ${
+                                  selectedDepartment === dept.slug
+                                    ? "bg-primary text-primary-foreground"
+                                    : "bg-background text-muted-foreground hover:text-foreground hover:bg-muted"
+                                }`}
+                              >
+                                {dept.name.replace("Department of ", "")}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Stats */}
+                        <div className="bg-gradient-to-br from-primary to-primary/80 rounded-2xl p-6 text-primary-foreground">
+                          <h3 className="text-sm font-bold uppercase tracking-wider mb-4 opacity-80">
+                            Content Library
+                          </h3>
+                          <div className="grid grid-cols-2 gap-4">
+                            {Object.entries(typeCounts).slice(0, 4).map(([type, count]) => (
+                              <div key={type} className="text-center">
+                                <p className="text-3xl font-bold">{count}</p>
+                                <p className="text-xs opacity-70 capitalize">{type}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Newsletter CTA */}
+                        <div className="border border-border rounded-2xl p-6">
+                          <h3 className="text-lg font-bold text-foreground mb-2">Stay Updated</h3>
+                          <p className="text-sm text-muted-foreground mb-4">
+                            Get the latest insights on Africa's digital transformation delivered to your inbox.
+                          </p>
+                          <Button className="w-full bg-foreground text-background hover:bg-foreground/90">
+                            Subscribe
+                            <ArrowRight className="h-4 w-4 ml-2" />
+                          </Button>
+                        </div>
+                      </div>
+                    </aside>
+                  </div>
+
+                  {/* More Stories Grid */}
+                  {remainingPosts.length > 8 && (
+                    <div className="mt-16">
+                      <div className="flex items-center justify-between mb-8">
+                        <h2 className="text-xl font-serif font-bold text-foreground">More Stories</h2>
+                        <div className="h-px flex-1 bg-border ml-6" />
+                      </div>
+                      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {remainingPosts.slice(8).map((post, index) => (
+                          <motion.article
+                            key={post.id}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.05 }}
+                            onClick={() => handleOpenContent(post)}
+                            className="group cursor-pointer"
+                          >
+                            <div className="relative aspect-[4/3] rounded-xl overflow-hidden mb-3">
+                              {post.thumbnail_url ? (
+                                <img
+                                  src={post.thumbnail_url}
+                                  alt={post.title}
+                                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                />
+                              ) : (
+                                <div className="w-full h-full bg-gradient-to-br from-primary/10 to-brand/10 flex items-center justify-center">
+                                  <BookOpen className="h-8 w-8 text-primary/30" />
+                                </div>
+                              )}
+                              <div className="absolute top-2 left-2">
+                                <span className={`w-2 h-2 rounded-full inline-block ${getTypeColor(post.type)}`} />
+                              </div>
+                            </div>
+                            <h3 className="text-sm font-bold text-foreground leading-snug group-hover:text-primary transition-colors line-clamp-2 mb-1">
+                              {post.title}
+                            </h3>
+                            <span className="text-xs text-muted-foreground">
+                              {format(new Date(post.created_at), "MMM d")}
+                            </span>
+                          </motion.article>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </section>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
 
       <Footer />
