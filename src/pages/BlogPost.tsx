@@ -1,14 +1,14 @@
 import { useEffect, useState, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { BackButton } from "@/components/BackButton";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
-import { Clock, Calendar, User, ArrowLeft, ChevronLeft, ChevronRight, Share2, Bookmark, Heart } from "lucide-react";
+import { Clock, Calendar, User, ArrowLeft, ChevronLeft, ChevronRight, Share2, Bookmark, Heart, Twitter, Linkedin, Link2, ArrowUpRight } from "lucide-react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { Footer } from "@/components/Footer";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface BlogPostData {
@@ -34,6 +34,8 @@ interface RelatedPost {
   thumbnail_url: string | null;
   created_at: string;
   slug: string | null;
+  author: string | null;
+  read_time: number | null;
 }
 
 const BlogPost = () => {
@@ -49,7 +51,7 @@ const BlogPost = () => {
   const [isPaused, setIsPaused] = useState(false);
   const [direction, setDirection] = useState(1);
 
-  // Reading progress bar with smooth animation
+  // Reading progress bar
   useEffect(() => {
     const updateProgress = () => {
       const scrollTop = window.scrollY;
@@ -129,14 +131,15 @@ const BlogPost = () => {
       setPost(data);
 
       // Fetch related posts
-      if (data?.department?.slug) {
+      if (data) {
         const { data: related } = await supabase
           .from("content")
-          .select("id, title, thumbnail_url, created_at, slug")
+          .select("id, title, thumbnail_url, created_at, slug, author, read_time")
           .eq("type", "blog")
           .eq("published", true)
           .neq("id", data.id)
-          .limit(3);
+          .order("created_at", { ascending: false })
+          .limit(4);
 
         setRelatedPosts(related || []);
       }
@@ -151,165 +154,180 @@ const BlogPost = () => {
     enter: (direction: number) => ({
       x: direction > 0 ? 300 : -300,
       opacity: 0,
-      scale: 1.1,
     }),
     center: {
       zIndex: 1,
       x: 0,
       opacity: 1,
-      scale: 1,
     },
     exit: (direction: number) => ({
       zIndex: 0,
       x: direction < 0 ? 300 : -300,
       opacity: 0,
-      scale: 0.9,
     }),
+  };
+
+  const handleShare = async (platform: string) => {
+    const url = window.location.href;
+    const title = post?.title || "";
+    
+    switch (platform) {
+      case "twitter":
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`, "_blank");
+        break;
+      case "linkedin":
+        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, "_blank");
+        break;
+      case "copy":
+        await navigator.clipboard.writeText(url);
+        break;
+    }
   };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
+        <Header />
         <div className="max-w-4xl mx-auto px-4 py-20">
-          <div className="animate-pulse space-y-6">
-            <div className="h-8 bg-muted rounded w-3/4" />
-            <div className="h-64 bg-muted rounded-xl" />
-            <div className="space-y-3">
+          <div className="animate-pulse space-y-8">
+            <div className="h-4 w-32 bg-muted rounded" />
+            <div className="h-12 bg-muted rounded w-3/4" />
+            <div className="flex gap-4">
+              <div className="h-4 w-24 bg-muted rounded" />
+              <div className="h-4 w-24 bg-muted rounded" />
+            </div>
+            <div className="h-[400px] bg-muted rounded-2xl" />
+            <div className="space-y-4">
               <div className="h-4 bg-muted rounded w-full" />
               <div className="h-4 bg-muted rounded w-5/6" />
               <div className="h-4 bg-muted rounded w-4/5" />
             </div>
           </div>
         </div>
+        <Footer />
       </div>
     );
   }
 
   if (!post) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center"
-        >
-          <h1 className="text-2xl font-bold text-foreground mb-4">Post not found</h1>
-          <p className="text-muted-foreground mb-6">The blog post you're looking for doesn't exist.</p>
-          <Button onClick={() => navigate("/publications")}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Publications
-          </Button>
-        </motion.div>
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="flex flex-col items-center justify-center py-32">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center max-w-md mx-auto px-4"
+          >
+            <h1 className="text-4xl font-serif font-bold text-foreground mb-4">Article Not Found</h1>
+            <p className="text-muted-foreground mb-8">The article you're looking for doesn't exist or has been removed.</p>
+            <Button onClick={() => navigate("/publications")} variant="outline" className="gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              Back to Publications
+            </Button>
+          </motion.div>
+        </div>
+        <Footer />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-background">
+      <Header />
+      
       {/* Reading progress bar */}
       <motion.div 
-        className="fixed top-0 left-0 h-1.5 bg-gradient-to-r from-primary via-primary to-brand z-50"
+        className="fixed top-0 left-0 h-1 bg-primary z-50"
         style={{ width: `${readProgress}%` }}
-        initial={{ scaleX: 0 }}
-        animate={{ scaleX: 1 }}
-        transition={{ duration: 0.1 }}
       />
 
-      {/* Hero Section with Parallax Effect */}
-      <motion.header 
-        className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-accent/10"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6 }}
-      >
-        {/* Animated background shapes */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <motion.div 
-            className="absolute -top-20 -right-20 w-96 h-96 rounded-full bg-primary/5 blur-3xl"
-            animate={{ 
-              scale: [1, 1.2, 1],
-              rotate: [0, 90, 0],
-            }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          />
-          <motion.div 
-            className="absolute -bottom-20 -left-20 w-80 h-80 rounded-full bg-brand/5 blur-3xl"
-            animate={{ 
-              scale: [1.2, 1, 1.2],
-              rotate: [0, -90, 0],
-            }}
-            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-          />
-        </div>
-
-        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
-          <BackButton className="mb-8" />
-
-          <motion.div 
-            className="flex flex-wrap items-center gap-3 mb-6"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-          >
+      {/* Breadcrumb */}
+      <section className="border-b border-border">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <nav className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to="/publications" className="hover:text-foreground transition-colors">
+              Publications
+            </Link>
+            <span>/</span>
             {post.department && (
-              <Badge className="bg-primary text-primary-foreground px-4 py-1.5 text-sm font-medium">
+              <>
+                <span className="hover:text-foreground transition-colors cursor-pointer">
+                  {post.department.name.replace("Department of ", "")}
+                </span>
+                <span>/</span>
+              </>
+            )}
+            <span className="text-foreground truncate max-w-[200px]">{post.title}</span>
+          </nav>
+        </div>
+      </section>
+
+      {/* Article Header */}
+      <header className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          {/* Category Badge */}
+          <div className="flex items-center gap-3 mb-6">
+            <div className="h-1 w-8 bg-primary rounded-full" />
+            {post.department && (
+              <Badge variant="secondary" className="text-xs uppercase tracking-wider font-medium">
                 {post.department.name.replace("Department of ", "")}
               </Badge>
             )}
-            <Badge variant="outline" className="px-4 py-1.5">Blog</Badge>
-          </motion.div>
+          </div>
 
-          <motion.h1 
-            className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground leading-tight mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
+          {/* Title */}
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-foreground leading-[1.1] mb-8">
             {post.title}
-          </motion.h1>
+          </h1>
 
-          <motion.div 
-            className="flex flex-wrap items-center gap-6 text-muted-foreground"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-          >
+          {/* Meta info */}
+          <div className="flex flex-wrap items-center gap-6 text-muted-foreground pb-8 border-b border-border">
             {post.author && (
-              <div className="flex items-center gap-2 group cursor-pointer">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                  <User className="h-4 w-4 text-primary" />
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
+                  <User className="h-5 w-5 text-primary-foreground" />
                 </div>
-                <span className="font-medium text-foreground">{post.author}</span>
+                <div>
+                  <p className="text-sm font-medium text-foreground">{post.author}</p>
+                  <p className="text-xs text-muted-foreground">Author</p>
+                </div>
               </div>
             )}
+            
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4" />
-              <time>{format(new Date(post.created_at), "MMMM d, yyyy")}</time>
+              <time className="text-sm">{format(new Date(post.created_at), "MMMM d, yyyy")}</time>
             </div>
+            
             {post.read_time && (
               <div className="flex items-center gap-2">
                 <Clock className="h-4 w-4" />
-                <span>{post.read_time} min read</span>
+                <span className="text-sm">{post.read_time} min read</span>
               </div>
             )}
-          </motion.div>
-        </div>
-      </motion.header>
+          </div>
+        </motion.div>
+      </header>
 
-      {/* Interactive Image Gallery with Auto-Slideshow */}
+      {/* Featured Image */}
       {allImages.length > 0 && (
         <motion.section 
-          className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 -mt-4"
-          initial={{ opacity: 0, y: 40 }}
+          className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-12"
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.6 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
         >
           <div 
-            className="relative rounded-2xl overflow-hidden shadow-2xl bg-muted group"
+            className="relative rounded-2xl overflow-hidden bg-muted group"
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
           >
-            <div className="aspect-[16/9] relative overflow-hidden">
+            <div className="aspect-[21/9] relative overflow-hidden">
               <AnimatePresence initial={false} custom={direction} mode="wait">
                 <motion.img
                   key={activeImageIndex}
@@ -323,263 +341,281 @@ const BlogPost = () => {
                   exit="exit"
                   transition={{
                     x: { type: "spring", stiffness: 300, damping: 30 },
-                    opacity: { duration: 0.3 },
-                    scale: { duration: 0.4 },
+                    opacity: { duration: 0.2 },
                   }}
                 />
               </AnimatePresence>
               
-              {/* Gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              
               {allImages.length > 1 && (
                 <>
-                  <motion.button
+                  <button
                     onClick={prevImage}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-background/90 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-background hover:scale-110 shadow-lg"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-background/90 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background"
                     aria-label="Previous image"
                   >
-                    <ChevronLeft className="h-6 w-6" />
-                  </motion.button>
-                  <motion.button
+                    <ChevronLeft className="h-5 w-5" />
+                  </button>
+                  <button
                     onClick={nextImage}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-background/90 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-background hover:scale-110 shadow-lg"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-background/90 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background"
                     aria-label="Next image"
                   >
-                    <ChevronRight className="h-6 w-6" />
-                  </motion.button>
+                    <ChevronRight className="h-5 w-5" />
+                  </button>
 
-                  {/* Auto-play indicator */}
-                  <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <motion.div 
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-2 ${isPaused ? 'bg-background/90' : 'bg-primary/90 text-primary-foreground'}`}
-                      initial={{ scale: 0.8 }}
-                      animate={{ scale: 1 }}
-                    >
-                      <span className={`w-2 h-2 rounded-full ${isPaused ? 'bg-muted-foreground' : 'bg-primary-foreground animate-pulse'}`} />
-                      {isPaused ? 'Paused' : 'Auto-playing'}
-                    </motion.div>
+                  {/* Image counter */}
+                  <div className="absolute bottom-4 right-4 px-3 py-1.5 rounded-full bg-background/90 backdrop-blur-sm text-sm font-medium">
+                    {activeImageIndex + 1} / {allImages.length}
                   </div>
                 </>
               )}
-
-              {/* Image counter */}
-              {allImages.length > 1 && (
-                <div className="absolute bottom-4 left-4 px-3 py-1.5 rounded-full bg-background/90 backdrop-blur-sm text-sm font-medium">
-                  {activeImageIndex + 1} / {allImages.length}
-                </div>
-              )}
             </div>
-
-            {/* Animated progress dots */}
-            {allImages.length > 1 && (
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 p-2 rounded-full bg-background/80 backdrop-blur">
-                {allImages.map((_, idx) => (
-                  <motion.button
-                    key={idx}
-                    onClick={() => {
-                      setDirection(idx > activeImageIndex ? 1 : -1);
-                      setActiveImageIndex(idx);
-                    }}
-                    className="relative w-3 h-3 rounded-full overflow-hidden"
-                    whileHover={{ scale: 1.2 }}
-                    whileTap={{ scale: 0.9 }}
-                    aria-label={`View image ${idx + 1}`}
-                  >
-                    <span className={`absolute inset-0 rounded-full transition-colors ${
-                      idx === activeImageIndex ? "bg-primary" : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
-                    }`} />
-                    {idx === activeImageIndex && !isPaused && (
-                      <motion.span
-                        className="absolute inset-0 rounded-full bg-primary-foreground/30"
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1.5, opacity: 0 }}
-                        transition={{ duration: 5, repeat: Infinity }}
-                      />
-                    )}
-                  </motion.button>
-                ))}
-              </div>
-            )}
           </div>
 
-          {/* Thumbnail strip with hover effects */}
+          {/* Thumbnail strip */}
           {allImages.length > 1 && (
-            <motion.div 
-              className="flex gap-3 mt-4 overflow-x-auto pb-2 px-1"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7 }}
-            >
+            <div className="flex gap-2 mt-4 overflow-x-auto pb-2">
               {allImages.map((img, idx) => (
-                <motion.button
+                <button
                   key={idx}
                   onClick={() => {
                     setDirection(idx > activeImageIndex ? 1 : -1);
                     setActiveImageIndex(idx);
                   }}
-                  className={`flex-shrink-0 w-24 h-16 rounded-xl overflow-hidden border-2 transition-all ${
+                  className={`flex-shrink-0 w-20 h-14 rounded-lg overflow-hidden border-2 transition-all ${
                     idx === activeImageIndex 
-                      ? "border-primary ring-4 ring-primary/20 scale-105" 
-                      : "border-transparent opacity-60 hover:opacity-100 hover:border-muted-foreground/30"
+                      ? "border-primary opacity-100" 
+                      : "border-transparent opacity-50 hover:opacity-100"
                   }`}
-                  whileHover={{ scale: idx === activeImageIndex ? 1.05 : 1.08 }}
-                  whileTap={{ scale: 0.95 }}
                 >
                   <img
                     src={img}
                     alt={`Thumbnail ${idx + 1}`}
                     className="w-full h-full object-cover"
                   />
-                </motion.button>
+                </button>
               ))}
-            </motion.div>
+            </div>
           )}
         </motion.section>
       )}
 
-      {/* Floating Action Bar */}
-      <motion.div 
-        className="sticky top-4 z-40 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 mt-8"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8 }}
-      >
-        <div className="flex items-center justify-end gap-2">
-          <motion.button
-            onClick={() => setIsLiked(!isLiked)}
-            className={`p-3 rounded-full transition-all ${
-              isLiked 
-                ? 'bg-red-500/10 text-red-500' 
-                : 'bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground'
-            }`}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
+      {/* Article Content + Sidebar */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        <div className="grid lg:grid-cols-[1fr_280px] gap-12">
+          {/* Main Content */}
+          <motion.article 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
           >
-            <Heart className={`h-5 w-5 ${isLiked ? 'fill-current' : ''}`} />
-          </motion.button>
-          <motion.button
-            onClick={() => setIsBookmarked(!isBookmarked)}
-            className={`p-3 rounded-full transition-all ${
-              isBookmarked 
-                ? 'bg-primary/10 text-primary' 
-                : 'bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground'
-            }`}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <Bookmark className={`h-5 w-5 ${isBookmarked ? 'fill-current' : ''}`} />
-          </motion.button>
-          <motion.button
-            onClick={() => navigator.share?.({ title: post.title, url: window.location.href })}
-            className="p-3 rounded-full bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground transition-all"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <Share2 className="h-5 w-5" />
-          </motion.button>
-        </div>
-      </motion.div>
+            <div 
+              className="prose prose-lg prose-gray dark:prose-invert max-w-none
+                prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight
+                prose-p:leading-relaxed prose-p:text-muted-foreground prose-p:text-lg
+                prose-a:text-primary prose-a:no-underline hover:prose-a:underline
+                prose-img:rounded-xl
+                prose-blockquote:border-l-primary prose-blockquote:bg-muted/30 prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:rounded-r-xl prose-blockquote:not-italic prose-blockquote:font-serif prose-blockquote:text-xl
+                prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm
+                first-letter:text-6xl first-letter:font-serif first-letter:font-bold first-letter:float-left first-letter:mr-3 first-letter:mt-1 first-letter:text-primary
+              "
+              dangerouslySetInnerHTML={{ 
+                __html: post.body?.replace(/\n/g, "<br />") || "" 
+              }}
+            />
 
-      {/* Article Content with animations */}
-      <motion.article 
-        className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12"
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6, duration: 0.6 }}
-      >
-        <div 
-          className="prose prose-lg prose-gray dark:prose-invert max-w-none
-            prose-headings:font-bold prose-headings:tracking-tight
-            prose-p:leading-relaxed prose-p:text-muted-foreground
-            prose-a:text-primary prose-a:no-underline hover:prose-a:underline
-            prose-img:rounded-xl prose-img:shadow-lg
-            prose-blockquote:border-l-primary prose-blockquote:bg-muted/50 prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:rounded-r-xl
-            prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded
-          "
-          dangerouslySetInnerHTML={{ 
-            __html: post.body?.replace(/\n/g, "<br />") || "" 
-          }}
-        />
+            {/* Tags / End of Article */}
+            <div className="mt-12 pt-8 border-t border-border">
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="outline" className="text-xs">Digital Africa</Badge>
+                <Badge variant="outline" className="text-xs">Technology</Badge>
+                <Badge variant="outline" className="text-xs">Policy</Badge>
+              </div>
+            </div>
 
-        <Separator className="my-12" />
+            {/* Author Card */}
+            <div className="mt-8 p-6 rounded-2xl bg-muted/30 border border-border">
+              <div className="flex items-start gap-4">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center flex-shrink-0">
+                  <User className="h-8 w-8 text-primary-foreground" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm text-muted-foreground mb-1">Written by</p>
+                  <p className="text-xl font-serif font-bold text-foreground">{post.author || "AfroStrategia Team"}</p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Contributing to Africa's digital transformation through research and policy analysis.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </motion.article>
 
-        {/* Enhanced Author section */}
-        <motion.div 
-          className="flex items-center gap-6 p-8 rounded-2xl bg-gradient-to-br from-muted/50 to-muted/30 border border-border/50"
-          whileHover={{ scale: 1.02 }}
-          transition={{ type: "spring", stiffness: 300 }}
-        >
-          <motion.div 
-            className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-lg"
-            whileHover={{ rotate: 10 }}
-          >
-            <User className="h-8 w-8 text-primary-foreground" />
-          </motion.div>
-          <div>
-            <p className="text-sm text-muted-foreground mb-1">Written by</p>
-            <p className="text-xl font-bold text-foreground">{post.author || "AfroStrategia"}</p>
-            <p className="text-sm text-muted-foreground mt-1">
-              Published on {format(new Date(post.created_at), "MMMM d, yyyy")}
-            </p>
-          </div>
-        </motion.div>
-      </motion.article>
+          {/* Sidebar */}
+          <aside className="lg:sticky lg:top-24 lg:self-start space-y-8">
+            {/* Share & Actions */}
+            <div className="p-6 rounded-2xl bg-muted/30 border border-border">
+              <h3 className="text-sm font-medium uppercase tracking-wider text-muted-foreground mb-4">Share Article</h3>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => handleShare("twitter")}
+                  className="flex-1 p-3 rounded-xl bg-background hover:bg-muted transition-colors flex items-center justify-center"
+                  aria-label="Share on Twitter"
+                >
+                  <Twitter className="h-5 w-5" />
+                </button>
+                <button
+                  onClick={() => handleShare("linkedin")}
+                  className="flex-1 p-3 rounded-xl bg-background hover:bg-muted transition-colors flex items-center justify-center"
+                  aria-label="Share on LinkedIn"
+                >
+                  <Linkedin className="h-5 w-5" />
+                </button>
+                <button
+                  onClick={() => handleShare("copy")}
+                  className="flex-1 p-3 rounded-xl bg-background hover:bg-muted transition-colors flex items-center justify-center"
+                  aria-label="Copy link"
+                >
+                  <Link2 className="h-5 w-5" />
+                </button>
+              </div>
+              
+              <Separator className="my-4" />
+              
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setIsLiked(!isLiked)}
+                  className={`flex-1 p-3 rounded-xl transition-colors flex items-center justify-center gap-2 ${
+                    isLiked 
+                      ? 'bg-red-500/10 text-red-500' 
+                      : 'bg-background hover:bg-muted text-muted-foreground'
+                  }`}
+                >
+                  <Heart className={`h-5 w-5 ${isLiked ? 'fill-current' : ''}`} />
+                  <span className="text-sm font-medium">Like</span>
+                </button>
+                <button
+                  onClick={() => setIsBookmarked(!isBookmarked)}
+                  className={`flex-1 p-3 rounded-xl transition-colors flex items-center justify-center gap-2 ${
+                    isBookmarked 
+                      ? 'bg-primary/10 text-primary' 
+                      : 'bg-background hover:bg-muted text-muted-foreground'
+                  }`}
+                >
+                  <Bookmark className={`h-5 w-5 ${isBookmarked ? 'fill-current' : ''}`} />
+                  <span className="text-sm font-medium">Save</span>
+                </button>
+              </div>
+            </div>
 
-      {/* Related Posts with staggered animations */}
-      {relatedPosts.length > 0 && (
-        <section className="bg-gradient-to-b from-muted/30 to-background py-20">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <motion.h2 
-              className="text-3xl font-bold text-foreground mb-10"
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
+            {/* More From Journal */}
+            {relatedPosts.length > 0 && (
+              <div>
+                <h3 className="text-sm font-medium uppercase tracking-wider text-muted-foreground mb-4">More Articles</h3>
+                <div className="space-y-4">
+                  {relatedPosts.slice(0, 3).map((related, idx) => (
+                    <motion.div
+                      key={related.id}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.4 + idx * 0.1 }}
+                      onClick={() => related.slug && navigate(`/blog/${related.slug}`)}
+                      className="group cursor-pointer"
+                    >
+                      <div className="flex gap-3">
+                        <span className="text-3xl font-serif font-bold text-muted-foreground/30 group-hover:text-primary/50 transition-colors">
+                          {String(idx + 1).padStart(2, "0")}
+                        </span>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium text-foreground line-clamp-2 group-hover:text-primary transition-colors text-sm leading-snug">
+                            {related.title}
+                          </h4>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {format(new Date(related.created_at), "MMM d")}
+                            {related.read_time && ` · ${related.read_time} min`}
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Back to Publications */}
+            <Button
+              variant="outline"
+              className="w-full gap-2"
+              onClick={() => navigate("/publications")}
             >
-              Related Articles
-            </motion.h2>
-            <div className="grid md:grid-cols-3 gap-6">
+              <ArrowLeft className="h-4 w-4" />
+              All Publications
+            </Button>
+          </aside>
+        </div>
+      </div>
+
+      {/* Related Articles Section */}
+      {relatedPosts.length > 0 && (
+        <section className="border-t border-border bg-muted/20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div className="flex items-center justify-between mb-10">
+              <div className="flex items-center gap-3">
+                <div className="h-1 w-8 bg-primary rounded-full" />
+                <h2 className="text-2xl font-serif font-bold text-foreground">Continue Reading</h2>
+              </div>
+              <Link 
+                to="/publications" 
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+              >
+                View All
+                <ArrowUpRight className="h-4 w-4" />
+              </Link>
+            </div>
+            
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               {relatedPosts.map((related, index) => (
-                <motion.div
+                <motion.article
                   key={related.id}
-                  initial={{ opacity: 0, y: 30 }}
+                  initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
+                  onClick={() => related.slug && navigate(`/blog/${related.slug}`)}
+                  className="group cursor-pointer"
                 >
-                  <Card 
-                    className="overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer group border-0 bg-background"
-                    onClick={() => related.slug && navigate(`/blog/${related.slug}`)}
-                  >
-                    <div className="aspect-[16/10] bg-muted overflow-hidden">
-                      {related.thumbnail_url ? (
-                        <motion.img
-                          src={related.thumbnail_url}
-                          alt={related.title}
-                          className="w-full h-full object-cover"
-                          whileHover={{ scale: 1.1 }}
-                          transition={{ duration: 0.4 }}
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-brand/10">
-                          <span className="text-muted-foreground">No image</span>
-                        </div>
-                      )}
-                    </div>
-                    <CardContent className="p-5">
-                      <h3 className="font-semibold text-foreground line-clamp-2 mb-2 group-hover:text-primary transition-colors">
-                        {related.title}
-                      </h3>
-                      <time className="text-sm text-muted-foreground">
-                        {format(new Date(related.created_at), "MMM d, yyyy")}
-                      </time>
-                    </CardContent>
-                  </Card>
-                </motion.div>
+                  <div className="aspect-[4/3] rounded-xl overflow-hidden bg-muted mb-4">
+                    {related.thumbnail_url ? (
+                      <img
+                        src={related.thumbnail_url}
+                        alt={related.title}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-muted">
+                        <span className="text-4xl font-serif font-bold text-muted-foreground/20">
+                          {related.title.charAt(0)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+                    <time>{format(new Date(related.created_at), "MMM d, yyyy")}</time>
+                    {related.read_time && (
+                      <>
+                        <span>·</span>
+                        <span>{related.read_time} min read</span>
+                      </>
+                    )}
+                  </div>
+                  <h3 className="font-medium text-foreground line-clamp-2 group-hover:text-primary transition-colors">
+                    {related.title}
+                  </h3>
+                  {related.author && (
+                    <p className="text-sm text-muted-foreground mt-2">
+                      By {related.author}
+                    </p>
+                  )}
+                </motion.article>
               ))}
             </div>
           </div>
