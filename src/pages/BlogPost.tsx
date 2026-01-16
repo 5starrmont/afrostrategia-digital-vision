@@ -469,146 +469,155 @@ const BlogPost = () => {
         )}
       </AnimatePresence>
 
-      {/* Hero Section - Clean Thumbnail Only */}
-      {post.thumbnail_url ? (
-        <section className="relative h-[60vh] min-h-[450px] max-h-[700px] overflow-hidden">
-          <motion.div 
-            className="absolute inset-0"
-            style={{ opacity: heroOpacity, scale: heroScale }}
+      {/* Editorial Hero Section - Typography Focused */}
+      <section className="relative bg-background pt-24 pb-16 overflow-hidden">
+        {/* Decorative Background Elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-bl from-primary/5 via-transparent to-transparent rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-brand/5 via-transparent to-transparent rounded-full blur-3xl" />
+          {/* Decorative lines */}
+          <div className="absolute top-32 left-8 w-px h-40 bg-gradient-to-b from-primary/20 to-transparent hidden lg:block" />
+          <div className="absolute top-32 right-8 w-px h-40 bg-gradient-to-b from-brand/20 to-transparent hidden lg:block" />
+        </div>
+
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
           >
-            <img
-              src={post.thumbnail_url}
-              alt={post.title}
-              className="w-full h-full object-cover"
-            />
-            
-            {/* Gradient Overlays */}
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-r from-background/40 to-transparent" />
-          </motion.div>
-
-          {/* Hero Content */}
-          <div className="absolute bottom-0 left-0 right-0 z-10">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-              <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.2 }}
-              >
-                {/* Breadcrumb */}
-                <nav className="flex items-center gap-2 text-sm text-white/70 mb-6">
-                  <Link to="/publications" className="hover:text-white transition-colors">
-                    Publications
-                  </Link>
-                  <span className="text-white/40">/</span>
-                  {post.department && (
-                    <>
-                      <span className="hover:text-white transition-colors cursor-pointer">
-                        {post.department.name.replace("Department of ", "")}
-                      </span>
-                      <span className="text-white/40">/</span>
-                    </>
-                  )}
-                  <span className="text-white truncate max-w-[200px]">{post.title}</span>
-                </nav>
-
-                {/* Category Badge */}
-                {post.department && (
-                  <Badge className="bg-primary/90 text-primary-foreground border-0 text-xs uppercase tracking-wider font-semibold mb-4 px-3 py-1">
-                    {post.department.name.replace("Department of ", "")}
-                  </Badge>
-                )}
-
-                {/* Title */}
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-white leading-[1.15] mb-6 drop-shadow-lg">
-                  {post.title}
-                </h1>
-
-                {/* Meta */}
-                <div className="flex flex-wrap items-center gap-4 text-white/80">
-                  {post.author && (
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                        <User className="h-4 w-4 text-white" />
-                      </div>
-                      <span className="font-medium">{post.author}</span>
-                    </div>
-                  )}
-                  <span className="text-white/40">·</span>
-                  <div className="flex items-center gap-1.5">
-                    <Calendar className="h-4 w-4" />
-                    <time>{format(new Date(post.created_at), "MMMM d, yyyy")}</time>
-                  </div>
-                  {post.read_time && (
-                    <>
-                      <span className="text-white/40">·</span>
-                      <div className="flex items-center gap-1.5">
-                        <Clock className="h-4 w-4" />
-                        <span>{post.read_time} min read</span>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </section>
-      ) : (
-        /* Fallback Header without Image */
-        <section className="bg-foreground pt-24 pb-16">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              {/* Breadcrumb */}
-              <nav className="flex items-center gap-2 text-sm text-white/60 mb-8">
-                <Link to="/publications" className="hover:text-white transition-colors">
-                  Publications
-                </Link>
-                <span>/</span>
-                {post.department && (
-                  <>
-                    <span>{post.department.name.replace("Department of ", "")}</span>
-                    <span>/</span>
-                  </>
-                )}
-                <span className="text-white truncate max-w-[200px]">{post.title}</span>
-              </nav>
-
+            {/* Breadcrumb */}
+            <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-8">
+              <Link to="/publications" className="hover:text-primary transition-colors">
+                Publications
+              </Link>
+              <span className="text-muted-foreground/40">/</span>
               {post.department && (
-                <Badge className="bg-primary text-primary-foreground border-0 text-xs uppercase tracking-wider font-semibold mb-4">
+                <>
+                  <span className="hover:text-primary transition-colors cursor-pointer">
+                    {post.department.name.replace("Department of ", "")}
+                  </span>
+                  <span className="text-muted-foreground/40">/</span>
+                </>
+              )}
+              <span className="text-foreground truncate max-w-[200px]">{post.title}</span>
+            </nav>
+
+            {/* Category Badge with decorative line */}
+            <div className="flex items-center gap-4 mb-8">
+              {post.department && (
+                <Badge className="bg-primary/10 text-primary border-primary/20 text-xs uppercase tracking-[0.2em] font-semibold px-4 py-1.5 rounded-full">
                   {post.department.name.replace("Department of ", "")}
                 </Badge>
               )}
+              <div className="hidden sm:block flex-1 h-px bg-gradient-to-r from-border to-transparent" />
+            </div>
 
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-white leading-[1.15] mb-8">
-                {post.title}
-              </h1>
+            {/* Title - Large Editorial Typography */}
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-foreground leading-[1.1] tracking-tight mb-10">
+              {post.title}
+            </h1>
 
-              <div className="flex flex-wrap items-center gap-4 text-white/70">
+            {/* Meta Row with enhanced styling */}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-0 sm:justify-between pt-8 border-t border-border">
+              {/* Author & Date */}
+              <div className="flex flex-wrap items-center gap-4 text-muted-foreground">
                 {post.author && (
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
-                      <User className="h-4 w-4 text-white" />
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-brand/20 flex items-center justify-center ring-2 ring-primary/10">
+                      <User className="h-5 w-5 text-primary" />
                     </div>
-                    <span className="font-medium text-white">{post.author}</span>
+                    <div>
+                      <span className="font-semibold text-foreground block">{post.author}</span>
+                      <span className="text-sm text-muted-foreground">Author</span>
+                    </div>
                   </div>
                 )}
-                <span className="text-white/30">·</span>
-                <time>{format(new Date(post.created_at), "MMMM d, yyyy")}</time>
+                <div className="hidden sm:block w-px h-10 bg-border mx-2" />
+                <div className="flex flex-col">
+                  <time className="font-medium text-foreground">{format(new Date(post.created_at), "MMMM d, yyyy")}</time>
+                  <span className="text-sm text-muted-foreground">Published</span>
+                </div>
                 {post.read_time && (
                   <>
-                    <span className="text-white/30">·</span>
-                    <span>{post.read_time} min read</span>
+                    <div className="hidden sm:block w-px h-10 bg-border mx-2" />
+                    <div className="flex flex-col">
+                      <span className="font-medium text-foreground">{post.read_time} min</span>
+                      <span className="text-sm text-muted-foreground">Read time</span>
+                    </div>
                   </>
                 )}
               </div>
-            </motion.div>
-          </div>
-        </section>
-      )}
+
+              {/* Share Actions */}
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground mr-2 hidden sm:inline">Share</span>
+                <button
+                  onClick={() => handleShare("twitter")}
+                  className="p-2.5 rounded-full bg-muted hover:bg-primary hover:text-primary-foreground transition-all"
+                  aria-label="Share on Twitter"
+                >
+                  <Twitter className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => handleShare("linkedin")}
+                  className="p-2.5 rounded-full bg-muted hover:bg-primary hover:text-primary-foreground transition-all"
+                  aria-label="Share on LinkedIn"
+                >
+                  <Linkedin className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => handleShare("copy")}
+                  className="p-2.5 rounded-full bg-muted hover:bg-primary hover:text-primary-foreground transition-all"
+                  aria-label="Copy link"
+                >
+                  <Link2 className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Featured Thumbnail - Positioned below header, with elegant framing */}
+          {post.thumbnail_url && (
+            <motion.figure
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.3 }}
+              className="mt-12 relative group"
+            >
+              <div className="relative overflow-hidden rounded-2xl shadow-2xl">
+                {/* Decorative frame effect */}
+                <div className="absolute inset-0 border-2 border-primary/10 rounded-2xl pointer-events-none z-10" />
+                <div className="absolute -inset-4 bg-gradient-to-br from-primary/5 to-brand/5 rounded-3xl blur-xl opacity-60" />
+                
+                <img
+                  src={post.thumbnail_url}
+                  alt={post.title}
+                  className="relative w-full h-auto max-h-[500px] object-cover transition-transform duration-700 group-hover:scale-[1.02]"
+                />
+                
+                {/* Subtle gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-background/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                
+                {/* Zoom button */}
+                <button
+                  onClick={() => setZoomedImage(post.thumbnail_url)}
+                  className="absolute bottom-4 right-4 p-3 rounded-full bg-background/80 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-background hover:scale-110 shadow-lg"
+                  aria-label="Zoom image"
+                >
+                  <ZoomIn className="h-5 w-5 text-foreground" />
+                </button>
+              </div>
+              
+              {/* Caption line */}
+              <div className="mt-4 flex items-center gap-3">
+                <div className="w-8 h-0.5 bg-primary/40" />
+                <span className="text-sm text-muted-foreground italic">Featured image</span>
+              </div>
+            </motion.figure>
+          )}
+        </div>
+      </section>
 
       {/* Article Content + Sidebar */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
