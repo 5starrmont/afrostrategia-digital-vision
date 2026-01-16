@@ -1,11 +1,11 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Clock, Calendar, User, ArrowLeft, ChevronLeft, ChevronRight, Share2, Bookmark, Heart, Twitter, Linkedin, Link2, ArrowUpRight, Quote, Eye, MessageCircle } from "lucide-react";
+import { Clock, Calendar, User, ArrowLeft, Share2, Bookmark, Heart, Twitter, Linkedin, Link2, ArrowUpRight, Quote, Eye, MessageCircle, ZoomIn } from "lucide-react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
@@ -37,19 +37,96 @@ interface RelatedPost {
   read_time: number | null;
 }
 
+// Dynamic image layout component for embedding images within content
+const InlineGalleryImage = ({ 
+  src, 
+  alt, 
+  layout, 
+  index,
+  onZoom 
+}: { 
+  src: string; 
+  alt: string; 
+  layout: 'full' | 'left' | 'right' | 'center';
+  index: number;
+  onZoom: (src: string) => void;
+}) => {
+  const layoutClasses = {
+    full: 'w-full my-10',
+    left: 'float-left mr-8 mb-6 w-full sm:w-1/2 lg:w-2/5',
+    right: 'float-right ml-8 mb-6 w-full sm:w-1/2 lg:w-2/5',
+    center: 'mx-auto my-10 w-full max-w-2xl'
+  };
+
+  return (
+    <motion.figure
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 0.6, delay: index * 0.1 }}
+      className={`${layoutClasses[layout]} group relative`}
+    >
+      <div className="relative overflow-hidden rounded-2xl shadow-lg group-hover:shadow-2xl transition-shadow duration-500">
+        <img
+          src={src}
+          alt={alt}
+          className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <button
+          onClick={() => onZoom(src)}
+          className="absolute bottom-4 right-4 p-2.5 rounded-full bg-white/20 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white/30 hover:scale-110"
+          aria-label="Zoom image"
+        >
+          <ZoomIn className="h-5 w-5 text-white" />
+        </button>
+      </div>
+      <figcaption className="text-sm text-muted-foreground mt-3 italic text-center">
+        Image {index + 1}
+      </figcaption>
+    </motion.figure>
+  );
+};
+
+// Image lightbox component
+const ImageLightbox = ({ src, onClose }: { src: string; onClose: () => void }) => (
+  <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm"
+    onClick={onClose}
+  >
+    <motion.img
+      initial={{ scale: 0.9, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      exit={{ scale: 0.9, opacity: 0 }}
+      src={src}
+      alt="Zoomed image"
+      className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+      onClick={(e) => e.stopPropagation()}
+    />
+    <button
+      onClick={onClose}
+      className="absolute top-6 right-6 p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+      aria-label="Close lightbox"
+    >
+      <span className="text-white text-2xl leading-none">&times;</span>
+    </button>
+  </motion.div>
+);
+
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const [post, setPost] = useState<BlogPostData | null>(null);
   const [relatedPosts, setRelatedPosts] = useState<RelatedPost[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [readProgress, setReadProgress] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
-  const [direction, setDirection] = useState(1);
   const [showFloatingBar, setShowFloatingBar] = useState(false);
+  const [zoomedImage, setZoomedImage] = useState<string | null>(null);
 
   const { scrollY } = useScroll();
   const heroOpacity = useTransform(scrollY, [0, 400], [1, 0]);
@@ -68,30 +145,6 @@ const BlogPost = () => {
     window.addEventListener("scroll", updateProgress);
     return () => window.removeEventListener("scroll", updateProgress);
   }, []);
-
-  // Auto-slideshow effect
-  const allImages = post ? [post.thumbnail_url, ...(post.gallery_images || [])].filter(Boolean) as string[] : [];
-  
-  useEffect(() => {
-    if (allImages.length <= 1 || isPaused) return;
-    
-    const interval = setInterval(() => {
-      setDirection(1);
-      setActiveImageIndex((prev) => (prev + 1) % allImages.length);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [allImages.length, isPaused]);
-
-  const nextImage = useCallback(() => {
-    setDirection(1);
-    setActiveImageIndex((prev) => (prev + 1) % allImages.length);
-  }, [allImages.length]);
-
-  const prevImage = useCallback(() => {
-    setDirection(-1);
-    setActiveImageIndex((prev) => (prev - 1 + allImages.length) % allImages.length);
-  }, [allImages.length]);
 
   // SEO
   useEffect(() => {
@@ -155,23 +208,6 @@ const BlogPost = () => {
     }
   };
 
-  const slideVariants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? 300 : -300,
-      opacity: 0,
-    }),
-    center: {
-      zIndex: 1,
-      x: 0,
-      opacity: 1,
-    },
-    exit: (direction: number) => ({
-      zIndex: 0,
-      x: direction < 0 ? 300 : -300,
-      opacity: 0,
-    }),
-  };
-
   const handleShare = async (platform: string) => {
     const url = window.location.href;
     const title = post?.title || "";
@@ -194,6 +230,120 @@ const BlogPost = () => {
     if (!post?.read_time) return null;
     const remaining = Math.ceil(post.read_time * (1 - readProgress / 100));
     return remaining > 0 ? remaining : 0;
+  };
+
+  // Get layout pattern for gallery images
+  const getImageLayout = (index: number): 'full' | 'left' | 'right' | 'center' => {
+    const patterns: ('full' | 'left' | 'right' | 'center')[] = ['full', 'left', 'right', 'center', 'right', 'left'];
+    return patterns[index % patterns.length];
+  };
+
+  // Split content into paragraphs and intersperse with images
+  const renderContentWithImages = () => {
+    if (!post?.body) return null;
+    
+    const galleryImages = post.gallery_images || [];
+    const paragraphs = post.body.split(/\n\n+/).filter(p => p.trim());
+    
+    if (galleryImages.length === 0) {
+      return (
+        <div 
+          className="prose prose-lg prose-gray dark:prose-invert max-w-none
+            prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-foreground
+            prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6
+            prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4
+            prose-p:leading-[1.8] prose-p:text-muted-foreground prose-p:text-[17px] prose-p:mb-6
+            prose-a:text-primary prose-a:font-medium prose-a:no-underline hover:prose-a:underline prose-a:decoration-primary/50
+            prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-muted/40 prose-blockquote:py-6 prose-blockquote:px-8 prose-blockquote:rounded-r-2xl prose-blockquote:not-italic prose-blockquote:font-serif prose-blockquote:text-xl prose-blockquote:text-foreground/80 prose-blockquote:my-10
+            prose-code:bg-muted prose-code:px-2 prose-code:py-1 prose-code:rounded-md prose-code:text-sm prose-code:font-normal
+            prose-strong:text-foreground prose-strong:font-semibold
+            prose-li:text-muted-foreground prose-li:text-[17px] prose-li:leading-[1.8]
+            first-letter:text-7xl first-letter:font-serif first-letter:font-bold first-letter:float-left first-letter:mr-4 first-letter:mt-1 first-letter:leading-[0.8] first-letter:text-primary
+          "
+          dangerouslySetInnerHTML={{ 
+            __html: post.body.replace(/\n/g, "<br />") 
+          }}
+        />
+      );
+    }
+
+    // Calculate where to insert images within the content
+    const imageInsertPoints = galleryImages.map((_, i) => {
+      const spacing = Math.floor(paragraphs.length / (galleryImages.length + 1));
+      return Math.min((i + 1) * spacing, paragraphs.length - 1);
+    });
+
+    let imageIndex = 0;
+    const elements: React.ReactNode[] = [];
+
+    paragraphs.forEach((paragraph, pIndex) => {
+      // Check if we should insert an image before this paragraph
+      if (imageInsertPoints.includes(pIndex) && imageIndex < galleryImages.length) {
+        const layout = getImageLayout(imageIndex);
+        const isFloating = layout === 'left' || layout === 'right';
+        
+        if (!isFloating) {
+          // Clear floats before non-floating images
+          elements.push(<div key={`clear-${pIndex}`} className="clear-both" />);
+        }
+        
+        elements.push(
+          <InlineGalleryImage
+            key={`img-${imageIndex}`}
+            src={galleryImages[imageIndex]}
+            alt={`${post.title} - Image ${imageIndex + 1}`}
+            layout={layout}
+            index={imageIndex}
+            onZoom={setZoomedImage}
+          />
+        );
+        imageIndex++;
+      }
+
+      // Add the paragraph
+      const isFirstParagraph = pIndex === 0;
+      elements.push(
+        <motion.div
+          key={`p-${pIndex}`}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.5 }}
+          className={`
+            prose prose-lg prose-gray dark:prose-invert max-w-none
+            prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-foreground
+            prose-p:leading-[1.8] prose-p:text-muted-foreground prose-p:text-[17px] prose-p:mb-6
+            prose-a:text-primary prose-a:font-medium prose-a:no-underline hover:prose-a:underline
+            prose-strong:text-foreground prose-strong:font-semibold
+            ${isFirstParagraph ? 'first-letter:text-7xl first-letter:font-serif first-letter:font-bold first-letter:float-left first-letter:mr-4 first-letter:mt-1 first-letter:leading-[0.8] first-letter:text-primary' : ''}
+          `}
+          dangerouslySetInnerHTML={{ 
+            __html: paragraph.replace(/\n/g, "<br />") 
+          }}
+        />
+      );
+    });
+
+    // Add remaining images at the end if any
+    while (imageIndex < galleryImages.length) {
+      elements.push(<div key={`clear-end-${imageIndex}`} className="clear-both" />);
+      elements.push(
+        <InlineGalleryImage
+          key={`img-end-${imageIndex}`}
+          src={galleryImages[imageIndex]}
+          alt={`${post.title} - Image ${imageIndex + 1}`}
+          layout={getImageLayout(imageIndex)}
+          index={imageIndex}
+          onZoom={setZoomedImage}
+        />
+      );
+      imageIndex++;
+    }
+
+    // Clear floats at the end
+    elements.push(<div key="clear-final" className="clear-both" />);
+
+    return <>{elements}</>;
   };
 
   if (loading) {
@@ -248,9 +398,16 @@ const BlogPost = () => {
     <div className="min-h-screen bg-background">
       <Header />
       
+      {/* Image Lightbox */}
+      <AnimatePresence>
+        {zoomedImage && (
+          <ImageLightbox src={zoomedImage} onClose={() => setZoomedImage(null)} />
+        )}
+      </AnimatePresence>
+      
       {/* Reading progress bar */}
       <motion.div 
-        className="fixed top-0 left-0 h-0.5 bg-gradient-to-r from-primary via-brand to-primary z-50"
+        className="fixed top-0 left-0 h-1 bg-gradient-to-r from-primary via-brand to-primary z-50"
         style={{ width: `${readProgress}%` }}
       />
 
@@ -312,78 +469,25 @@ const BlogPost = () => {
         )}
       </AnimatePresence>
 
-      {/* Hero Section with Parallax */}
-      {allImages.length > 0 ? (
-        <section className="relative h-[70vh] min-h-[500px] max-h-[800px] overflow-hidden">
+      {/* Hero Section - Clean Thumbnail Only */}
+      {post.thumbnail_url ? (
+        <section className="relative h-[60vh] min-h-[450px] max-h-[700px] overflow-hidden">
           <motion.div 
             className="absolute inset-0"
             style={{ opacity: heroOpacity, scale: heroScale }}
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
           >
-            <AnimatePresence initial={false} custom={direction} mode="wait">
-              <motion.img
-                key={activeImageIndex}
-                src={allImages[activeImageIndex]}
-                alt={`${post.title} - Image ${activeImageIndex + 1}`}
-                className="absolute inset-0 w-full h-full object-cover"
-                custom={direction}
-                variants={slideVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{
-                  x: { type: "spring", stiffness: 300, damping: 30 },
-                  opacity: { duration: 0.2 },
-                }}
-              />
-            </AnimatePresence>
+            <img
+              src={post.thumbnail_url}
+              alt={post.title}
+              className="w-full h-full object-cover"
+            />
             
-            {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-r from-background/30 to-transparent" />
+            {/* Gradient Overlays */}
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-background/40 to-transparent" />
           </motion.div>
 
-          {/* Navigation Controls */}
-          {allImages.length > 1 && (
-            <>
-              <button
-                onClick={prevImage}
-                className="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center opacity-0 hover:opacity-100 focus:opacity-100 transition-opacity border border-white/20 hover:bg-white/20 z-10"
-                aria-label="Previous image"
-              >
-                <ChevronLeft className="h-6 w-6 text-white" />
-              </button>
-              <button
-                onClick={nextImage}
-                className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center opacity-0 hover:opacity-100 focus:opacity-100 transition-opacity border border-white/20 hover:bg-white/20 z-10"
-                aria-label="Next image"
-              >
-                <ChevronRight className="h-6 w-6 text-white" />
-              </button>
-
-              {/* Image Indicators */}
-              <div className="absolute bottom-32 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-                {allImages.map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => {
-                      setDirection(idx > activeImageIndex ? 1 : -1);
-                      setActiveImageIndex(idx);
-                    }}
-                    className={`h-1.5 rounded-full transition-all ${
-                      idx === activeImageIndex 
-                        ? "w-8 bg-white" 
-                        : "w-1.5 bg-white/40 hover:bg-white/60"
-                    }`}
-                    aria-label={`Go to image ${idx + 1}`}
-                  />
-                ))}
-              </div>
-            </>
-          )}
-
-          {/* Hero Content Overlay */}
+          {/* Hero Content */}
           <div className="absolute bottom-0 left-0 right-0 z-10">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
               <motion.div
@@ -416,7 +520,7 @@ const BlogPost = () => {
                 )}
 
                 {/* Title */}
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-white leading-[1.1] mb-6 drop-shadow-lg">
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-white leading-[1.15] mb-6 drop-shadow-lg">
                   {post.title}
                 </h1>
 
@@ -479,7 +583,7 @@ const BlogPost = () => {
                 </Badge>
               )}
 
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-white leading-[1.1] mb-8">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-white leading-[1.15] mb-8">
                 {post.title}
               </h1>
 
@@ -524,24 +628,8 @@ const BlogPost = () => {
               </div>
             )}
 
-            <div 
-              className="prose prose-lg prose-gray dark:prose-invert max-w-none
-                prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-foreground
-                prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6
-                prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4
-                prose-p:leading-[1.8] prose-p:text-muted-foreground prose-p:text-[17px] prose-p:mb-6
-                prose-a:text-primary prose-a:font-medium prose-a:no-underline hover:prose-a:underline prose-a:decoration-primary/50
-                prose-img:rounded-2xl prose-img:shadow-lg
-                prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-muted/40 prose-blockquote:py-6 prose-blockquote:px-8 prose-blockquote:rounded-r-2xl prose-blockquote:not-italic prose-blockquote:font-serif prose-blockquote:text-xl prose-blockquote:text-foreground/80 prose-blockquote:my-10
-                prose-code:bg-muted prose-code:px-2 prose-code:py-1 prose-code:rounded-md prose-code:text-sm prose-code:font-normal
-                prose-strong:text-foreground prose-strong:font-semibold
-                prose-li:text-muted-foreground prose-li:text-[17px] prose-li:leading-[1.8]
-                first-letter:text-7xl first-letter:font-serif first-letter:font-bold first-letter:float-left first-letter:mr-4 first-letter:mt-1 first-letter:leading-[0.8] first-letter:text-primary
-              "
-              dangerouslySetInnerHTML={{ 
-                __html: post.body?.replace(/\n/g, "<br />") || "" 
-              }}
-            />
+            {/* Content with embedded gallery images */}
+            {renderContentWithImages()}
 
             {/* Tags / End of Article */}
             <Separator className="my-12" />
@@ -621,6 +709,30 @@ const BlogPost = () => {
                 </div>
               </div>
             </div>
+
+            {/* Gallery Preview - if many images */}
+            {post.gallery_images && post.gallery_images.length > 2 && (
+              <div className="p-6 rounded-2xl bg-muted/30 border border-border">
+                <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+                  Gallery ({post.gallery_images.length} images)
+                </h3>
+                <div className="grid grid-cols-3 gap-2">
+                  {post.gallery_images.slice(0, 6).map((img, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setZoomedImage(img)}
+                      className="aspect-square rounded-lg overflow-hidden bg-muted hover:ring-2 ring-primary transition-all"
+                    >
+                      <img 
+                        src={img} 
+                        alt={`Gallery ${idx + 1}`}
+                        className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Share & Actions */}
             <div className="p-6 rounded-2xl bg-muted/30 border border-border">
