@@ -699,23 +699,6 @@ const BlogPost = () => {
 
           {/* Sidebar */}
           <aside className="lg:sticky lg:top-24 lg:self-start space-y-8">
-            {/* Article Stats */}
-            <div className="p-6 rounded-2xl bg-muted/30 border border-border">
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div>
-                  <div className="text-2xl font-bold text-foreground">{post.read_time || 5}</div>
-                  <div className="text-xs text-muted-foreground uppercase tracking-wider mt-1">Min Read</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-foreground">2.4k</div>
-                  <div className="text-xs text-muted-foreground uppercase tracking-wider mt-1">Views</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-foreground">18</div>
-                  <div className="text-xs text-muted-foreground uppercase tracking-wider mt-1">Shares</div>
-                </div>
-              </div>
-            </div>
 
             {/* Gallery Preview - if many images */}
             {post.gallery_images && post.gallery_images.length > 2 && (
