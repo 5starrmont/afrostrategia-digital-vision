@@ -144,7 +144,15 @@ const Publications = () => {
   }, [content, searchTerm, selectedType, selectedDepartment]);
 
   const contentTypes = useMemo(() => [...new Set(content.map((item) => item.type))].sort((a, b) => a.localeCompare(b)), [content]);
-  const departments = useMemo(() => [...new Set(content.filter((item) => item.department).map((item) => item.department!))].sort((a, b) => a.name.localeCompare(b.name)), [content]);
+  const departments = useMemo(() => {
+    const deptMap = new Map<string, { name: string; slug: string }>();
+    content.forEach((item) => {
+      if (item.department && !deptMap.has(item.department.slug)) {
+        deptMap.set(item.department.slug, item.department);
+      }
+    });
+    return Array.from(deptMap.values()).sort((a, b) => a.name.localeCompare(b.name));
+  }, [content]);
   const typeCounts = useMemo(() => content.reduce<Record<string, number>>((acc, item) => { acc[item.type] = (acc[item.type] || 0) + 1; return acc; }, {}), [content]);
 
   const heroPost = filteredContent[0];
