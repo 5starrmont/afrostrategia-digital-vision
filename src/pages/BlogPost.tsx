@@ -37,53 +37,40 @@ interface RelatedPost {
   read_time: number | null;
 }
 
-// Dynamic image layout component for embedding images within content
+// Subtle inline image component - smaller and less intrusive
 const InlineGalleryImage = ({ 
   src, 
   alt, 
-  layout, 
   index,
   onZoom 
 }: { 
   src: string; 
   alt: string; 
-  layout: 'full' | 'left' | 'right' | 'center';
   index: number;
   onZoom: (src: string) => void;
 }) => {
-  const layoutClasses = {
-    full: 'w-full my-10',
-    left: 'float-left mr-8 mb-6 w-full sm:w-1/2 lg:w-2/5',
-    right: 'float-right ml-8 mb-6 w-full sm:w-1/2 lg:w-2/5',
-    center: 'mx-auto my-10 w-full max-w-2xl'
-  };
+  // Alternate between left and right alignment, keeping images small
+  const isLeft = index % 2 === 0;
 
   return (
     <motion.figure
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.6, delay: index * 0.1 }}
-      className={`${layoutClasses[layout]} group relative`}
+      initial={{ opacity: 0, x: isLeft ? -20 : 20 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.4 }}
+      className={`my-6 ${isLeft ? 'float-left mr-6 clear-left' : 'float-right ml-6 clear-right'} w-40 sm:w-48 lg:w-56 group cursor-pointer`}
+      onClick={() => onZoom(src)}
     >
-      <div className="relative overflow-hidden rounded-2xl shadow-lg group-hover:shadow-2xl transition-shadow duration-500">
+      <div className="relative overflow-hidden rounded-lg shadow-sm group-hover:shadow-md transition-shadow duration-300">
         <img
           src={src}
           alt={alt}
-          className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
+          className="w-full h-auto object-cover aspect-[4/3] transition-transform duration-300 group-hover:scale-102"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        <button
-          onClick={() => onZoom(src)}
-          className="absolute bottom-4 right-4 p-2.5 rounded-full bg-white/20 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white/30 hover:scale-110"
-          aria-label="Zoom image"
-        >
-          <ZoomIn className="h-5 w-5 text-white" />
-        </button>
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-200 flex items-center justify-center">
+          <ZoomIn className="h-4 w-4 text-white opacity-0 group-hover:opacity-70 transition-opacity duration-200" />
+        </div>
       </div>
-      <figcaption className="text-sm text-muted-foreground mt-3 italic text-center">
-        Image {index + 1}
-      </figcaption>
     </motion.figure>
   );
 };
@@ -232,12 +219,6 @@ const BlogPost = () => {
     return remaining > 0 ? remaining : 0;
   };
 
-  // Get layout pattern for gallery images
-  const getImageLayout = (index: number): 'full' | 'left' | 'right' | 'center' => {
-    const patterns: ('full' | 'left' | 'right' | 'center')[] = ['full', 'left', 'right', 'center', 'right', 'left'];
-    return patterns[index % patterns.length];
-  };
-
   // Split content into paragraphs and intersperse with images
   const renderContentWithImages = () => {
     if (!post?.body) return null;
@@ -267,7 +248,7 @@ const BlogPost = () => {
       );
     }
 
-    // Calculate where to insert images within the content
+    // Calculate where to insert images within the content - spread them evenly
     const imageInsertPoints = galleryImages.map((_, i) => {
       const spacing = Math.floor(paragraphs.length / (galleryImages.length + 1));
       return Math.min((i + 1) * spacing, paragraphs.length - 1);
@@ -279,20 +260,11 @@ const BlogPost = () => {
     paragraphs.forEach((paragraph, pIndex) => {
       // Check if we should insert an image before this paragraph
       if (imageInsertPoints.includes(pIndex) && imageIndex < galleryImages.length) {
-        const layout = getImageLayout(imageIndex);
-        const isFloating = layout === 'left' || layout === 'right';
-        
-        if (!isFloating) {
-          // Clear floats before non-floating images
-          elements.push(<div key={`clear-${pIndex}`} className="clear-both" />);
-        }
-        
         elements.push(
           <InlineGalleryImage
             key={`img-${imageIndex}`}
             src={galleryImages[imageIndex]}
             alt={`${post.title} - Image ${imageIndex + 1}`}
-            layout={layout}
             index={imageIndex}
             onZoom={setZoomedImage}
           />
@@ -326,13 +298,11 @@ const BlogPost = () => {
 
     // Add remaining images at the end if any
     while (imageIndex < galleryImages.length) {
-      elements.push(<div key={`clear-end-${imageIndex}`} className="clear-both" />);
       elements.push(
         <InlineGalleryImage
           key={`img-end-${imageIndex}`}
           src={galleryImages[imageIndex]}
           alt={`${post.title} - Image ${imageIndex + 1}`}
-          layout={getImageLayout(imageIndex)}
           index={imageIndex}
           onZoom={setZoomedImage}
         />
