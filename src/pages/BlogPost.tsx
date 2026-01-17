@@ -470,7 +470,7 @@ const BlogPost = () => {
       </AnimatePresence>
 
       {/* Editorial Hero Section - Typography Focused */}
-      <section className="relative bg-background pt-24 pb-16 overflow-hidden">
+      <section className="relative bg-background pt-8 pb-16 overflow-hidden">
         {/* Decorative Background Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-bl from-primary/5 via-transparent to-transparent rounded-full blur-3xl" />
@@ -486,25 +486,23 @@ const BlogPost = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            {/* Breadcrumb */}
-            <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-8">
-              <Link to="/publications" className="hover:text-primary transition-colors">
+            {/* Breadcrumb - Subtle */}
+            <nav className="flex items-center gap-1.5 text-[11px] text-muted-foreground/50 mb-6 uppercase tracking-wide">
+              <Link to="/publications" className="hover:text-muted-foreground transition-colors">
                 Publications
               </Link>
-              <span className="text-muted-foreground/40">/</span>
               {post.department && (
                 <>
-                  <span className="hover:text-primary transition-colors cursor-pointer">
+                  <span>/</span>
+                  <span className="hover:text-muted-foreground transition-colors cursor-pointer">
                     {post.department.name.replace("Department of ", "")}
                   </span>
-                  <span className="text-muted-foreground/40">/</span>
                 </>
               )}
-              <span className="text-foreground truncate max-w-[200px]">{post.title}</span>
             </nav>
 
             {/* Category Badge with decorative line */}
-            <div className="flex items-center gap-4 mb-8">
+            <div className="flex items-center gap-4 mb-6">
               {post.department && (
                 <Badge className="bg-primary/10 text-primary border-primary/20 text-xs uppercase tracking-[0.2em] font-semibold px-4 py-1.5 rounded-full">
                   {post.department.name.replace("Department of ", "")}
