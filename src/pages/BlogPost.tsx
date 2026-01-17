@@ -676,22 +676,15 @@ const BlogPost = () => {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="mt-12 p-8 rounded-3xl bg-gradient-to-br from-muted/50 to-muted/30 border border-border"
+              className="mt-10 pt-6 border-t border-border/50"
             >
-              <div className="flex items-start gap-5">
-                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center flex-shrink-0 shadow-lg">
-                  <User className="h-10 w-10 text-primary-foreground" />
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                  <User className="h-4 w-4 text-primary" />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-muted-foreground mb-1 font-medium uppercase tracking-wider">Written by</p>
-                  <p className="text-2xl font-serif font-bold text-foreground mb-2">{post.author || "AfroStrategia Team"}</p>
-                  <p className="text-muted-foreground leading-relaxed">
-                    Contributing to Africa's digital transformation through research, policy analysis, and strategic insights.
-                  </p>
-                  <div className="flex items-center gap-4 mt-4">
-                    <button className="text-sm font-medium text-primary hover:underline">View Profile</button>
-                    <button className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Follow</button>
-                  </div>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <span>By</span>
+                  <span className="font-medium text-foreground">{post.author || "AfroStrategia Team"}</span>
                 </div>
               </div>
             </motion.div>
