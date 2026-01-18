@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { LogOut } from "lucide-react";
+import { LogOut, FileText, Upload, Users, Briefcase, Home } from "lucide-react";
 import { UploadReports } from "@/components/admin/UploadReports";
-import { UploadContent } from "@/components/admin/UploadContent";
+import { BlogEditor } from "@/components/admin/BlogEditor";
 import { ManageContent } from "@/components/admin/ManageContent";
 import ManagePartners from "@/components/admin/ManagePartners";
+import ManageOpportunities from "@/components/admin/ManageOpportunities";
 
 const Moderator = () => {
   const [user, setUser] = useState<any>(null);
@@ -133,53 +134,123 @@ const Moderator = () => {
                 <p className="text-sm text-gray-500">{user?.email}</p>
               </div>
             </div>
-            <Button 
-              onClick={handleSignOut}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <LogOut className="h-4 w-4" />
-              Sign Out
-            </Button>
+            <div className="flex items-center gap-3">
+              <Button 
+                onClick={() => navigate("/")}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <Home className="h-4 w-4" />
+                View Site
+              </Button>
+              <Button 
+                onClick={handleSignOut}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <LogOut className="h-4 w-4" />
+                Sign Out
+              </Button>
+            </div>
           </div>
         </div>
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Tabs defaultValue="upload-reports" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 lg:w-auto">
-            <TabsTrigger value="upload-reports">Upload Reports</TabsTrigger>
-            <TabsTrigger value="upload-content">Upload Content</TabsTrigger>
-            <TabsTrigger value="manage-content">Manage Content</TabsTrigger>
-            <TabsTrigger value="manage-partners">Manage Partners</TabsTrigger>
+        <Tabs defaultValue="blog" className="space-y-6">
+          <TabsList className="flex w-full bg-white/60 backdrop-blur-sm border border-emerald-100 p-1 rounded-lg">
+            <TabsTrigger 
+              value="blog" 
+              className="flex-1 flex items-center justify-center gap-2 data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
+            >
+              <FileText className="h-4 w-4" />
+              Blog Editor
+            </TabsTrigger>
+            <TabsTrigger 
+              value="upload-reports"
+              className="flex-1 flex items-center justify-center gap-2 data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
+            >
+              <Upload className="h-4 w-4" />
+              Upload Reports
+            </TabsTrigger>
+            <TabsTrigger 
+              value="manage-content"
+              className="flex-1 flex items-center justify-center gap-2 data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
+            >
+              <FileText className="h-4 w-4" />
+              Manage Content
+            </TabsTrigger>
+            <TabsTrigger 
+              value="opportunities"
+              className="flex-1 flex items-center justify-center gap-2 data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
+            >
+              <Briefcase className="h-4 w-4" />
+              Careers
+            </TabsTrigger>
+            <TabsTrigger 
+              value="manage-partners"
+              className="flex-1 flex items-center justify-center gap-2 data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
+            >
+              <Users className="h-4 w-4" />
+              Partners
+            </TabsTrigger>
           </TabsList>
 
+          <TabsContent value="blog">
+            <Card className="bg-white/80 backdrop-blur-sm border-emerald-100 shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-t-lg">
+                <CardTitle className="text-white">Blog Editor</CardTitle>
+                <p className="text-emerald-100">Create, edit, and publish blog posts</p>
+              </CardHeader>
+              <CardContent className="p-6">
+                <BlogEditor />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           <TabsContent value="upload-reports">
-            <Card>
+            <Card className="bg-white/80 backdrop-blur-sm border-emerald-100 shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-t-lg">
+                <CardTitle className="text-white">Upload Reports</CardTitle>
+                <p className="text-emerald-100">Add new research reports and documents</p>
+              </CardHeader>
               <CardContent className="p-6">
                 <UploadReports />
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="upload-content">
-            <Card>
-              <CardContent className="p-6">
-                <UploadContent />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
           <TabsContent value="manage-content">
-            <Card>
+            <Card className="bg-white/80 backdrop-blur-sm border-emerald-100 shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-t-lg">
+                <CardTitle className="text-white">Manage Content</CardTitle>
+                <p className="text-emerald-100">View and manage existing content</p>
+              </CardHeader>
               <CardContent className="p-6">
                 <ManageContent />
               </CardContent>
             </Card>
           </TabsContent>
 
+          <TabsContent value="opportunities">
+            <Card className="bg-white/80 backdrop-blur-sm border-emerald-100 shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-t-lg">
+                <CardTitle className="text-white">Manage Careers</CardTitle>
+                <p className="text-emerald-100">Create and manage job, internship, and attachment opportunities</p>
+              </CardHeader>
+              <CardContent className="p-6">
+                <ManageOpportunities />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           <TabsContent value="manage-partners">
-            <Card>
+            <Card className="bg-white/80 backdrop-blur-sm border-emerald-100 shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-t-lg">
+                <CardTitle className="text-white">Manage Partners</CardTitle>
+                <p className="text-emerald-100">Manage strategic partnerships and logos</p>
+              </CardHeader>
               <CardContent className="p-6">
                 <ManagePartners />
               </CardContent>

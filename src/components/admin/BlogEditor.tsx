@@ -3,7 +3,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
@@ -12,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Pencil, Trash2, Plus, Eye, Loader2, X, ImagePlus } from "lucide-react";
 import { format } from "date-fns";
+import { RichTextEditor } from "./RichTextEditor";
 
 interface Department {
   id: string;
@@ -468,17 +468,14 @@ export const BlogEditor = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="body">Content *</Label>
-                <Textarea
-                  id="body"
-                  value={body}
-                  onChange={(e) => setBody(e.target.value)}
+                <Label>Content *</Label>
+                <RichTextEditor
+                  content={body}
+                  onChange={setBody}
                   placeholder="Write your blog content here..."
-                  rows={12}
-                  className="border-emerald-200 focus:border-emerald-500 font-mono text-sm"
                 />
                 <p className="text-xs text-gray-500">
-                  Tip: Use line breaks for paragraphs. HTML is supported for formatting.
+                  Use the toolbar above to format your text with headings, lists, quotes, and more.
                 </p>
               </div>
 
