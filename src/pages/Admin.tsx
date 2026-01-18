@@ -4,18 +4,19 @@ import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Shield, AlertTriangle } from "lucide-react";
+import { Loader2, Shield, AlertTriangle, Plus, FileText, Upload, Briefcase } from "lucide-react";
 import { UploadReports } from "@/components/admin/UploadReports";
-import { UploadContent } from "@/components/admin/UploadContent";
 import { ManageContent } from "@/components/admin/ManageContent";
-import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import { SecuritySettings } from "@/components/admin/SecuritySettings";
 import { LoginForm } from "@/components/admin/LoginForm";
 import ManagePartners from "@/components/admin/ManagePartners";
 import ManageOpportunities from "@/components/admin/ManageOpportunities";
 import { BlogEditor } from "@/components/admin/BlogEditor";
+import { AdminSidebar } from "@/components/admin/AdminSidebar";
+import { AnalyticsOverview } from "@/components/admin/AnalyticsOverview";
+import { RecentActivityFeed } from "@/components/admin/RecentActivityFeed";
+import { cn } from "@/lib/utils";
 
 const Admin = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -175,187 +176,154 @@ const Admin = () => {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-yellow-50">
-      <header className="border-b border-emerald-100 bg-white/80 backdrop-blur-sm shadow-sm">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <img 
-                src="/lovable-uploads/aea9891e-d4df-4543-b771-163f7061a75c.png" 
-                alt="AfroStrategia Foundation Logo" 
-                className="h-10 w-auto"
-              />
+  const renderContent = () => {
+    switch (activeTab) {
+      case "dashboard":
+        return (
+          <div className="space-y-6">
+            {/* Welcome Header */}
+            <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-                <p className="text-emerald-600">AfroStrategia Foundation Content Management</p>
+                <h2 className="text-2xl font-bold text-gray-900">Welcome back!</h2>
+                <p className="text-gray-600">Here's what's happening with your content.</p>
+              </div>
+              <div className="flex gap-3">
+                <Button 
+                  onClick={() => setActiveTab("blog")}
+                  className="bg-emerald-600 hover:bg-emerald-700"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  New Blog Post
+                </Button>
               </div>
             </div>
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-600 bg-white/50 px-3 py-1 rounded-full">
-                Welcome, {user.email}
-              </span>
-              <Button 
-                variant="outline" 
-                onClick={handleSignOut}
-                className="border-emerald-200 text-emerald-700 hover:bg-emerald-50"
-              >
-                Sign Out
-              </Button>
+
+            {/* Analytics Overview */}
+            <AnalyticsOverview />
+
+            {/* Quick Actions + Recent Activity */}
+            <div className="grid lg:grid-cols-3 gap-6">
+              {/* Quick Actions */}
+              <Card className="lg:col-span-1 border-gray-100">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg font-semibold text-gray-900">Quick Actions</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <button
+                    onClick={() => setActiveTab("blog")}
+                    className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-emerald-50 transition-colors text-left group"
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center group-hover:bg-emerald-200 transition-colors">
+                      <FileText className="h-5 w-5 text-emerald-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">Create Blog Post</p>
+                      <p className="text-sm text-gray-500">Write and publish a new article</p>
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("reports")}
+                    className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-blue-50 transition-colors text-left group"
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                      <Upload className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">Upload Report</p>
+                      <p className="text-sm text-gray-500">Add research documents</p>
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("opportunities")}
+                    className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-orange-50 transition-colors text-left group"
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center group-hover:bg-orange-200 transition-colors">
+                      <Briefcase className="h-5 w-5 text-orange-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">Post Opportunity</p>
+                      <p className="text-sm text-gray-500">Add jobs or internships</p>
+                    </div>
+                  </button>
+                </CardContent>
+              </Card>
+
+              {/* Recent Activity */}
+              <Card className="lg:col-span-2 border-gray-100">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg font-semibold text-gray-900">Recent Activity</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <RecentActivityFeed />
+                </CardContent>
+              </Card>
             </div>
           </div>
+        );
+      case "blog":
+        return <BlogEditor />;
+      case "reports":
+        return <UploadReports />;
+      case "manage":
+        return <ManageContent />;
+      case "opportunities":
+        return <ManageOpportunities />;
+      case "partners":
+        return <ManagePartners />;
+      case "security":
+        return <SecuritySettings />;
+      default:
+        return <BlogEditor />;
+    }
+  };
+
+  const getPageTitle = () => {
+    switch (activeTab) {
+      case "dashboard": return "Dashboard";
+      case "blog": return "Blog Editor";
+      case "reports": return "Upload Reports";
+      case "manage": return "Manage Content";
+      case "opportunities": return "Manage Careers";
+      case "partners": return "Manage Partners";
+      case "security": return "Security Settings";
+      default: return "Dashboard";
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Sidebar */}
+      <AdminSidebar 
+        activeTab={activeTab} 
+        onTabChange={setActiveTab} 
+        onSignOut={handleSignOut}
+        userEmail={user.email}
+      />
+
+      {/* Main Content */}
+      <main className="ml-16 lg:ml-64 transition-all duration-300">
+        {/* Top Bar */}
+        <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-sm border-b border-gray-200 px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-xl font-bold text-gray-900">{getPageTitle()}</h1>
+              <p className="text-sm text-gray-500">AfroStrategia Foundation Admin</p>
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => navigate('/')}
+              className="text-gray-600"
+            >
+              View Website
+            </Button>
+          </div>
+        </header>
+
+        {/* Page Content */}
+        <div className="p-6">
+          {renderContent()}
         </div>
-      </header>
-
-      <main className="container mx-auto px-4 py-8">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-8 bg-white/60 backdrop-blur-sm border border-emerald-100">
-            <TabsTrigger 
-              value="dashboard"
-              className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
-            >
-              Dashboard
-            </TabsTrigger>
-            <TabsTrigger 
-              value="blog"
-              className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
-            >
-              Blog
-            </TabsTrigger>
-            <TabsTrigger 
-              value="reports"
-              className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
-            >
-              Reports
-            </TabsTrigger>
-            <TabsTrigger 
-              value="content"
-              className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
-            >
-              Content
-            </TabsTrigger>
-            <TabsTrigger 
-              value="manage"
-              className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
-            >
-              Manage
-            </TabsTrigger>
-            <TabsTrigger 
-              value="opportunities"
-              className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
-            >
-              Careers
-            </TabsTrigger>
-            <TabsTrigger 
-              value="partners"
-              className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
-            >
-              Partners
-            </TabsTrigger>
-            <TabsTrigger 
-              value="security"
-              className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
-            >
-              Security
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="dashboard">
-            <Card className="bg-white/80 backdrop-blur-sm border-emerald-100 shadow-lg">
-              <CardHeader className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-t-lg">
-                <CardTitle className="text-white">Admin Dashboard</CardTitle>
-                <p className="text-emerald-100">System overview and recent activity</p>
-              </CardHeader>
-              <CardContent className="p-6">
-                <AdminDashboard onNavigateToTab={setActiveTab} />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="blog">
-            <Card className="bg-white/80 backdrop-blur-sm border-emerald-100 shadow-lg">
-              <CardHeader className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-t-lg">
-                <CardTitle className="text-white">Blog Editor</CardTitle>
-                <p className="text-emerald-100">Create, edit, and publish blog posts</p>
-              </CardHeader>
-              <CardContent className="p-6">
-                <BlogEditor />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="reports">
-            <Card className="bg-white/80 backdrop-blur-sm border-emerald-100 shadow-lg">
-              <CardHeader className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-t-lg">
-                <CardTitle className="text-white">Upload Reports</CardTitle>
-                <p className="text-emerald-100">Add new research reports and documents</p>
-              </CardHeader>
-              <CardContent className="p-6">
-                <UploadReports />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="content">
-            <Card className="bg-white/80 backdrop-blur-sm border-emerald-100 shadow-lg">
-              <CardHeader className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-t-lg">
-                <CardTitle className="text-white">Upload Content</CardTitle>
-                <p className="text-emerald-100">Create and publish new content</p>
-              </CardHeader>
-              <CardContent className="p-6">
-                <UploadContent />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="manage">
-            <Card className="bg-white/80 backdrop-blur-sm border-emerald-100 shadow-lg">
-              <CardHeader className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-t-lg">
-                <CardTitle className="text-white">Manage Content</CardTitle>
-                <p className="text-emerald-100">View and manage existing content</p>
-              </CardHeader>
-              <CardContent className="p-6">
-                <ManageContent />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="opportunities">
-            <Card className="bg-white/80 backdrop-blur-sm border-emerald-100 shadow-lg">
-              <CardHeader className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-t-lg">
-                <CardTitle className="text-white">Manage Careers</CardTitle>
-                <p className="text-emerald-100">Create and manage job, internship, and attachment opportunities</p>
-              </CardHeader>
-              <CardContent className="p-6">
-                <ManageOpportunities />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="partners">
-            <Card className="bg-white/80 backdrop-blur-sm border-emerald-100 shadow-lg">
-              <CardHeader className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-t-lg">
-                <CardTitle className="text-white">Manage Partners</CardTitle>
-                <p className="text-emerald-100">Manage strategic partnerships and logos</p>
-              </CardHeader>
-              <CardContent className="p-6">
-                <ManagePartners />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="security">
-            <Card className="bg-white/80 backdrop-blur-sm border-emerald-100 shadow-lg">
-              <CardHeader className="bg-gradient-to-r from-red-600 to-red-700 text-white rounded-t-lg">
-                <CardTitle className="text-white">Security Management</CardTitle>
-                <p className="text-red-100">User roles and security settings</p>
-              </CardHeader>
-              <CardContent className="p-6">
-                <SecuritySettings />
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
       </main>
     </div>
   );
